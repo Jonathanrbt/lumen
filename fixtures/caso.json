@@ -1,0 +1,111 @@
+{
+  "_nota": "Ejemplo de salida de POST /analizar y GET /caso/{caso_id}. La estructura es real y validada contra los modelos Pydantic (ver api/tests/test_contrato.py). Los valores son ILUSTRATIVOS y solo sirven para maquetar: ningun dato de aqui puede aparecer en el video ni en la demo. Lo que se grabe sale del motor corriendo contra Croma.",
+  "id": "caso-ejemplo-0001",
+  "modo": "emergencia",
+  "entidad": "Alcaldía Municipal de ejemplo",
+  "proveedor": "Constructora de ejemplo S.A.S.",
+  "municipio": "Municipio de ejemplo",
+  "departamento": "Departamento de ejemplo",
+  "valor": 4200000000.0,
+  "objeto": "Retiro de escombros y demolición de estructuras afectadas",
+  "fecha": "2026-08-14",
+  "nivel_atencion": "alto",
+  "senales": [
+    {
+      "codigo": "S1",
+      "nombre": "Empresa recién creada que gana",
+      "nivel": "alto",
+      "regla_legible": "La empresa se registró 41 días antes de que le adjudicaran este contrato.",
+      "datos_usados": {
+        "fecha_registro": "2026-07-04",
+        "fecha_adjudicacion": "2026-08-14",
+        "dias_transcurridos": 41
+      },
+      "fuente": {
+        "herramienta_croma": "rues_entity_by_nit",
+        "url_oficial": "https://www.rues.org.co/",
+        "consultado_en": "2026-08-15T17:20:00-05:00"
+      }
+    },
+    {
+      "codigo": "S7",
+      "nombre": "Concentración del valor en un solo proveedor",
+      "nivel": "medio",
+      "regla_legible": "El 61 % del valor que esta alcaldía contrató desde la emergencia se lo llevaron 2 empresas.",
+      "datos_usados": {
+        "porcentaje_concentrado": 61,
+        "numero_proveedores": 2,
+        "contratos_evaluados": 9
+      },
+      "fuente": {
+        "herramienta_croma": "secop_processes_by_entity",
+        "url_oficial": "https://www.colombiacompra.gov.co/secop",
+        "consultado_en": "2026-08-15T17:20:00-05:00"
+      }
+    }
+  ],
+  "lectura": {
+    "veredicto": "generica",
+    "puntos": [
+      {
+        "pregunta": "¿La justificación menciona daños concretos, ubicados y verificables?",
+        "hallazgo": "El documento describe la afectación en términos generales y no identifica ninguna dirección, barrio ni estructura concreta.",
+        "cita_textual": "…debido a los graves daños ocasionados por el evento sísmico en la infraestructura del municipio…",
+        "pagina": 2,
+        "no_concluye_por": null
+      },
+      {
+        "pregunta": "¿Se invocan los diagnósticos técnicos que la norma exige?",
+        "hallazgo": "No fue posible determinarlo con el documento disponible.",
+        "cita_textual": null,
+        "pagina": null,
+        "no_concluye_por": "El PDF no incluye los anexos técnicos que menciona en su encabezado."
+      }
+    ],
+    "documento_url": "https://ejemplo.gov.co/justificacion.pdf",
+    "analizado_en": "2026-08-15T17:20:00-05:00"
+  },
+  "grafo": {
+    "nodos": [
+      { "id": "n1", "tipo": "entidad", "nombre": "Alcaldía Municipal de ejemplo", "nit": "800000000", "rol": "contratante" },
+      { "id": "n2", "tipo": "empresa", "nombre": "Constructora de ejemplo S.A.S.", "nit": "901000000", "rol": "proveedor" },
+      { "id": "n3", "tipo": "persona", "nombre": "Representante legal de ejemplo", "nit": null, "rol": "representante legal" },
+      { "id": "n4", "tipo": "empresa", "nombre": "Segunda empresa de ejemplo S.A.S.", "nit": "901000001", "rol": "proveedor" }
+    ],
+    "aristas": [
+      {
+        "origen": "n1",
+        "destino": "n2",
+        "tipo": "contrato_a",
+        "fuente": {
+          "herramienta_croma": "secop_processes_by_entity",
+          "url_oficial": "https://www.colombiacompra.gov.co/secop",
+          "consultado_en": "2026-08-15T17:20:00-05:00"
+        }
+      },
+      {
+        "origen": "n3",
+        "destino": "n2",
+        "tipo": "representante_legal_de",
+        "fuente": {
+          "herramienta_croma": "rues_entity_by_nit",
+          "url_oficial": "https://www.rues.org.co/",
+          "consultado_en": "2026-08-15T17:20:00-05:00"
+        }
+      },
+      {
+        "origen": "n3",
+        "destino": "n4",
+        "tipo": "representante_legal_de",
+        "fuente": {
+          "herramienta_croma": "rues_entity_by_nit",
+          "url_oficial": "https://www.rues.org.co/",
+          "consultado_en": "2026-08-15T17:20:00-05:00"
+        }
+      }
+    ]
+  },
+  "narracion": "Esta alcaldía adjudicó de forma directa un contrato de 4.200 millones para retirar escombros. La empresa que lo ganó se había registrado 41 días antes. Además, su representante legal aparece también al frente de otra empresa que contrata con la misma alcaldía. La justificación de urgencia habla de daños del sismo, pero no señala ninguna dirección ni estructura concreta. Nada de esto prueba una irregularidad: son motivos para preguntar.",
+  "disclaimer": "Herramienta de priorización ciudadana. Una señal no es prueba de irregularidad.",
+  "generado_en": "2026-08-15T17:20:00-05:00"
+}

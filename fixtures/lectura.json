@@ -1,0 +1,29 @@
+{
+  "_nota": "Ejemplo de salida de POST /justificacion. Estructura real, valores ilustrativos. Fijate en el segundo punto: cuando el modelo no puede citar, NO afirma — llena no_concluye_por y deja la cita vacia. Ese es el guardarrail, y el frontend tiene que saber pintarlo.",
+  "veredicto": "sin_relacion",
+  "puntos": [
+    {
+      "pregunta": "¿El objeto contractual guarda relación causal con el daño descrito?",
+      "hallazgo": "El objeto es la adquisición de mobiliario de oficina. El documento no explica cómo se relaciona con la afectación del sismo.",
+      "cita_textual": "Objeto: suministro de mobiliario y enseres para la sede administrativa.",
+      "pagina": 1,
+      "no_concluye_por": null
+    },
+    {
+      "pregunta": "¿La fecha del hecho justificante es posterior al 10 de agosto de 2026?",
+      "hallazgo": "El documento cita una necesidad identificada en el plan de compras del mes de junio.",
+      "cita_textual": "…conforme a la necesidad identificada en el Plan Anual de Adquisiciones de junio de 2026…",
+      "pagina": 3,
+      "no_concluye_por": null
+    },
+    {
+      "pregunta": "¿Se invocan los diagnósticos técnicos que la norma exige?",
+      "hallazgo": "No fue posible determinarlo.",
+      "cita_textual": null,
+      "pagina": null,
+      "no_concluye_por": "El documento no contiene ninguna sección ni anexo que pueda citarse sobre diagnósticos técnicos."
+    }
+  ],
+  "documento_url": "https://ejemplo.gov.co/justificacion-urgencia.pdf",
+  "analizado_en": "2026-08-15T17:20:00-05:00"
+}

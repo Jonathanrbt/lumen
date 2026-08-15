@@ -1,0 +1,33 @@
+# Dependencias del backend de Lumen.
+#
+# Versiones fijadas a proposito: los cuatro tenemos que tener exactamente lo
+# mismo, y a las tres de la manana nadie quiere depurar una diferencia de minor.
+#
+# Para anadir una: ESCRIBELA AL FINAL DEL ARCHIVO, nunca en medio. Asi git
+# resuelve casi todos los conflictos solo cuando dos personas anaden a la vez.
+# Y avisa en el chat del equipo para que los demas reinstalen.
+#
+#   python -m venv .venv
+#   .\.venv\Scripts\Activate.ps1     (Mac/Linux: source .venv/bin/activate)
+#   pip install -r api/requirements.txt
+#
+# Probado sobre Python 3.13.5.
+
+fastapi==0.141.1
+uvicorn[standard]==0.52.3
+pydantic==2.13.4
+pydantic-settings==2.15.0
+httpx==0.28.1
+python-multipart==0.0.32
+
+# Cliente de Supabase. Dueno: Cristian (B3).
+supabase==2.31.0
+
+# Pruebas de humo del contrato: valida que los fixtures cuadren con los modelos.
+pytest==9.1.1
+
+# --- Anade aqui abajo ---
+#
+# Nota para Freddy (B2): el SDK de Cursor va aqui cuando confirmes el nombre
+# exacto del paquete y su version. El brief lo llama `cursor-sdk`. No lo fijamos
+# a ciegas: instalalo, comprueba que importa, y anade la linea con su version.

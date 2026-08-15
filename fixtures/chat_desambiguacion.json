@@ -1,0 +1,32 @@
+{
+  "_nota": "Ejemplo de salida de POST /chat cuando hay que desambiguar. Regla no negociable: si hay mas de un candidato, se muestran como tarjetas y ELIGE LA PERSONA. Nunca se asume. Fijate que 'caso' viene en null: todavia no se analizo nada.",
+  "narracion": "Encontré tres registros que coinciden con lo que escribiste. ¿Cuál es el que te interesa?",
+  "caso": null,
+  "candidatos": [
+    {
+      "nombre": "CONSTRUCTORA DE EJEMPLO S.A.S.",
+      "nit": "901000000",
+      "ciudad": "Armenia",
+      "actividad": "4290 - Construcción de otras obras de ingeniería civil",
+      "tipo": "empresa"
+    },
+    {
+      "nombre": "CONSTRUCTORA DE EJEMPLO Y CIA LTDA",
+      "nit": "830000000",
+      "ciudad": "Bogotá D.C.",
+      "actividad": "4111 - Construcción de edificios residenciales",
+      "tipo": "empresa"
+    },
+    {
+      "nombre": "ALCALDÍA MUNICIPAL DE EJEMPLO",
+      "nit": "800000000",
+      "ciudad": "Quimbaya",
+      "actividad": "Administración pública municipal",
+      "tipo": "entidad"
+    }
+  ],
+  "siguientes_pasos": [
+    "Elegir uno de los registros de arriba",
+    "Buscar por número de proceso si lo tienes a mano"
+  ]
+}

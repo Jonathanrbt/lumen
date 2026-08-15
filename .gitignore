@@ -1,0 +1,62 @@
+# ---------------------------------------------------------------------------
+# Secretos. El repo es PUBLICO desde el primer commit: nada de esto entra.
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+.cursor/mcp.json
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---------------------------------------------------------------------------
+# Directorio scratch del LLM (§5.2 regla 2: el agente nunca ve el repo)
+# ---------------------------------------------------------------------------
+scratch/*
+!scratch/.gitkeep
+
+# ---------------------------------------------------------------------------
+# Frontend. Andrew es dueno unico de web/ y define su propio stack.
+# Estas reglas son solo para que no suba artefactos pesados por accidente.
+# ---------------------------------------------------------------------------
+node_modules/
+dist/
+build/
+.next/
+.output/
+.vite/
+.wrangler/
+
+# ---------------------------------------------------------------------------
+# Supabase (la CLI genera basura local; las migraciones SI se versionan)
+# ---------------------------------------------------------------------------
+supabase/.branches/
+supabase/.temp/
+
+# ---------------------------------------------------------------------------
+# Sistema y editor
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+
+# ---------------------------------------------------------------------------
+# Material de video en crudo (pesa y no se evalua; el corte final va aparte)
+# ---------------------------------------------------------------------------
+video/crudo/
+*.mp4
+!video/final/*.mp4

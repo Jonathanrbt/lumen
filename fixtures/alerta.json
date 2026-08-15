@@ -1,0 +1,5 @@
+{
+  "_nota": "Ejemplo de salida de POST /alerta. 'estado' es 'enviado', 'omitido' o 'error'. Se usa 'omitido' cuando el nivel de atencion es bajo y no amerita molestar a nadie: no todo contrato genera un WhatsApp.",
+  "estado": "enviado",
+  "detalle": "Mensaje entregado al suscriptor del municipio."
+}

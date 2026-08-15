@@ -1,0 +1,45 @@
+{
+  "_nota": "Ejemplo de salida de POST /chat con el analisis ya hecho. El campo 'caso' trae exactamente la misma estructura que caso.json, para que el frontend reuse las MISMAS tarjetas de senal de la ficha. El chat no es una pantalla nueva: es otro envoltorio sobre los mismos componentes. Aqui va recortado para que se lea; la estructura completa esta en caso.json. Y siempre, siempre, se ofrece el siguiente paso.",
+  "narracion": "El 61 % del valor que contrató esta alcaldía desde la emergencia se concentra en 2 empresas. En la principal encontré 2 señales: la empresa se registró 41 días antes de ganar, y su representante legal aparece también al frente de otra firma que contrata con la misma alcaldía. Cada una tiene abajo el dato que la disparó y el enlace a la fuente oficial. Nada de esto prueba una irregularidad: son motivos para preguntar.",
+  "caso": {
+    "id": "caso-ejemplo-0001",
+    "modo": "vigilancia",
+    "entidad": "Alcaldía Municipal de ejemplo",
+    "proveedor": "Constructora de ejemplo S.A.S.",
+    "municipio": "Municipio de ejemplo",
+    "departamento": "Departamento de ejemplo",
+    "valor": 4200000000.0,
+    "objeto": "Retiro de escombros y demolición de estructuras afectadas",
+    "fecha": "2026-08-14",
+    "nivel_atencion": "alto",
+    "senales": [
+      {
+        "codigo": "S1",
+        "nombre": "Empresa recién creada que gana",
+        "nivel": "alto",
+        "regla_legible": "La empresa se registró 41 días antes de que le adjudicaran este contrato.",
+        "datos_usados": {
+          "fecha_registro": "2026-07-04",
+          "fecha_adjudicacion": "2026-08-14",
+          "dias_transcurridos": 41
+        },
+        "fuente": {
+          "herramienta_croma": "rues_entity_by_nit",
+          "url_oficial": "https://www.rues.org.co/",
+          "consultado_en": "2026-08-15T17:20:00-05:00"
+        }
+      }
+    ],
+    "lectura": null,
+    "grafo": null,
+    "narracion": null,
+    "disclaimer": "Herramienta de priorización ciudadana. Una señal no es prueba de irregularidad.",
+    "generado_en": "2026-08-15T17:20:00-05:00"
+  },
+  "candidatos": null,
+  "siguientes_pasos": [
+    "Ver la red de actores detrás de este contrato",
+    "Generar el paquete de evidencia",
+    "Redactar un derecho de petición"
+  ]
+}

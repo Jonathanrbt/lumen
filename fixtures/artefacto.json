@@ -1,0 +1,14 @@
+{
+  "_nota": "Ejemplo de salida de POST /accion. El cuerpo va en markdown para que el frontend lo pinte y ofrezca copiar o descargar. Es el artefacto que sale en el video: el derecho de peticion.",
+  "tipo": "derecho_peticion",
+  "titulo": "Derecho de petición sobre el contrato de retiro de escombros",
+  "cuerpo_markdown": "Señor(a)\n**Alcalde(sa) Municipal de ejemplo**\nE. S. D.\n\n**Asunto:** Derecho de petición en interés general — solicitud de información sobre contratación por urgencia manifiesta.\n\nRespetuosamente, en ejercicio del derecho fundamental de petición consagrado en el artículo 23 de la Constitución Política y regulado por la Ley 1755 de 2015, solicito la siguiente información:\n\n**Hechos**\n\n1. El 14 de agosto de 2026 esa entidad adjudicó de forma directa un contrato por valor de $4.200.000.000 cuyo objeto es el retiro de escombros y la demolición de estructuras afectadas.\n2. Según el Registro Único Empresarial y Social, el proveedor adjudicatario fue registrado el 4 de julio de 2026, es decir, 41 días antes de la adjudicación.\n3. Según los procesos publicados por esa entidad en el SECOP, el 61 % del valor contratado desde la declaratoria de emergencia se concentra en dos proveedores.\n\n**Peticiones**\n\n1. Copia íntegra del acto administrativo que declaró la urgencia manifiesta y de los estudios previos que lo sustentan.\n2. Copia de los diagnósticos técnicos que acreditan la relación directa entre el objeto contratado y los hechos que dieron lugar a la emergencia, conforme lo exige el artículo 46 de la Ley 1523 de 2012.\n3. Certificación de la experiencia e idoneidad acreditadas por el proveedor adjudicatario.\n4. Relación de los contratos celebrados por esa entidad bajo el régimen de urgencia manifiesta desde el 11 de agosto de 2026, con su valor, objeto y proveedor.\n\n**Fundamento**\n\nLa contratación bajo urgencia manifiesta debe tener relación directa y verificable con los hechos que dieron lugar a la emergencia, y está sujeta al control fiscal posterior de la Contraloría General de la República.\n\nEsta solicitud no imputa irregularidad alguna. Su propósito es ejercer el control social sobre el uso de recursos públicos.\n\nAgradezco su respuesta dentro de los términos legales.\n\nAtentamente,\n\n_________________________\n[Nombre y documento del peticionario]\n[Dirección de notificación]\n",
+  "normas_citadas": [
+    "Constitución Política, artículo 23",
+    "Ley 1755 de 2015",
+    "Ley 1523 de 2012, artículo 46",
+    "Ley 80 de 1993, artículos 42 y 43"
+  ],
+  "destinatario": "Alcaldía Municipal de ejemplo",
+  "caso_id": "caso-ejemplo-0001"
+}

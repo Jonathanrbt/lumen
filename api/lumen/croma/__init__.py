@@ -1,0 +1,5 @@
+"""Cliente de Croma, la fuente unica de datos. Dueno: Jonatin (B1)."""
+
+from .client import CromaClient, CromaError, CromaSinRespuesta, probar_conexion
+
+__all__ = ["CromaClient", "CromaError", "CromaSinRespuesta", "probar_conexion"]

@@ -1,0 +1,65 @@
+# Despliegue del backend en Render. Dueno: Cristian (B3).
+#
+# Que esto exista desde el principio es deliberado: el brief dejaba el despliegue
+# para las 03:30 y eso es un error. Un deploy que se estrena de madrugada es un
+# deploy que falla de madrugada. Objetivo: URL viva antes de las 19:00.
+#
+# Esta listo cuando /health responde DESDE EL CELULAR DE ALGUIEN CON DATOS
+# MOVILES, no desde tu navegador con la cache caliente.
+#
+# Las variables con sync: false NO se ponen aqui: se cargan a mano en el
+# dashboard de Render o con el MCP de Render. En este archivo no va ni un secreto.
+
+services:
+  - type: web
+    name: lumen-api
+    runtime: python
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: pip install -r api/requirements.txt
+    startCommand: uvicorn lumen.main:app --host 0.0.0.0 --port $PORT --app-dir api
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13.5"
+      - key: LUMEN_ENV
+        value: produccion
+      - key: LUMEN_LOG_LEVEL
+        value: info
+
+      # Croma: fuente unica de datos.
+      - key: CROMA_MCP_URL
+        value: https://api.croma.run/mcp
+      - key: CROMA_API_KEY
+        sync: false
+
+      # IA. Los IDs de modelo los fija Freddy tras correr Cursor.models.list().
+      - key: CURSOR_API_KEY
+        sync: false
+      - key: LUMEN_MODELO_RAPIDO
+        sync: false
+      - key: LUMEN_MODELO_FUERTE
+        sync: false
+
+      # Supabase.
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+
+      # Twilio, si sobrevive al hard-cut.
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_WHATSAPP_FROM
+        sync: false
+
+      # El dominio del frontend lo define Andrew. En cuanto lo sepa, entra aqui
+      # separado por comas. Si esto se descubre a las 02:00, se pierden treinta
+      # minutos justo en la integracion.
+      - key: LUMEN_CORS_ORIGINS
+        sync: false

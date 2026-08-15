@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+# Hook anti-secretos de Lumen.
+#
+# El repo es publico desde el primer commit. Un token que entra al historial
+# no se arregla con otro commit: toca reescribir historial o rotar la llave.
+# Este hook corre antes de cada commit y lo bloquea si detecta credenciales.
+#
+# Se activa con:  git config core.hooksPath .githooks
+# (esta en scripts/setup-dev.ps1, no hay que acordarse)
+#
+# Si necesitas saltarlo por una razon real:  git commit --no-verify
+# Si lo saltas, dilo en el chat del equipo.
+
+PATRONES='croma_live_[A-Za-z0-9]{8,}|rnd_[A-Za-z0-9]{16,}|key_[a-f0-9]{32,}|AC[a-f0-9]{32}|SK[a-f0-9]{32}|eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}|sbp_[a-f0-9]{40,}|sk-[A-Za-z0-9_-]{20,}|postgres(ql)?://[^:[:space:]]+:[^@[:space:]]+@'
+
+ARCHIVOS=$(git diff --cached --name-only --diff-filter=ACM | grep -v '^\.env\.example$' | grep -v '^scripts/check-secrets\.ps1$' | grep -v '^\.githooks/pre-commit$')
+
+ENCONTRADO=0
+for f in $ARCHIVOS; do
+    if git show ":$f" 2>/dev/null | grep -qE "$PATRONES"; then
+        echo "  posible secreto en: $f"
+        ENCONTRADO=1
+    fi
+done
+
+if [ "$ENCONTRADO" = "1" ]; then
+    echo ""
+    echo "COMMIT BLOQUEADO: hay algo que parece una credencial en el stage."
+    echo ""
+    echo "  1. git restore --staged <archivo>"
+    echo "  2. mueve el valor a .env (que esta ignorado)"
+    echo "  3. si la llave ya salio del equipo, rotala y avisa en el chat"
+    echo ""
+    exit 1
+fi
+
+exit 0
