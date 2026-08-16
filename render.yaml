@@ -56,11 +56,15 @@ services:
       - key: TWILIO_WHATSAPP_FROM
         sync: false
 
-      # El dominio del frontend lo define Andrew. En cuanto lo sepa, entra aqui
-      # separado por comas. Si esto se descubre a las 02:00, se pierden treinta
-      # minutos justo en la integracion.
+      # Decision 23:20: se queda en "*" y no se espera al dominio de Andrew.
+      # Es seguro aqui porque main.py monta CORS con allow_credentials=False:
+      # sin cookies ni credenciales cruzadas, "*" solo permite leer lo que ya
+      # es publico. Y quita una variable manual del dashboard, que es una cosa
+      # menos que puede faltar a las 02:00 durante la integracion.
+      # Si algun dia la API acepta credenciales, esto TIENE que volver a ser
+      # una lista de dominios explicita.
       - key: LUMEN_CORS_ORIGINS
-        sync: false
+        value: "*"
 
       # El enlace que va dentro del mensaje de WhatsApp (no controla CORS).
       # Mismo dominio que LUMEN_CORS_ORIGINS de arriba, sin coma si es solo uno.
