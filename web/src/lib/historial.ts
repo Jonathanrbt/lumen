@@ -5,11 +5,13 @@
  * un veedor no crea cuenta para entrar. Al recargar se empieza limpio.
  */
 import { createContext, use, useRef, useState } from 'react'
-import type { ChatResponse } from './tipos'
+import type { ChatResponse, Lectura } from './tipos'
 
 export type Mensaje =
   | { rol: 'usuario'; texto: string }
   | { rol: 'lumen'; respuesta: ChatResponse }
+  /** La ruta alterna del Flujo B: alguien subió el PDF de una justificación. */
+  | { rol: 'lector'; archivo: string; lectura?: Lectura; error?: string }
 
 export type Consulta = {
   id: string
