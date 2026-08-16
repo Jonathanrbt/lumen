@@ -122,6 +122,32 @@ Si termino usando Evolution API en su lugar, este detalle no aplica y lo anoto a
 
 ## Bitácora
 
+### 03:05 — /accion vivo: derecho de petición real contra un caso del dump
+
+**Qué cambié.** `api/lumen/ia/artefactos.py` + wireado en `routers/ia.py` (usa `obtener_caso` de
+Cristian, solo lectura). Solo `derecho_peticion` usa el LLM (`Modelo.RAPIDO`), porque es narrativo
+de verdad — los otros tres (`paquete_evidencia`, `informe_veeduria`, `guia_denuncia`) son
+plantillas en Python puro: listan lo que el `Caso` ya trae (señales, fuentes, lectura), cero
+riesgo de alucinación para algo que es formateo, no redacción.
+
+**Guardarraíl igual que en `/justificacion`, pero para el otro lado del problema:** los "Hechos"
+numerados de la carta salen del `Caso` en código (fecha, valor, proveedor, cada `regla_legible`),
+**no** se le pide al modelo que los invente — el prompt se los da como dato fijo y le prohíbe
+agregar cifras que no estén ahí. Y el disclaimer legal (*"Esta solicitud no imputa irregularidad
+alguna..."*) y la firma van **fijos en el código**, siempre, sin depender de que el modelo se
+acuerde de escribirlos — mismo principio que `DISCLAIMER` en `contracts/modelos.py`.
+
+**Probado con Cursor real y un caso real del dump** (Alcaldía Local de Kennedy): la carta salió
+con los hechos reales (fecha, valor $23.808.000, proveedor, la señal de concentración del 100%),
+las normas correctas (sin Ley 1523 art. 46 porque este caso no es de emergencia — la regla de
+`_normas_del_caso` funcionó), disclaimer y firma presentes.
+
+**Tests:** `test_artefactos.py`, 8 casos (las tres plantillas, el guardarraíl del disclaimer/firma
+con el LLM mockeado, JSON roto, y el endpoint completo contra el dump con 404 real). Suite
+completa: 70 passed.
+
+**Qué sigue:** `/chat` — el último endpoint de IA, orquesta `/resolver` + `/analizar`.
+
 ### 02:45 — /justificacion vivo: el núcleo del producto, probado en los dos extremos
 
 **Qué cambié.** `api/lumen/ia/lector.py` + wireado en `api/lumen/routers/ia.py`. No le pido al

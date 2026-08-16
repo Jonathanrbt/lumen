@@ -22,6 +22,7 @@ from ..contracts import (
     Lectura,
     ResolverRequest,
 )
+from ..ia.artefactos import generar_artefacto
 from ..ia.lector import (
     DocumentoIlegible,
     leer_justificacion,
@@ -29,6 +30,8 @@ from ..ia.lector import (
 )
 from ..ia.llm_client import CursorAgentError, LLMEjecucionError
 from ..ia.resolver import resolver_candidatos
+from ..plataforma.casos import obtener_caso
+from ..plataforma.supabase_client import SupabaseNoConfigurado
 
 router = APIRouter(tags=["IA · B2 Freddy"])
 
@@ -84,7 +87,22 @@ async def accion(peticion: AccionRequest) -> Artefacto:
     Redactado a partir del hallazgo específico, con hechos numerados y norma
     citada. No es una plantilla con huecos.
     """
-    raise HTTPException(status_code=501, detail="Pendiente: B2 (Freddy). Generador de artefactos.")
+    try:
+        caso = obtener_caso(peticion.caso_id)
+    except SupabaseNoConfigurado as err:
+        raise HTTPException(status_code=503, detail=str(err)) from err
+
+    if caso is None:
+        raise HTTPException(
+            status_code=404, detail=f"No existe un caso con id '{peticion.caso_id}'."
+        )
+
+    try:
+        return await generar_artefacto(caso, peticion.tipo)
+    except (CursorAgentError, LLMEjecucionError) as err:
+        raise HTTPException(
+            status_code=503, detail=f"El generador de artefactos no pudo completarse: {err}"
+        ) from err
 
 
 @router.post("/chat", response_model=ChatResponse)
