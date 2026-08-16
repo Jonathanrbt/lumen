@@ -414,25 +414,13 @@ export function PantallaLanding() {
           </ol>
         </section>
 
+        {/* La cita y la última llamada van juntas: dos cierres seguidos eran uno de más. */}
         <section className="mx-auto max-w-3xl px-6 py-24 text-center sm:py-32">
           <Greca className="mx-auto w-[168px] text-[var(--color-bronce)] opacity-80" />
           <blockquote className="mt-11 font-serif text-[clamp(1.9rem,4vw,3rem)] italic leading-[1.25]">
             «{t.cita}»
           </blockquote>
-          <p className="mt-8 text-sm text-[var(--color-texto-tenue)]">
-            {DISCLAIMER_LANDING[idioma]}
-          </p>
-          <Greca className="mx-auto mt-11 w-[168px] rotate-180 text-[var(--color-bronce)] opacity-80" />
-        </section>
-
-        <section className="mx-auto max-w-3xl px-6 pb-28 text-center sm:pb-36">
-          <h2 className="font-serif text-[clamp(2rem,4.2vw,3.1rem)] font-normal leading-[1.12]">
-            {t.cierreTitulo}
-          </h2>
-          <p className="mx-auto mt-6 max-w-xl leading-relaxed text-[var(--color-texto-tenue)]">
-            {t.cierreTexto}
-          </p>
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
+          <div className="mt-11 flex flex-wrap justify-center gap-3">
             <Boton a="/app/vigilancia" tamano="lg">
               {t.cierreCta}
             </Boton>
@@ -441,6 +429,7 @@ export function PantallaLanding() {
             </Boton>
           </div>
           <p className="mt-6 text-xs text-[var(--color-texto-tenue)]">{t.heroNota}</p>
+          <Greca className="mx-auto mt-14 w-[168px] rotate-180 text-[var(--color-bronce)] opacity-80" />
         </section>
       </main>
 

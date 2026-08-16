@@ -118,9 +118,6 @@ export const TEXTOS = {
 
     cita: 'No acusamos. Ayudamos a preguntar.',
 
-    cierreTitulo: '¿Quieres saber qué está contratando tu municipio?',
-    cierreTexto:
-      'Escribe el nombre de tu alcaldía y mira qué se está firmando esta semana, con la fuente oficial al lado de cada dato.',
     cierreCta: 'Empezar a vigilar',
 
     piePitch: 'Vigilancia ciudadana sobre la plata de la reconstrucción.',
@@ -244,9 +241,6 @@ export const TEXTOS = {
 
     cita: 'We do not accuse. We help you ask.',
 
-    cierreTitulo: 'Want to know what your municipality is contracting?',
-    cierreTexto:
-      'Type the name of your town hall and see what is being signed this week, with the official source next to every figure.',
     cierreCta: 'Start watching',
 
     piePitch: 'Citizen oversight of reconstruction money.',
