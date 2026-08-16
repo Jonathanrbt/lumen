@@ -12,6 +12,7 @@ import { useEffect } from 'react'
 import { Link } from 'react-router'
 import { DISCLAIMER_LANDING, useIdioma } from '../lib/copy'
 import { Boton, Rubrica } from '../componentes/Basicos'
+import { Carrusel } from '../componentes/Carrusel'
 import { Greca } from '../componentes/Greca'
 import { Marca } from '../componentes/Marca'
 import fondoHero from '../assets/hero-fondo.jpg'
@@ -128,6 +129,41 @@ export function PantallaLanding() {
             <p className="mt-10 flex items-center gap-4 border-t border-[var(--color-borde)] pt-5 text-xs text-[var(--color-texto-tenue)]">
               <span className="h-px w-7 shrink-0 bg-[var(--color-bronce)]" />
               {DISCLAIMER_LANDING[idioma]}
+            </p>
+          </div>
+        </section>
+
+        {/*
+          Zócalo del hero: con qué trabaja el motor, dicho en marcas antes de
+          contar el problema. Llena el hueco que dejaba el titular.
+        */}
+        <section
+          id="fuentes"
+          className="border-y border-[var(--color-borde)] bg-[var(--color-superficie)] py-14 sm:py-16"
+        >
+          <div className="mx-auto max-w-6xl px-6">
+            <Rubrica>{t.fuentesEtiqueta}</Rubrica>
+            <h2 className="mt-5 font-serif text-[clamp(1.4rem,2.4vw,1.9rem)] font-normal leading-snug">
+              {t.fuentesTitulo}
+            </h2>
+          </div>
+
+          <div className="mt-10 sm:mt-12">
+            <Carrusel />
+          </div>
+
+          <div className="mx-auto mt-10 max-w-6xl px-6 sm:mt-12">
+            <p className="max-w-2xl text-sm leading-relaxed text-[var(--color-texto-tenue)]">
+              {t.fuentesTexto}{' '}
+              <a
+                href={CROMA}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="text-[var(--color-lumen)] underline decoration-dotted underline-offset-4"
+              >
+                {t.fuentesVia}
+              </a>
+              .
             </p>
           </div>
         </section>
@@ -298,37 +334,6 @@ export function PantallaLanding() {
               </li>
             ))}
           </ol>
-        </section>
-
-        <section
-          id="fuentes"
-          className="border-y border-[var(--color-borde)] bg-[var(--color-superficie)]"
-        >
-          <div className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
-            <Rubrica>{t.fuentesEtiqueta}</Rubrica>
-            <h2 className="mt-6 font-serif text-[clamp(1.6rem,2.8vw,2.25rem)] font-normal leading-[1.15]">
-              {t.fuentesTitulo}
-            </h2>
-
-            <ul className="mt-10 flex flex-wrap items-center gap-x-9 gap-y-4 font-serif text-lg text-[var(--color-texto-tenue)]">
-              {t.fuentesLista.map((fuente) => (
-                <li key={fuente}>{fuente}</li>
-              ))}
-            </ul>
-
-            <p className="mt-10 max-w-2xl text-sm leading-relaxed text-[var(--color-texto-tenue)]">
-              {t.fuentesTexto}{' '}
-              <a
-                href={CROMA}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="text-[var(--color-lumen)] underline decoration-dotted underline-offset-4"
-              >
-                {t.fuentesVia}
-              </a>
-              .
-            </p>
-          </div>
         </section>
 
         <section className="mx-auto max-w-3xl px-6 py-24 text-center sm:py-32">

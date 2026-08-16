@@ -89,15 +89,6 @@ export const TEXTOS = {
 
     fuentesEtiqueta: 'Trazabilidad',
     fuentesTitulo: 'Todo sale de fuentes oficiales',
-    fuentesLista: [
-      'SECOP I y II',
-      'RUES',
-      'Supersociedades',
-      'SICAAC',
-      'Procuraduría',
-      'Contraloría',
-      'Contaduría General',
-    ],
     fuentesTexto:
       'Cada señal muestra el dato que la disparó, la regla que aplicó y el enlace a la fuente con su fecha de consulta. No republicamos bases: publicamos hallazgos enlazados.',
     fuentesVia: 'Datos a través de Croma',
@@ -200,15 +191,6 @@ export const TEXTOS = {
 
     fuentesEtiqueta: 'Traceability',
     fuentesTitulo: 'Everything comes from official sources',
-    fuentesLista: [
-      'SECOP I & II',
-      'RUES',
-      'Supersociedades',
-      'SICAAC',
-      'Inspector General',
-      'Comptroller',
-      'Accountant General',
-    ],
     fuentesTexto:
       'Every signal shows the figure that triggered it, the rule it applied and the link to the source with its consultation date. We do not republish databases: we publish findings that link back.',
     fuentesVia: 'Data through Croma',
