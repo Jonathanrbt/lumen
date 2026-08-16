@@ -115,12 +115,20 @@ las fechas que salgan a Croma (`from_date`, `to_date`) y todo lo que se guarde e
 Change de OpenSpec `plataforma-b3-flujo-completo` (`openspec/changes/plataforma-b3-flujo-completo/`)
 aplicado. Resumen de las cuatro preguntas del ritual:
 
+> **Nota al pushear (22:20):** todo lo de abajo se escribió antes de enterarme de la reasignación
+> de WhatsApp de las 22:14 (ver arriba). `whatsapp.py` **ya no es "el" envío de WhatsApp del
+> proyecto** — es un respaldo funcional para que `/alerta` no se quede mudo mientras el cliente
+> real de Freddy en `api/lumen/whatsapp/` no exista. El punto de enganche para reemplazarlo es una
+> sola línea de import en `api/lumen/routers/plataforma.py`, comentada ahí mismo. Hablado con
+> Freddy: su reasignación queda firme.
+
 **1. Qué cambié**
 
 - Los tres endpoints de `api/lumen/routers/plataforma.py` dejaron de ser `501`:
   `GET /caso/{caso_id}`, `GET /monitor/nuevos`, `POST /alerta` ya tienen lógica real.
 - Paquete nuevo `api/lumen/plataforma/`: `supabase_client.py`, `casos.py`, `cache_croma.py`,
-  `monitor.py`, `whatsapp.py` (Twilio), `suscripciones.py`, `dump_local.py`, `tiempo.py`.
+  `monitor.py`, `whatsapp.py` (envío de **respaldo**, ver nota arriba — el dueño real de WhatsApp
+  es Freddy desde las 22:14), `suscripciones.py`, `dump_local.py`, `tiempo.py`.
 - Primera migración de Supabase: `supabase/migrations/20260815205000_esquema_minimo.sql` — tres
   tablas (`casos`, `suscripciones_whatsapp`, `cache_croma`), no cinco: `senales`/`lecturas` viven
   dentro del `jsonb` de `casos` (ver Decisión 3 del `design.md` del change).

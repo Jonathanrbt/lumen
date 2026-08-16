@@ -1,16 +1,24 @@
-"""Envio de alertas por WhatsApp via Twilio sandbox. Dueno: Cristian (B3).
+"""Envio de alertas por WhatsApp. FALLBACK provisional — dueno real: Freddy (B2).
 
-Prioridad 1 del bloque de las 20:45 (docs/handoff/CRISTIAN-B3.md). Timebox de
-60 minutos, corte a las 21:45: si a esa hora no llego un mensaje real a un
-telefono real, se corta y se avisa a Jonatin de inmediato.
+**22:14: el canal de WhatsApp se reasigno de Cristian a Freddy** (ver
+`docs/PLAN.md` y `docs/handoff/FREDDY-B2.md`). Su cliente real vive en
+`api/lumen/whatsapp/` y puede usar Twilio o Evolution API. Este archivo se
+escribio ANTES de esa reasignacion y se deja aqui a proposito, como
+respaldo funcional: sin el, `POST /alerta` no manda nada mientras
+`api/lumen/whatsapp/` no exista.
 
-El copy es de fuente unica: `docs/COPY-SENALES.md`. Este modulo NO redacta
-señales nuevas — reusa `Senal.regla_legible`, que Jonatin (B1) ya escribe en
-ese lenguaje. Si los cuatro maquillan el mismo texto, el veedor lee cuatro
-voces distintas.
+**El punto de enganche es una sola linea**: en
+`api/lumen/routers/plataforma.py`, el import de `enviar_alerta`. En cuanto
+el cliente de Freddy exista, ese import cambia a `..whatsapp` (el suyo) y
+este archivo se puede borrar. No hace falta tocar nada mas del router.
 
-Regla que no se negocia: nunca se simula un envio. Si Twilio no esta
-configurado o falla, el estado es 'error', jamas 'enviado'.
+El copy sigue siendo de fuente unica: `docs/COPY-SENALES.md`. Este modulo NO
+redacta señales nuevas — reusa `Senal.regla_legible`, que Jonatin (B1) ya
+escribe en ese lenguaje.
+
+Regla que no se negocia, y que tambien aplica al cliente de Freddy: nunca se
+simula un envio. Si Twilio no esta configurado o falla, el estado es
+'error', jamas 'enviado'.
 """
 
 from __future__ import annotations

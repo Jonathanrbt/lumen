@@ -18,6 +18,12 @@ from ..croma.client import CromaError, CromaSinRespuesta
 from ..plataforma.casos import obtener_caso
 from ..plataforma.monitor import monitor_nuevos
 from ..plataforma.supabase_client import SupabaseNoConfigurado
+
+# PUNTO DE ENGANCHE 22:14: WhatsApp se reasignó a Freddy (B2), ver docs/PLAN.md
+# y docs/handoff/FREDDY-B2.md. Su cliente real vive en `api/lumen/whatsapp/`.
+# `..plataforma.whatsapp` es el envío de respaldo escrito antes de esa
+# reasignación — en cuanto el módulo de Freddy exista, este import es lo único
+# que cambia: `from ..whatsapp import enviar_alerta` (o el nombre que él fije).
 from ..plataforma.whatsapp import enviar_alerta
 
 router = APIRouter(tags=["plataforma · B3 Cristian"])
