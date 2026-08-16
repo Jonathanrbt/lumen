@@ -67,8 +67,14 @@ def _no_tocar_supabase_de_verdad(monkeypatch: pytest.MonkeyPatch):
     sesión de pytest. Confirmado en vivo (16.ago ~03:15): rompía
     test_plataforma.py::test_caso_sin_supabase_ni_dump_da_503_explicito.
     Los dos tests que sí quieren probar el guardado real de otra forma
-    sobreescriben este mock localmente."""
+    sobreescriben este mock localmente.
+
+    Desde el 16.ago la lista es de dos: `obtener_caso` entró por la misma
+    puerta cuando `_caso_cacheado` empezó a preguntarle a Supabase si el caso
+    ya existía antes de re-analizarlo. Devuelve None por defecto — "no hay
+    nada cacheado" — que es el camino que estos tests quieren probar."""
     monkeypatch.setattr(chat, "guardar_caso", lambda caso: None)
+    monkeypatch.setattr(chat, "obtener_caso", lambda caso_id: None)
 
 
 def test_sin_candidatos_dice_no_se_con_alternativa(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -130,6 +136,73 @@ def test_contexto_con_nit_analiza_directo_sin_volver_a_preguntar(
     assert resultado.candidatos is None
     assert resultado.narracion == "Narración de prueba en lenguaje ciudadano."
     assert "Redactar un derecho de petición" in resultado.siguientes_pasos  # nivel alto
+
+
+def test_la_narracion_queda_dentro_del_caso_que_se_guarda(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Si la narración vive solo en la respuesta del chat, al reabrir la ficha
+    por `/caso/{id}` el párrafo desaparece: `FichaCaso` solo lo pinta cuando
+    `caso.narracion` existe, y el motor siempre lo deja en None."""
+    guardados = []
+
+    async def _analizar_falso(peticion):
+        return _caso()
+
+    monkeypatch.setattr(chat, "analizar", _analizar_falso)
+    monkeypatch.setattr(chat, "preguntar", _preguntar_falso)
+    monkeypatch.setattr(chat, "guardar_caso", guardados.append)
+
+    resultado = _run(chat.responder_chat("sí, esa", contexto={"nit": "900000000"}))
+
+    assert resultado.caso is not None
+    assert resultado.caso.narracion == "Narración de prueba en lenguaje ciudadano."
+    assert guardados and guardados[0].narracion == resultado.caso.narracion
+
+
+def test_un_caso_ya_cacheado_no_re_analiza_ni_vuelve_a_narrar(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Brief §4.6, Flujo B paso 4: "si el caso ya está cacheado en Supabase,
+    responde al instante". Un análisis por NIT tarda 80-100 s contra Croma y
+    una narración cuesta presupuesto de Cursor: con el caso en la base, ni lo
+    uno ni lo otro debe pasar."""
+
+    async def _analizar_prohibido(peticion):
+        raise AssertionError("no se debe re-analizar un caso que ya está en Supabase")
+
+    async def _preguntar_prohibido(prompt, modelo):
+        raise AssertionError("no se debe volver a narrar un caso que ya trae narración")
+
+    cacheado = _caso().model_copy(update={"narracion": "Lo que ya se había narrado."})
+
+    monkeypatch.setattr(chat, "analizar", _analizar_prohibido)
+    monkeypatch.setattr(chat, "preguntar", _preguntar_prohibido)
+    monkeypatch.setattr(chat, "obtener_caso", lambda caso_id: cacheado)
+
+    resultado = _run(chat.responder_chat("sí, esa", contexto={"nit": "900000000"}))
+
+    assert resultado.narracion == "Lo que ya se había narrado."
+    assert resultado.caso is not None and resultado.caso.id == cacheado.id
+
+
+def test_si_supabase_falla_el_cache_no_tumba_el_chat(monkeypatch: pytest.MonkeyPatch) -> None:
+    """El caché es un atajo, no un requisito: si la consulta revienta, se sigue
+    por el camino largo."""
+
+    def _obtener_roto(caso_id: str):
+        raise RuntimeError("Supabase caída")
+
+    async def _analizar_falso(peticion):
+        return _caso()
+
+    monkeypatch.setattr(chat, "obtener_caso", _obtener_roto)
+    monkeypatch.setattr(chat, "analizar", _analizar_falso)
+    monkeypatch.setattr(chat, "preguntar", _preguntar_falso)
+
+    resultado = _run(chat.responder_chat("sí, esa", contexto={"nit": "900000000"}))
+
+    assert resultado.caso is not None
 
 
 def test_nivel_bajo_no_sugiere_derecho_de_peticion(monkeypatch: pytest.MonkeyPatch) -> None:
