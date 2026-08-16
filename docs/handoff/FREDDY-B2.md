@@ -20,6 +20,65 @@ a las 23:00 y lo anoto aquí abajo.
 
 ---
 
+## 04:40 — Mensaje de demo para el video, con datos reales del sismo (no mock)
+
+**Se pidió simular la catástrofe del 10 de agosto para el video.** No se inventaron señales: en
+vez de mockear, revisé las 3 entidades del sismo que todavía no había probado (`docs/entidades-
+emergencia.json`) y **las tres tienen una señal S6 real** (fraccionamiento — contratos por
+debajo del umbral que exige concurso, firmados casi el mismo día):
+
+| Entidad | NIT | Contratos agrupados | Valor real |
+|---|---|---|---|
+| **Gobernación del Chocó** | 891680010 | **97** | $14.492.100.000 |
+| Gobernación del Valle (Secretaría de Educación) | 890399029 | 40 | (no reportado en el foco) |
+| Alcaldía de Buenaventura | 890399045 | 25 | (no reportado en el foco) |
+
+**Elegí Chocó** (el número más alto) para el mensaje de demo. Mandado y confirmado en Telegram:
+
+```
+🚨 Nuevo contrato en zona del sismo del 10 de agosto: Gobernacion Del Chocó, por $14.492.100.000.
+Se firmaron 97 contratos parecidos, casi el mismo día, cada uno justo por debajo del monto que obliga a hacer concurso.
+Una señal no es prueba de irregularidad. Es un motivo para preguntar.
+Ver evidencia: pide el caso caso-0d6968f81dad en la API (dominio del frontend pendiente)
+```
+
+El caso (`caso-0d6968f81dad`) ya está guardado en Supabase real — `/caso/caso-0d6968f81dad` y
+`/accion` con ese `caso_id` funcionan ya mismo, en cuanto Andrew tenga el dominio del frontend
+para que el enlace de la última línea deje de decir "pendiente".
+
+**Si se quiere mostrar "varias ciudades afectadas" en vez de una sola**, Valle y Buenaventura
+también son reales y se pueden mandar igual — el script de abajo sirve para las tres, cambiando
+el `entidad_id`.
+
+**Receta para reproducir esto exacto** (o repetirlo con otro NIT de la tabla de arriba):
+
+```python
+# desde api/, con .env cargado
+from lumen.contracts import AnalizarRequest
+from lumen.senales.motor import analizar
+from lumen.whatsapp.copy import formatear_pesos, url_ficha
+from lumen.plataforma.casos import guardar_caso
+from lumen.telegram.cliente import enviar
+
+caso = await analizar(AnalizarRequest(entidad_id="891680010"))  # cambiar NIT para otra ciudad
+entidad_limpia = caso.entidad.rstrip(". ").title()
+lineas = [
+    f"🚨 Nuevo contrato en zona del sismo del 10 de agosto: {entidad_limpia}, por {formatear_pesos(caso.valor)}.",
+    *[s.regla_legible for s in caso.senales[:2]],
+    caso.disclaimer,
+    url_ficha(caso),
+]
+guardar_caso(caso)
+estado, detalle = await enviar("<chat_id>", "\n".join(lineas[:5]))
+```
+
+**Por qué no fue un mock:** el encabezado menciona el sismo del 10 de agosto porque es literal —
+estas 4 entidades están en la lista de emergencia precisamente por eso (`docs/entidades-
+emergencia.json`, verificada por Jonatin). La señal, la cifra y la fuente son reales, consultadas
+en vivo contra Croma. Lo único "de demo" es que elegí manualmente cuál de los 4 NITs mandar, en
+vez de dejar que el monitor lo descubriera solo — y eso es exactamente lo que hace `/monitor/
+nuevos` cuando se lo dispara.
+
 ## 04:25 — Modo Emergencia probado de punta a punta: suscriptores + un hallazgo de datos
 
 **Pregunta que lo disparó: "¿el bot de Telegram funciona? ¿qué falta para Modo Emergencia?"**

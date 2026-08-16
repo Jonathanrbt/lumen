@@ -38,6 +38,15 @@ tenga ubicación, o revisar `senales/motor.py` (la extracción de `location`) si
 funcione con casos nuevos del monitor en vivo, no solo los precomputados.** Detalle completo en
 [`docs/handoff/FREDDY-B2.md`](docs/handoff/FREDDY-B2.md).
 
+### 🎬 Mensaje de demo para el video — datos reales, no mockeados
+
+Se pidió simular la catástrofe del 10 de agosto para el video. En vez de inventar señales,
+revisé las 3 entidades del sismo sin probar todavía: **las tres tienen una señal S6 real**
+(fraccionamiento de contratos) — Chocó (97 contratos, $14.492 millones), Valle (40), Buenaventura
+(25). Mandé la de Chocó a Telegram, confirmada y aprobada. El caso ya está guardado en Supabase
+(`caso-0d6968f81dad`). Receta exacta para reproducirlo o repetirlo con las otras dos ciudades en
+[`docs/handoff/FREDDY-B2.md`](docs/handoff/FREDDY-B2.md) (bitácora 04:40).
+
 ### ✅ Buenas noticias primero
 
 - **`web/` ya no es un riesgo — está fusionado a `main`.** Andrew terminó las 4 pantallas +
