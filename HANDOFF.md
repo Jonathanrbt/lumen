@@ -18,6 +18,26 @@ integración real encontrado y arreglado — ver el detalle completo de todo est
 de tests: **77 passed**. No vuelve a estar disponible hasta que se levante — lo de abajo es para
 que Jonatin y Cristian puedan seguir sin esperarlo.
 
+### 🚨 Modo Emergencia: probado de punta a punta, con un hallazgo importante de datos
+
+**`suscripciones_whatsapp` estaba vacía — 0 filas.** Aunque el monitor encontrara un caso real de
+nivel medio/alto, el aviso automático no le llegaba a nadie porque no había a quién. Sembré 2
+suscriptores de prueba (Freddy y Jonatin, sus `chat_id` de Telegram guardados en la columna
+`telefono` — el nombre de la columna sigue siendo el de WhatsApp, pero solo guarda texto) y
+disparé `_avisar_si_corresponde` directo (la función real del monitor, no `/alerta` a mano) sobre
+el caso de Kennedy del catálogo curado. **Confirmado en vivo: le llegó a los dos.**
+
+**El hallazgo que importa más que el de arriba:** `caso.municipio` y `caso.departamento` vienen
+`None` la mayoría de las veces desde el motor real — lo confirmé con Cali (NIT 890399011, una de
+las 4 entidades que el monitor recorre), que dio `municipio=None, departamento=None`. Eso
+significa que para esos casos, `listar_suscriptores` nunca encuentra a nadie: la función corta
+en seco cuando los dos vienen vacíos, sin importar qué tan poblada esté la tabla. El caso de
+Kennedy sí tenía `municipio='No Definido'` (viene del campo `location` de Croma, que no siempre
+está poblado) y por eso pudo enrutar la alerta. **Para el video: usar un caso del catálogo que sí
+tenga ubicación, o revisar `senales/motor.py` (la extracción de `location`) si se quiere que
+funcione con casos nuevos del monitor en vivo, no solo los precomputados.** Detalle completo en
+[`docs/handoff/FREDDY-B2.md`](docs/handoff/FREDDY-B2.md).
+
 ### ✅ Buenas noticias primero
 
 - **`web/` ya no es un riesgo — está fusionado a `main`.** Andrew terminó las 4 pantallas +
@@ -60,8 +80,9 @@ que Jonatin y Cristian puedan seguir sin esperarlo.
    `get_supabase()` valide antes de cachear el cliente. Sigue sin arreglar, no bloquea nada.
 3. **`GET /monitor/nuevos` no tiene ningún cron real que lo dispare** — solo existe el
    keep-alive de `/health` cada 10 min. El monitor "corre solo" del brief hoy es manual. No
-   bloquea el video (se dispara a mano al grabar), pero es la pieza que falta para que el
-   Modo Emergencia sea automático de verdad.
+   bloquea el video (se dispara a mano al grabar). Con el hallazgo de arriba (suscriptores +
+   municipio/departamento), esto ya es la única pieza que falta para que el Modo Emergencia sea
+   automático de verdad de punta a punta.
 4. **`chat.py` ahora llama a tu `guardar_caso`** cuando el Modo Vigilancia descubre un caso
    nuevo — verificado que ya persiste de verdad (punto 1). Sigue siendo best-effort: si Supabase
    falla, se registra y el chat no se cae.

@@ -20,6 +20,43 @@ a las 23:00 y lo anoto aquí abajo.
 
 ---
 
+## 04:25 — Modo Emergencia probado de punta a punta: suscriptores + un hallazgo de datos
+
+**Pregunta que lo disparó: "¿el bot de Telegram funciona? ¿qué falta para Modo Emergencia?"**
+El envío en sí ya estaba probado (`/alerta`, `enviar()`), pero el mecanismo *automático* del
+monitor — el que encuentra a quién avisar sin que nadie pase un `destinatario` a mano — nunca se
+había probado.
+
+**Primer hallazgo: `suscripciones_whatsapp` tenía 0 filas** (verificado contra Supabase real).
+El monitor llama `listar_suscriptores(caso.municipio, caso.departamento)` — sin suscriptores, un
+caso real de nivel medio/alto no le llega a nadie, silenciosamente (no es un error, es un bucle
+vacío).
+
+**Segundo hallazgo, más importante:** `caso.municipio` y `caso.departamento` vienen `None` la
+mayoría de las veces desde el motor real de Jonatin — confirmado con Cali (NIT 890399011, una de
+las 4 entidades que el monitor recorre para el sismo), que dio los dos campos vacíos.
+`listar_suscriptores` corta en seco (`if not municipio and not departamento: return []`) cuando
+los dos vienen vacíos — así que **ni sembrando la tabla se resuelve** para esos casos. Vienen de
+parsear el campo `location` de Croma (`senales/motor.py`), que no siempre está poblado.
+
+**Lo que sí funcionó:** el caso de Kennedy del catálogo curado (`caso-38d879c8695f`) tenía
+`municipio='No Definido'` (un valor real, aunque el nombre sea raro) — con eso alcanzó. Sembré
+dos suscriptores de prueba (mi `chat_id` y el de Jonatin — se lo pedí a él en vivo, mandó
+`/start` al bot y saqué su `chat_id` de `getUpdates`, `6746822281`) con `municipio='No Definido'`,
+`departamento='Bogotá'`, y disparé `_avisar_si_corresponde` (la función real del monitor, no
+`/alerta` manual) sobre ese caso. **Confirmado en vivo por los dos: les llegó el mensaje
+automático a Telegram.**
+
+**Conclusión para el video:** el Modo Emergencia automático funciona de punta a punta, pero
+depende de usar un caso que sí tenga ubicación (como Kennedy) o de sembrar suscriptores sin
+filtro geográfico si se usa uno que no la tenga. Si alguien quiere que funcione en general para
+casos nuevos que descubra el monitor en vivo (no solo el catálogo), hace falta revisar por qué
+`location` viene vacío tan seguido en `senales/motor.py` — eso es de Jonatin, no lo toqué.
+
+**Datos insertados en Supabase (tabla `suscripciones_whatsapp`, para que Cristian lo sepa):**
+dos filas de prueba con los `chat_id` de Telegram de Freddy y Jonatin. Son datos de demo, no
+reales de un veedor — se pueden borrar sin problema cuando ya no hagan falta.
+
 ## 04:10 — Supabase real conectado. El ciclo completo cierra de punta a punta
 
 **Freddy consiguió las keys correctas y repitió la prueba pendiente:** `/chat` con un NIT nunca
