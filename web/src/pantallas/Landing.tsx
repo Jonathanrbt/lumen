@@ -21,6 +21,7 @@ import demoVigilancia from '../assets/demo-vigilancia.png'
 import pixelAgente from '../assets/pixel-agente.png'
 import pixelAve from '../assets/pixel-ave.png'
 import pixelBici from '../assets/pixel-bici.png'
+import pixelCerdo from '../assets/pixel-cerdo.png'
 import victoria from '../assets/victoria.png'
 import mundo from '../assets/mundo.mp4'
 
@@ -418,12 +419,23 @@ export function PantallaLanding() {
         </section>
 
         <section id="etica" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-          <Rubrica>{t.eticaEtiqueta}</Rubrica>
-          <h2 className="mt-6 font-serif text-[clamp(1.75rem,3.2vw,2.6rem)] font-normal leading-[1.15]">
-            {t.eticaTitulo}
-          </h2>
+          <div className="flex flex-col-reverse items-start gap-8 sm:flex-row sm:items-end sm:justify-between sm:gap-16">
+            <div>
+              <Rubrica>{t.eticaEtiqueta}</Rubrica>
+              <h2 className="mt-6 font-serif text-[clamp(1.75rem,3.2vw,2.6rem)] font-normal leading-[1.15]">
+                {t.eticaTitulo}
+              </h2>
+            </div>
+            {/* El que husmea, no el que acusa: es lo que dicen las cuatro líneas de abajo. */}
+            <img
+              src={pixelCerdo}
+              alt=""
+              aria-hidden
+              className="w-24 shrink-0 mix-blend-multiply sm:w-32"
+            />
+          </div>
 
-          <ol className="mt-14 grid gap-px border border-[var(--color-borde)] bg-[var(--color-borde)] sm:grid-cols-2">
+          <ol className="mt-12 grid gap-px border border-[var(--color-borde)] bg-[var(--color-borde)] sm:grid-cols-2">
             {t.etica.map((linea, i) => (
               <li key={linea} className="flex gap-6 bg-[var(--color-fondo)] p-8">
                 <span className="w-7 shrink-0 font-serif text-xl leading-none text-[var(--color-bronce)]">
