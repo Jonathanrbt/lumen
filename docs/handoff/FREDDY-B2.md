@@ -1,11 +1,18 @@
 # Handoff — Freddy · B2 IA
 
-**Soy dueño de:** `api/lumen/ia/`, `api/lumen/routers/ia.py`.
+**Soy dueño de:** `api/lumen/ia/`, `api/lumen/routers/ia.py`, y desde las 22:14 también
+`api/lumen/whatsapp/`.
 **Mis endpoints:** `POST /resolver`, `POST /justificacion`, `POST /accion`, `POST /chat`.
 **Mi hito:** 21:30 — el lector clasifica correctamente 3 documentos reales de urgencia manifiesta,
 y cada punto del veredicto trae su cita textual.
 **También soy dueño del presupuesto:** los US$50 de la API de Cursor. Reviso consumo a las 20:00 y
 a las 23:00 y lo anoto aquí abajo.
+
+> **Actualización 22:14 — WhatsApp pasa a ser mío.** El reparto original (`PLAN.md`) ponía Twilio en
+> B3/Cristian, prioridad 1 de su bloque de las 20:45. Se reasigna por decisión del equipo: yo tomo
+> el canal de WhatsApp completo, con libertad para usar Twilio o Evolution API — el que mejor
+> funcione en la ventana que queda, sin que eso implique reabrir el contrato de la API. Detalle en
+> la sección de abajo y en `PLAN.md` / `CRISTIAN-B3.md`, ya actualizados.
 
 > Se actualiza al cerrar cada bloque: 20:45, 22:00, 23:00, 02:00.
 
@@ -85,6 +92,31 @@ cuesta una hora.
 **Toda salida del LLM cita el fragmento fuente. Si no puede citar, dice que no puede concluir.** El
 modelo `Lectura` tiene un campo `no_concluye_por` justamente para eso: existe para usarse, no para
 decorar.
+
+---
+
+## WhatsApp — mío desde las 22:14
+
+**Vive en `api/lumen/whatsapp/`, carpeta nueva, separada de `api/lumen/plataforma/` de Cristian.**
+No toco su territorio: Supabase, el monitor y `/alerta` siguen siendo suyos. Lo que construyo es un
+cliente de WhatsApp con la misma filosofía que `llm_client`: una interfaz mínima detrás de la cual
+puede vivir Twilio o Evolution API, y se cambia de proveedor sin tocar el resto del código. El brief
+fijaba Twilio, pero lo que importa es que un mensaje real le llegue a un teléfono real esta noche —
+si Evolution API resuelve eso mejor o más rápido, se usa esa.
+
+**Frontera con Cristian:** su router (`api/lumen/routers/plataforma.py`, endpoint `POST /alerta`)
+sigue siendo la puerta pública del contrato — eso no cambia sin anunciarlo. Lo que cambia es qué hay
+detrás: en vez de que él implemente el envío, `/alerta` llama a mi cliente de `api/lumen/whatsapp/`.
+
+**Copy:** las nueve frases y el disclaimer ya están fijados en
+[`docs/COPY-SENALES.md`](../COPY-SENALES.md) — máximo 5 líneas, cero siglas sueltas, cifras en pesos
+redondeados, "la carta para preguntarle a la alcaldía" nunca "derecho de petición". No reescribo
+nada, lo consumo tal cual está ahí.
+
+**Detalle operativo que ya estaba anotado y sigue aplicando (venía del handoff de Cristian):** en el
+sandbox de Twilio, el teléfono que recibe tiene que unirse antes mandando `join <código>` al número
+de Twilio, y tiene que estar unido desde temprano, no a las 03:00. Va en `TWILIO_WHATSAPP_TO_DEMO`.
+Si termino usando Evolution API en su lugar, este detalle no aplica y lo anoto aquí cuando decida.
 
 ---
 
