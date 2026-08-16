@@ -57,6 +57,16 @@ class CromaError(RuntimeError):
     """Croma respondio, pero con un error de negocio o de validacion."""
 
 
+class CromaDeshabilitado(CromaError):
+    """El interruptor `LUMEN_CROMA_HABILITADO` esta en false.
+
+    No es un fallo: es una decision de ahorro. El token de Croma es UNO para
+    las cuatro personas mas el monitor, y los creditos son finitos. Hereda de
+    `CromaError` a proposito, para que todo el codigo que ya lo captura degrade
+    igual que ante cualquier otro fallo de Croma en vez de reventar.
+    """
+
+
 class CromaSinRespuesta(RuntimeError):
     """La respuesta no era JSON utilizable. Suele ser token invalido."""
 
@@ -116,6 +126,15 @@ class CromaClient:
         esperar_pendientes: bool = True,
     ) -> Any:
         """POST a la ruta de `fuente` y devuelve el `data` ya desempaquetado."""
+        # Interruptor de ahorro. Va ANTES de mirar la ruta y antes de tocar la
+        # red: si esta apagado, no sale ni una peticion.
+        if not get_settings().lumen_croma_habilitado:
+            raise CromaDeshabilitado(
+                f"Croma está desactivado (LUMEN_CROMA_HABILITADO=false), no se consultó "
+                f"'{fuente}'. Se apagó para no gastar créditos del token compartido. "
+                f"Para volver a activarlo, ponlo en true en tu .env."
+            )
+
         if fuente not in RUTAS:
             raise CromaError(
                 f"Fuente '{fuente}' no esta en el corte. "
@@ -224,6 +243,17 @@ def _mensaje_error(respuesta: httpx.Response) -> str:
 async def probar_conexion() -> dict[str, Any]:
     """Comprueba que el token funciona con una llamada real a RUES."""
     ajustes = get_settings()
+    if not ajustes.lumen_croma_habilitado:
+        # Este endpoint hace una consulta REAL, asi que abrirlo desde /docs
+        # gasta creditos. Con el interruptor apagado ni lo intenta.
+        return {
+            "estado": "desactivado",
+            "detalle": (
+                "LUMEN_CROMA_HABILITADO=false: no se consultó Croma para no gastar "
+                "créditos del token compartido. El resto de la API sigue funcionando."
+            ),
+        }
+
     if not ajustes.croma_configurado:
         return {
             "estado": "sin_configurar",

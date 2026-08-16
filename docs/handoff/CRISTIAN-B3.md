@@ -110,6 +110,27 @@ las fechas que salgan a Croma (`from_date`, `to_date`) y todo lo que se guarde e
 
 ## Bitácora
 
+### 01:40 — Interruptor de créditos de Croma
+
+`LUMEN_CROMA_HABILITADO=false` corta **todas** las llamadas a Croma: el motor, el monitor y
+`/health/croma`. Corta *antes* de la red, no después — si la petición sale y luego se descarta la
+respuesta, el crédito ya se gastó. Verificado espiando el transporte: **0 peticiones** con el
+interruptor apagado.
+
+- Por defecto viene **encendido**, para que quien haga pull no se encuentre el backend mudo sin
+  saber por qué. Se apaga en el `.env` de cada uno; el mío ya está apagado.
+- **Toqué `api/lumen/croma/client.py`, que es de Jonatin (B1)**, porque es el único punto por donde
+  pasan las tres rutas de llamada. Es un guard aditivo al principio de `consultar()` más un caso
+  nuevo en `probar_conexion()`; no cambié nada de su lógica. **Hay que avisarlo en el chat.**
+- El keep-alive **no gastaba créditos**: pega a `/health`, no a `/health/croma`. Igual el
+  healthcheck de Render.
+
+**Aviso que no es mío pero conviene mirar:** con el interruptor apagado, `/analizar` y `/red/{nit}`
+responden **200 con un caso/grafo vacío** en vez de un error, porque `Consultas.get()` captura
+`CromaError` y devuelve `{"found": False}`. Un caso con cero señales es indistinguible de "analicé
+y no encontré nada". `/monitor/nuevos` sí responde 503 con el motivo. Es decisión de B1 si quiere
+distinguir "no encontré" de "no pude buscar".
+
 ### 00:50 — Supabase vivo, barrido real y la suite vuelve a correr en segundos
 
 Change `cerrar-flujo-emergencia-b3`. Las cuatro preguntas del ritual:

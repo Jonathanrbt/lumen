@@ -24,6 +24,14 @@ class Settings(BaseSettings):
     # --- Croma: fuente unica de datos (API HTTP; URL fija en el cliente) ---
     croma_api_key: str = ""
 
+    # Interruptor general de Croma. En false, NINGUNA llamada sale a la red:
+    # ni el motor, ni el monitor, ni /health/croma. El token es uno solo para
+    # las cuatro personas y tiene creditos finitos.
+    #
+    # Por defecto True para que quien haga pull no se encuentre el backend
+    # mudo sin saber por que; se apaga en el .env de cada uno.
+    lumen_croma_habilitado: bool = True
+
     # --- IA ---
     cursor_api_key: str = ""
     lumen_modelo_rapido: str = "composer-2.5"

@@ -32,6 +32,12 @@ services:
       - key: CROMA_API_KEY
         sync: false
 
+      # Interruptor de creditos. En el servicio desplegado se deja en true
+      # (si no, la demo no tiene datos), pero queda declarado aqui para poder
+      # apagarlo desde el dashboard sin redesplegar si la cuota se agota.
+      - key: LUMEN_CROMA_HABILITADO
+        value: "true"
+
       # IA. Los IDs de modelo los fija Freddy tras correr Cursor.models.list().
       - key: CURSOR_API_KEY
         sync: false
