@@ -158,9 +158,15 @@ del teléfono, hay que cambiarla por Telegram. Puesto también en `HANDOFF.md`.
 **Tests:** `api/tests/test_telegram.py` (3) y `api/tests/test_alertas.py` (3), mockeados. Suite
 completa: 55 passed.
 
-**Pendiente para que funcione en vivo:** crear el bot real (`@BotFather`) y conseguir el
-`chat_id` de demo (mandarle un mensaje al bot y leer `getUpdates`) — ninguno de los dos lo he
-hecho todavía, necesito que alguien cree el bot y me pase el token.
+**Verificado en vivo, 02:20.** Freddy creó `@lumen_alerta_ctw_bot`. `TELEGRAM_BOT_TOKEN` en
+`.env`; `chat_id` de demo (`5833175479`) sacado de `getUpdates` tras mandarle un mensaje al bot.
+Dos pruebas reales, las dos con `estado=enviado`:
+1. Mensaje suelto por `lumen.telegram.cliente.enviar` — llegó.
+2. `POST /alerta` completo con un caso real del dump (`caso-38d879c8695f`, Alcaldía Local de
+   Kennedy, nivel medio) — llegó con el copy real (señal + disclaimer), confirmado por Freddy.
+
+`TELEGRAM_CHAT_ID_DEMO` queda anotado para el video. El teléfono/cuenta de Telegram que sale en
+el video tiene que ser el mismo que ya está unido (`5833175479`), igual que el "join" de Twilio.
 
 ### 01:35 — /resolver vivo, probado contra RUES real
 
