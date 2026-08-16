@@ -66,6 +66,8 @@ desktop.ini
 video/crudo/
 *.mp4
 !video/final/*.mp4
+# Los videos de la web no son material en crudo: son parte de la pagina
+!web/src/assets/*.mp4
 
 .cursor/
 .claude/

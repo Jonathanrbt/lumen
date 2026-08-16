@@ -18,9 +18,19 @@ import { Marca } from '../componentes/Marca'
 import fondoHero from '../assets/hero-fondo.jpg'
 import buhoAscii from '../assets/buho-ascii.png'
 import demoVigilancia from '../assets/demo-vigilancia.png'
+import pixelAgente from '../assets/pixel-agente.png'
+import pixelAve from '../assets/pixel-ave.png'
+import pixelBici from '../assets/pixel-bici.png'
+import mundo from '../assets/mundo.mp4'
 
 const CROMA = 'https://usecroma.com'
 const NUMERAL = ['I', 'II', 'III', 'IV']
+
+/** En el mismo orden que `canales`: el monitor, el aviso y el agente externo. */
+const PIXELES = [pixelBici, pixelAve, pixelAgente]
+
+/** Con movimiento reducido el mundo se queda quieto en su primer fotograma. */
+const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const MARMOL = (porcentaje: number) =>
   `color-mix(in oklch, var(--color-fondo) ${porcentaje}%, transparent)`
@@ -327,6 +337,65 @@ export function PantallaLanding() {
           </div>
         </section>
 
+        {/*
+          Las tres salidas del motor, con el mundo girando al lado: el monitor
+          mira aunque no haya nadie preguntando.
+        */}
+        <section id="canales" className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
+          <div className="grid items-center gap-14 sm:grid-cols-[1fr_minmax(0,15rem)] sm:gap-20">
+            <div>
+              <Rubrica>{t.canalesEtiqueta}</Rubrica>
+              <h2 className="mt-6 max-w-2xl font-serif text-[clamp(1.75rem,3.2vw,2.6rem)] font-normal leading-[1.15]">
+                {t.canalesTitulo}
+              </h2>
+              <p className="mt-6 max-w-2xl leading-relaxed text-[var(--color-texto-tenue)]">
+                {t.canalesBajada}
+              </p>
+
+              <ul className="mt-11 grid gap-px border border-[var(--color-borde)] bg-[var(--color-borde)]">
+                {t.canales.map((canal, i) => (
+                  <li
+                    key={canal.titulo}
+                    className="flex items-start gap-5 bg-[var(--color-fondo)] p-6 sm:gap-6 sm:p-7"
+                  >
+                    {/* Los píxeles vienen con fondo blanco: multiply los funde en el mármol. */}
+                    <img
+                      src={PIXELES[i]}
+                      alt=""
+                      aria-hidden
+                      className="h-12 w-12 shrink-0 object-contain mix-blend-multiply sm:h-14 sm:w-14"
+                    />
+                    <div>
+                      <h3 className="font-serif text-lg">{canal.titulo}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-[var(--color-texto-tenue)]">
+                        {canal.texto}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="justify-self-center">
+              <div className="h-52 w-52 overflow-hidden rounded-full sm:h-60 sm:w-60">
+                <video
+                  src={mundo}
+                  autoPlay={!quieto}
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  aria-hidden
+                  className="h-full w-full scale-[1.3] object-cover"
+                />
+              </div>
+              <p className="mx-auto mt-7 max-w-[15rem] text-center text-xs leading-relaxed text-[var(--color-texto-tenue)]">
+                {t.canalesPie}
+              </p>
+            </div>
+          </div>
+        </section>
+
         <section id="etica" className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
           <Rubrica>{t.eticaEtiqueta}</Rubrica>
           <h2 className="mt-6 font-serif text-[clamp(1.75rem,3.2vw,2.6rem)] font-normal leading-[1.15]">
@@ -388,6 +457,7 @@ export function PantallaLanding() {
             <ColumnaPie titulo={t.pieProducto}>
               <EnlacePie a="/app/emergencia">{t.modoEmergenciaTitulo}</EnlacePie>
               <EnlacePie a="/app/vigilancia">{t.modoVigilanciaTitulo}</EnlacePie>
+              <EnlacePie ancla="#canales">{t.pieCanales}</EnlacePie>
             </ColumnaPie>
 
             <ColumnaPie titulo={t.pieMetodo}>
