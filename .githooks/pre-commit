@@ -14,7 +14,7 @@
 
 PATRONES='croma_live_[A-Za-z0-9]{8,}|rnd_[A-Za-z0-9]{16,}|key_[a-f0-9]{32,}|AC[a-f0-9]{32}|SK[a-f0-9]{32}|eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}|sbp_[a-f0-9]{40,}|sk-[A-Za-z0-9_-]{20,}|postgres(ql)?://[^:[:space:]]+:[^@[:space:]]+@'
 
-ARCHIVOS=$(git diff --cached --name-only --diff-filter=ACM | grep -v '^\.env\.example$' | grep -v '^scripts/check-secrets\.ps1$' | grep -v '^\.githooks/pre-commit$')
+ARCHIVOS=$(git diff --cached --name-only --diff-filter=ACM | grep -v '^\.env\.example$' | grep -v '^\.githooks/pre-commit$')
 
 ENCONTRADO=0
 for f in $ARCHIVOS; do
