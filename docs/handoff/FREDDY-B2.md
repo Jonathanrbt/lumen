@@ -2,9 +2,11 @@
 
 **Soy dueño de:** `api/lumen/ia/`, `api/lumen/routers/ia.py`, y desde las 22:14 también
 `api/lumen/whatsapp/`, `api/lumen/telegram/` y `api/lumen/alertas.py` (el despachador de canal).
-**Mis endpoints:** `POST /resolver`, `POST /justificacion`, `POST /accion`, `POST /chat`.
+**Mis endpoints:** `POST /resolver`, `POST /justificacion`, `POST /accion`, `POST /chat` — **los
+cuatro vivos** desde las 03:20, probados con Cursor y Croma reales, no solo mocks.
 **Mi hito:** 21:30 — el lector clasifica correctamente 3 documentos reales de urgencia manifiesta,
-y cada punto del veredicto trae su cita textual.
+y cada punto del veredicto trae su cita textual. Cumplido (tarde, ~02:45, pero con los dos
+extremos probados: `solida` y `sin_relacion`).
 **También soy dueño del presupuesto:** los US$50 de la API de Cursor. Reviso consumo a las 20:00 y
 a las 23:00 y lo anoto aquí abajo.
 
@@ -121,6 +123,37 @@ Si termino usando Evolution API en su lugar, este detalle no aplica y lo anoto a
 ---
 
 ## Bitácora
+
+### 03:20 — /chat vivo: los cuatro endpoints de IA completos, probados end-to-end
+
+**Qué cambié.** `api/lumen/ia/chat.py` + wireado en `routers/ia.py`. Dos caminos: si `contexto`
+ya trae un identificador resuelto (`nit`/`entidad_id`/`contrato_id`, la persona confirmó un
+candidato en un turno anterior), analiza directo con `analizar` de Jonatin. Si no, `/resolver`
+decide — sin candidatos dice "no sé" con una alternativa concreta; con uno o más, **siempre** se
+muestran para confirmar, ni con un solo candidato se asume cuál es. La narración usa
+`Modelo.RAPIDO` sobre las `regla_legible` de las señales del caso (nunca inventa hechos nuevos);
+si el LLM falla, se degrada a concatenar las señales tal cual — el chat nunca se cae por un
+problema de narración.
+
+**Probado de punta a punta con los cuatro endpoints encadenados de verdad** (Croma + Cursor
+reales, sin mocks): turno 1 con "Conalvias" → candidatos reales de RUES; turno 2 con el NIT
+elegido en `contexto` → corre el motor completo de señales de Jonatin (varias llamadas
+encadenadas a Croma), narra el resultado en lenguaje ciudadano, y ofrece los siguientes pasos
+correctos según el nivel de atención. En esa corrida, un endpoint de Croma (`sicaac_insolvency_cases`)
+devolvió un 502 real — el motor de Jonatin lo absorbió sin caerse (`nivel_atencion=bajo`, cero
+señales) y mi narración lo contó con honestidad ("el sistema no marcó señales de alerta"), sin
+inventar nada.
+
+**Tests:** `test_chat.py`, 6 casos mockeados (sin candidatos, un candidato sin asumir, varios
+candidatos, análisis directo desde contexto, nivel bajo sin sugerir derecho de petición,
+degradación de narración). `test_app.py`: retiré el test de "endpoints en 501" — ya no queda
+ninguno. Suite completa: **75 passed**.
+
+**Con esto, los cuatro endpoints de B2/IA están completos y probados en vivo**, no solo con
+mocks: `/resolver`, `/justificacion`, `/accion`, `/chat`. Y el canal de alerta (Telegram,
+verificado en vivo a las 02:20) cierra el otro bloque mío. Lo que queda pendiente de mi lado es
+WhatsApp real (pausado, ver bitácora de las 02:10) y cualquier pulido que salga de la integración
+con el resto del equipo.
 
 ### 03:05 — /accion vivo: derecho de petición real contra un caso del dump
 

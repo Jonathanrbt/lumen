@@ -23,6 +23,7 @@ from ..contracts import (
     ResolverRequest,
 )
 from ..ia.artefactos import generar_artefacto
+from ..ia.chat import responder_chat
 from ..ia.lector import (
     DocumentoIlegible,
     leer_justificacion,
@@ -115,4 +116,9 @@ async def chat(peticion: ChatRequest) -> ChatResponse:
     lenguaje ciudadano, cada afirmación con su fuente, siempre ofrecer el
     siguiente paso, jamás decir "corrupto" o "ilegal", y saber decir "no sé".
     """
-    raise HTTPException(status_code=501, detail="Pendiente: B2 (Freddy). Agente conversacional.")
+    try:
+        return await responder_chat(peticion.mensaje, peticion.contexto)
+    except HTTPException:
+        raise
+    except (CursorAgentError, LLMEjecucionError) as err:
+        raise HTTPException(status_code=503, detail=f"El chat no pudo completarse: {err}") from err

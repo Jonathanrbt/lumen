@@ -41,17 +41,10 @@ def test_estan_los_nueve_endpoints_del_contrato():
     assert not faltan, f"faltan rutas del contrato §5.5: {sorted(faltan)}"
 
 
-def test_los_endpoints_de_ia_sin_implementar_dicen_de_quien_son():
-    """Un 501 con el nombre del dueño ahorra una pregunta en el chat.
-
-    `/resolver`, `/justificacion` y `/accion` ya no están en 501 (ver
-    docs/handoff/FREDDY-B2.md) — tienen sus propias pruebas en
-    test_resolver.py, test_lector.py y test_artefactos.py. `/chat` es lo
-    único que sigue pendiente.
-    """
-    r = cliente.post("/chat", json={"mensaje": "hola"})
-    assert r.status_code == 501
-    assert "Freddy" in r.json()["detail"]
+# El test de "endpoints en 501 dicen de quién son" se retiró: los cuatro
+# endpoints de IA (/resolver, /justificacion, /accion, /chat) ya están
+# implementados — ver test_resolver.py, test_lector.py, test_artefactos.py
+# y test_chat.py. No queda ningún endpoint del contrato en 501.
 
 
 def test_analizar_exige_al_menos_una_llave():
