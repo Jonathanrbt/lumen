@@ -13,7 +13,8 @@ from .evolution_client import EvolutionWhatsAppClient
 from .twilio_client import TwilioWhatsAppClient
 
 
-def _cliente(ajustes: Settings) -> WhatsAppClient:
+def seleccionar_cliente(ajustes: Settings) -> WhatsAppClient:
+    """Cual proveedor esta activo. Publica porque `verificar.py` tambien la usa."""
     proveedor = ajustes.lumen_whatsapp_provider.strip().lower()
     if proveedor == "evolution":
         return EvolutionWhatsAppClient(ajustes)
@@ -31,4 +32,4 @@ async def enviar_alerta(caso: Caso, destinatario: str) -> tuple[str, str | None]
 
     ajustes = get_settings()
     mensaje = armar_mensaje(caso)
-    return await _cliente(ajustes).enviar(destinatario, mensaje)
+    return await seleccionar_cliente(ajustes).enviar(destinatario, mensaje)

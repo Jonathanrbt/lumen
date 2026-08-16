@@ -1,13 +1,13 @@
-"""Proveedor Evolution API. Esqueleto — segundo proveedor, sin probar todavia.
+"""Proveedor Evolution API. Segundo proveedor — Twilio va primero esta noche
+porque el equipo ya tiene cuenta y sandbox.
 
-Twilio va primero esta noche porque el equipo ya tiene cuenta y sandbox
-verificado. Este cliente queda listo para activarse con
-`LUMEN_WHATSAPP_PROVIDER=evolution` en cuanto se levante una instancia real y
-se confirme el formato exacto de respuesta (varia entre versiones de
-Evolution API). Hasta entonces, `configurado` es `False` sin las tres
-variables y el endpoint asumido (`POST {url}/message/sendText/{instancia}`)
-es el mas comun mirando la documentacion publica de Evolution API, no algo
-verificado contra un servidor real.
+El endpoint y el payload estan verificados contra la documentacion oficial
+v2 (`POST {url}/message/sendText/{instancia}`, header `apikey`, body
+`{"number", "text"}`): https://doc.evolution-api.com/v2/api-reference/message-controller/send-text.
+Lo que sigue sin probar es un servidor real: Evolution API no es un servicio
+cloud como Twilio, hace falta una instancia corriendo (self-hosted o de un
+proveedor) con un numero de WhatsApp ya vinculado por QR — eso es trabajo
+operativo, no de codigo, y esta detallado en el handoff.
 """
 
 from __future__ import annotations
