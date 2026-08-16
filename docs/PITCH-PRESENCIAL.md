@@ -1,14 +1,17 @@
 # Pitch hablado — Lumen
 
-Para decir al frente, con alguien más manejando el demo. Los `[DEMO]` son señas de qué debe
-estar en pantalla en ese momento — no se leen.
+Para decir al frente **junto con el video**, no en vez del video.
 
-**Duración: ~2:30.** Los bloques están marcados con lo que se puede recortar si te dan menos
-tiempo.
+**Regla:** el video ya cuenta qué hace el producto. Este guion **no lo repite** — cuenta lo que
+el video no alcanza a decir: por qué está construido así, y por qué no se muere el lunes.
+
+Lo único que se comparte con el video es el hook. Ese sí va tal cual.
+
+**Duración: ~1:40** sin contar el video.
 
 ---
 
-## 1. Hook (~20s) · pantalla en negro o el logo
+## 1. HOOK (~20s) — va tal cual, es lo más importante
 
 > Colombia se está reconstruyendo después del sismo del 10 de agosto.
 >
@@ -18,74 +21,63 @@ tiempo.
 >
 > **La revisión de esa plata llega un año después. Cuando ya se gastó.**
 
-*(pausa)*
+*(pausa — aquí entra el video)*
 
 ---
 
-## 2. El problema (~30s) · [DEMO] la landing, sección del problema
+## 2. LO QUE EL VIDEO NO ALCANZA A CONTAR (~50s)
 
-> Colombia ya vivió esto. En Mocoa. En Providencia. Y en la UNGRD, donde la agencia encargada
-> de gestionar el riesgo terminó siendo el caso de corrupción.
->
-> El patrón se repite: la ventana de emergencia se abre, la plata entra rápido, y el control
-> llega tarde.
->
-> Hay gente que ya vigila esto: veedurías, juntas de acción comunal, periodistas locales. No
-> les falta voluntad. **Les faltan las ocho horas que cuesta cruzar SECOP con el RUES, contrato
-> por contrato.**
->
-> Nosotros no les enseñamos a vigilar. Les quitamos el trabajo manual.
+*(esto va después del video, o mientras el demo se recorre en silencio)*
 
----
+> Lo que vieron son tres decisiones que tomamos a propósito, y que son la diferencia entre una
+> herramienta y un dashboard más.
 
-## 3. La solución (~80s) · [DEMO] corriendo en paralelo
+**Primera — nunca un puntaje.**
+> Lumen jamás dice "78% de probabilidad de corrupción". Son tres estados con color, y ya. Un
+> número da una falsa precisión que ningún dato público sostiene, y señala gente sin pruebas.
+> Está forzado en el código: si alguien intenta meter un porcentaje ahí, el sistema no compila.
 
-> Lumen es un vigilante que corre solo.
+**Segunda — sin fuente no hay señal.**
+> Ninguna señal se puede construir sin su enlace oficial y su fecha de consulta. No es una regla
+> de estilo: es el tipo de dato. Si no hay fuente, la señal no existe.
 
-**[DEMO] la alerta de Telegram**
-> Revisa lo que se firma en las entidades afectadas, y cuando encuentra un patrón que vale la
-> pena mirar, **le escribe a la veedora por Telegram.** Sin instalar nada, sin crear cuenta, sin
-> aprender un dashboard.
+**Tercera — si la IA no puede citar, no afirma.**
+> Cuando el lector evalúa un documento, verificamos cada cita contra el texto real del PDF. Si el
+> modelo se la inventó, la descartamos y ese punto queda como "no se pudo concluir". El veredicto
+> más fuerte es imposible de dar si falta una sola cita verificada.
 >
-> Aquí encontró que una gobernación firmó 97 contratos casi el mismo día, todos justo por debajo
-> del monto que obliga a hacer concurso.
-
-**[DEMO] abre el enlace → la ficha del caso**
-> Ella abre el enlace y ve el hallazgo en español. Qué se firmó, cuánto costó, y **el enlace a
-> la fuente oficial** para que lo compruebe ella misma. Cada dato con su fuente y su fecha de
-> consulta.
->
-> Puede ver quién está detrás — el grafo de actores. Y puede pedir la carta para preguntarle a
-> la entidad: un derecho de petición redactado a partir de ese hallazgo específico, con los
-> hechos numerados y la norma citada.
-
-**[DEMO] el chat — se adjunta el PDF**
-> Y esto es lo que ninguna base de datos hace.
->
-> Cuando una entidad contrata por urgencia, la ley la obliga a justificarlo por escrito: que
-> tenga relación con el desastre, que la necesidad haya surgido después, y que haya un estudio
-> técnico que lo respalde.
->
-> **Lumen lee ese documento.** Le hace esas tres preguntas, y responde citando el texto exacto
-> que lo prueba.
->
-> Y si el modelo se inventa una cita, **el código la descarta**: verificamos cada cita contra el
-> texto real del PDF. Si no puede citar, no afirma — dice que no puede concluir.
+> **No le pedimos al modelo que se porte bien. Se lo impedimos en el código.**
 
 ---
 
-## 4. Cierre (~20s)
+## 3. POR QUÉ NO SE MUERE EL LUNES (~30s)
 
-> Hoy, seis días después del sismo, todavía no hay ni un solo contrato de reconstrucción
-> publicado. Los revisamos: cuatrocientos treinta y cuatro procesos, ninguno de urgencia
-> manifiesta.
+> Tres cosas que ya son ciertas hoy, no promesas:
+
+> **Está corriendo.** Backend desplegado, frontend desplegado, base de datos real, y un bot que
+> manda mensajes de verdad. No es un prototipo local.
+
+> **No depende del sismo.** El disparador es la declaratoria de desastre, no el terremoto. Sirve
+> igual para una emergencia sanitaria o de orden público. Y entre desastres, el mismo motor es la
+> mesa de trabajo del veedor sobre contratación ordinaria — funciona desde el día uno.
+
+> **No depende de Colombia.** Perú y México ya están disponibles en la capa de datos. Cambia la
+> fuente, no el motor.
+
+---
+
+## 4. CIERRE (~15s)
+
+> Una última cosa, y es la más incómoda.
 >
-> **Por eso Lumen ya está encendido. Para verlos el día que aparezcan, no un año después.**
+> Hoy, seis días después del sismo, revisamos las cuatro entidades afectadas: **cuatrocientos
+> treinta y cuatro procesos publicados, y ni uno solo por urgencia manifiesta.**
 >
-> Funciona para cualquier declaratoria de desastre. La ventana del sismo dura doce meses; el
-> problema, siempre.
+> Todavía no hay nada que auditar. Y esa es exactamente la razón de existir de esto.
 >
-> No acusamos. **Ayudamos a preguntar.**
+> **Lumen ya está encendido, para verlos el día que aparezcan. No un año después.**
+>
+> No acusamos. Ayudamos a preguntar.
 
 ---
 
@@ -113,9 +105,10 @@ tiempo.
 > un feed público: la veedora de Quibdó no recibe nada. No reemplazamos a la Contraloría — le
 > damos a quien ya vigila la capacidad de preguntar más rápido.
 
-**"¿Esto solo sirve para el sismo?"**
-> No. El disparador es la declaratoria de desastre, no el terremoto. Y entre desastres, el mismo
-> motor es la mesa de trabajo del veedor sobre contratación ordinaria. Corre desde el día uno.
+**"¿Por qué Telegram y no una app?"**
+> Porque nuestro usuario no se va a instalar una app. Suele ser una persona mayor que ya hace
+> veeduría — la mamá, la tía, el jubilado del barrio. Le llega donde ya está, sin crear cuenta y
+> sin aprender nada.
 
 **"¿De dónde salen los datos?"**
 > Fuentes oficiales: el registro mercantil, el sistema de contratación pública, sanciones,
@@ -124,18 +117,14 @@ tiempo.
 
 ---
 
-# Si solo te dan 60 segundos
+# Si te cortan el tiempo
 
-Di esto y nada más:
+Di el **hook** completo, y luego solo esto:
 
-> Colombia se reconstruye después del sismo, y para ir rápido la ley permite contratar sin
-> concurso. La revisión llega un año después, cuando la plata ya se gastó.
+> Lo que acaban de ver tiene tres reglas en el código: nunca un puntaje de corrupción, ninguna
+> señal sin su fuente oficial, y si la IA no puede citar el documento, no afirma.
 >
-> Lumen vigila eso solo, y le avisa por Telegram a quien ya hace veeduría — con la evidencia y
-> la fuente oficial.
->
-> Y hace algo que ninguna base de datos hace: **lee el documento que justifica la urgencia y
-> verifica, cita por cita, si de verdad se conecta con el desastre.** Si el modelo inventa una
-> cita, el código la descarta.
+> Está desplegado y corriendo hoy. Y hoy, seis días después del sismo, todavía no hay ni un
+> contrato de reconstrucción publicado — por eso ya está encendido.
 >
 > No acusamos. Ayudamos a preguntar.
