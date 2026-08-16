@@ -129,11 +129,17 @@ puntos. Impacto, IA y demo solo se ven ahí. Si algo no cabe en 60 segundos, no 
 3. Twilio → se muestra la plataforma en vez del WhatsApp real
 4. Modo Vigilancia en el video → se queda en la plataforma y el README
 
-> **⚠️ El v3.1 pone en duda el puesto 3.** El Parche 1 dice que WhatsApp no es un canal más, sino
-> *"la única interfaz que nuestro usuario real ya usa todos los días"*, y el storyboard nuevo le
-> dedica 11 de los 60 segundos. Si eso es cierto, cortar Twilio ya no es un recorte: destripa el
-> argumento central. **Pendiente de decidir por el equipo.** Hasta entonces el orden se queda como
-> está, pero nadie debería aplicar el corte #3 sin decirlo en voz alta.
+> **⚠️ El puesto 3 ya no es un corte barato, y así se resolvió (19:30).** El Parche 1 convierte
+> WhatsApp en *"la única interfaz que nuestro usuario real ya usa todos los días"* y el storyboard le
+> dedica 11 de los 60 segundos. Cortarlo destriparía el argumento central, así que Twilio **sube a
+> prioridad 1 del bloque de Cristian de las 20:45**, con cuenta creada ya y timebox duro de 60
+> minutos.
+>
+> **Corte a las 21:45.** Si a esa hora no llegó un mensaje real a un teléfono real, se aplica el
+> corte y hay una consecuencia que no se descubre a las dos de la mañana: **el bloque 0:15–0:26 del
+> storyboard hay que reescribirlo**, porque la alerta se vería como notificación dentro de la
+> plataforma. Eso cae en las manos de Jonatin justo cuando arranca el video, a las 22:00. Y sigue
+> valiendo la regla de siempre: **no se mockea un WhatsApp falso.**
 
 ---
 
@@ -145,7 +151,7 @@ puntos. Impacto, IA y demo solo se ven ahí. Si algo no cabe en 60 segundos, no 
 | 2 | **Todo el stack del frontend lo decide Andrew.** React, Vite, Tailwind, Cloudflare Pages: nada de eso está impuesto. `web/` se entrega vacía y él elige | §5 del brief (fila Frontend) |
 | 3 | **Croma es un servidor MCP remoto**, no una API REST. Verificado en vivo: stateless, un POST JSON-RPC basta. El backend en Render puede llamarlo | §5 del brief (no lo especificaba) |
 | 4 | **El despliegue se monta hoy temprano**, no a las 03:30 | §11 del brief |
-| 5 | **Twilio sin resolver.** No tenemos cuenta. Decisión aplazada | §5 del brief |
+| 5 | **Twilio sube a prioridad 1 de B3** a las 20:45, con timebox de 60 min y corte a las 21:45. Ya no es un hard-cut barato: es la tesis del producto | §5 del brief y hard-cut #3 |
 | 6 | **HeyGen descartado.** Bonus menor, no compensa el tiempo | §8 del brief |
 | 7 | **Usuario primario = el veedor**, no "el ciudadano que no sabe qué es SECOP" | Parche 1 del v3.1 |
 | 8 | **Storyboard nuevo del video:** sin leyes, sin cifras de dólares, con protagonista | Parche 2 del v3.1 |

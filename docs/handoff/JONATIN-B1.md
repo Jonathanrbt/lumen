@@ -4,8 +4,27 @@
 `video/`, y la coordinación (`PROYECTO.md`, `README.md`, `HANDOFF.md`).
 **Mis endpoints:** `POST /analizar`, `GET /red/{nit}`.
 **Mis hitos:** 20:45 el motor escupe señales con fuente sobre un caso real · 22:00 congelo B1 y me
-voy al video · 03:30 primer corte grabado · 08:00 video final subido.
+voy al video · **23:00 soy el dueño del hito crítico** · 03:30 primer corte grabado · 08:00 video
+final subido.
 **Mi suplente después de las 22:00:** Cristian, para la revisión final de señales y fuentes.
+
+## Soy el dueño del hito de las 23:00 — tres reglas, decidido a las 19:30
+
+Encaja porque a esa hora mi bloque es validar a mano los 6 casos curados, y recorrer el flujo y
+elegir el caso que sale grabado son la misma tarea. Pero el riesgo de que me trague la noche es real,
+así que:
+
+1. **No toco el teclado del backend.** Recorro el flujo como usuario y miro. Si vuelvo a codear a las
+   23:00, no vuelvo al video hasta la una.
+2. **Digo en voz alta si el flujo existe o no.** Sin matices, sin "ya casi". Existe cuando va de dato
+   a señal a lectura de IA a alerta sin tocar nada a mano. Feo cuenta.
+3. **Si no existe, aplico el orden de hard-cuts sin abrir debate.** Se recorta alcance, no se
+   extiende el horario.
+
+**A las 23:20 vuelvo al video, pase lo que pase.**
+
+Y hay una dependencia que me llega esa noche: **si Twilio se corta a las 21:45, tengo que reescribir
+el bloque 0:15–0:26 del storyboard** antes de empezar a grabar. Cristian me avisa en cuanto lo sepa.
 
 > Se actualiza al cerrar cada bloque: 20:45, 22:00, 23:00, 02:00.
 
@@ -85,8 +104,6 @@ servidor: no hace falta modificar el cliente.
 3. Grafo de actores, curado, entre 5 y 12 nodos.
 4. Validar a mano los 6 casos del catálogo. Ninguno puede tener un falso positivo vergonzoso:
    aparecen en el video.
-5. **Designar por nombre al dueño del hito de las 23:00.** Lo pide el propio parche y es la única
-   hora del reloj sin dueño explícito, justo cuando yo ya estoy en el video.
 
 ---
 

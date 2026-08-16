@@ -65,7 +65,7 @@ El parche v3.1 añade trabajo que no estaba repartido. Esto lo reparte, sin camb
 | Storyboard nuevo del video, sin leyes y con protagonista | **Jonatin**, desde las 22:00 | — | `video/` |
 | Que las leyes sigan íntegras donde sí suman | **Jonatin** (README) y **Freddy** (cuerpo de la carta) | Jurado | `README.md`, `/accion` |
 | Reconocer a la mentora, si autoriza | **Jonatin** | — | `README.md` |
-| Decidir qué pasa con Twilio ahora que WhatsApp es la tesis | **El equipo** | — | pendiente |
+| Que exista un WhatsApp real, ahora que es la tesis del producto | **Cristian**, prioridad 1 de su bloque de 20:45 | Jonatin (video) | `api/lumen/plataforma/` |
 
 **La regla que hace que esto funcione:** las nueve frases se escriben **una sola vez**, en
 [`COPY-SENALES.md`](COPY-SENALES.md). Nadie las reescribe en su capa. Si cuatro personas maquillan el
@@ -73,13 +73,22 @@ mismo texto, el veedor lee cuatro voces distintas en la misma pantalla y el vide
 
 ### El dueño del hito de las 23:00
 
-El propio parche v3.1 lo señala como el único hueco del reloj: a las 22:00 Jonatin pasa a ser dueño
-del video, y el hito crítico es a la hora siguiente.
+> **Dueño del hito de las 23:00: Jonatin.**
 
-> **Dueño del hito de las 23:00: `[PENDIENTE — designar por nombre, no a las 23:05]`**
+Encaja porque a esa hora su bloque de B1 es validar a mano los 6 casos curados, que ya es preparación
+del video: recorrer el flujo y elegir el caso que sale grabado son la misma tarea. Y porque decidir
+un hard-cut es una decisión de producto, no técnica, y esa es suya.
 
-Quien sea, su trabajo esa hora no es codear: es recorrer el flujo completo de punta a punta, decir
-en voz alta si existe o no, y si no existe, **aplicar los hard-cuts sin pedir permiso**.
+**Las tres reglas de esos 20 minutos, porque el riesgo es evidente:**
+
+1. **No se toca el teclado del backend.** Se recorre el flujo como usuario y se mira, nada más. Si
+   Jonatin vuelve a codear a las 23:00, no vuelve al video hasta la una.
+2. **Se dice en voz alta si el flujo existe o no.** Sin matices y sin "ya casi". Existe cuando se va
+   de dato a señal a lectura de IA a alerta sin tocar nada a mano. Feo cuenta.
+3. **Si no existe, se aplica el orden de hard-cuts sin pedir permiso ni abrir debate.** Se recorta
+   alcance, no se extiende el horario.
+
+A las 23:20 Jonatin vuelve al video pase lo que pase.
 
 ### Los tres archivos compartidos, y cómo no romperlos
 
@@ -181,10 +190,10 @@ de las 23:00 no se mueve.
 | **18:15–19:00** | | Cliente Croma en marcha (el transporte ya está hecho) | `llm_client` blindado | **Hello world desplegado en Render** | Wireframes |
 | **19:00–20:45** | | **Las 8 señales corriendo en CLI** | **Lector de justificaciones** | Esqueleto de endpoints + cache | Las 4 pantallas contra fixtures |
 | **20:45** | | ✅ *El motor escupe señales con fuente sobre un caso real* | | | |
-| **20:45–22:00** | | Grafo de actores | Resolución de entidades + narración | Monitor + Twilio si existe | Pantallas navegables |
+| **20:45–22:00** | | Grafo de actores | Resolución de entidades + narración | **Twilio primero** (timebox 60 min, corte a las 21:45) + monitor | Pantallas navegables |
 | **21:30** | | | ✅ *El lector clasifica bien 3 documentos reales* | | |
 | **22:00–23:00** | **Integración.** Todos contra la API real | 🎬 **Jonatin sale de B1 y arranca el guion del video** | | | ✅ *4 pantallas contra fixtures* |
-| **23:00** | 🚨 **HITO CRÍTICO: flujo completo aunque sea feo.** Dato → señal → lectura IA → alerta. Si no existe, se aplican los hard-cuts. **No se extiende el horario** | | | | |
+| **23:00–23:20** | 🚨 **HITO CRÍTICO: flujo completo aunque sea feo.** Dato → señal → lectura IA → alerta. **Dueño: Jonatin**, 20 minutos sin tocar el teclado. Si no existe, aplica los hard-cuts sin abrir debate. **No se extiende el horario** | | | | |
 | **23:00–02:00** | | Validar a mano los 6 casos curados *(esto es también elegir el caso del video)* | Generador de artefactos | Precomputar y cachear los casos + dump JSON | Integrar contra la API real |
 | **02:00** | 🧊 **Congelación de features. Lo que no exista, no existe** | | | | |
 | **02:00–03:30** | | 🎬 **Primer corte del video, aunque esté feo. Respaldo grabado** | | | |

@@ -256,19 +256,6 @@ que gastó bien.
 **El modelo:** núcleo abierto y gratuito para ciudadanía y veedurías; monitoreo dedicado, API y
 reportes fiduciarios como servicio pagado.
 
----
-
-## Agradecimientos
-
-El enfoque de este producto lo corrigió una mentora en gestión de riesgo de desastres, que además es
-veedora, durante el propio hackathon. Nuestra primera versión hablaba de servir "al ciudadano que no
-sabe qué es SECOP"; ella señaló que ese usuario no existe como usuario activo, y que había que
-diseñar para quien ya se dedica a revisar esto. Cambió el producto.
-
-> `[PENDIENTE: nombre de la mentora, con su permiso]`
-
----
-
 ### Roadmap
 
 - Alertas suscritas por entidad, departamento o proveedor, con digest semanal.

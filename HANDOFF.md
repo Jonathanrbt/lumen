@@ -40,16 +40,21 @@ Lo que se propagó:
 - **Los cuatro handoffs actualizados** con lo que le cambia a cada quien, y `docs/PLAN.md` tiene una
   tabla nueva de validación cruzada: quién produce cada pieza del v3.1 y quién la consume.
 
-### Dos cosas que el parche abre y siguen sin decidir
+### Las dos decisiones que el parche abrió, ya cerradas (19:30)
 
-**1. Twilio subió de categoría.** El parche dice que WhatsApp *"no es un truco de distribución, es la
-única interfaz que nuestro usuario real ya usa todos los días"*, y el storyboard le da 11 de los 60
-segundos. Eso choca con el hard-cut #3, que dice que si Twilio falla se muestra la plataforma.
-Seguimos sin cuenta. **Decisión del equipo, y nadie debería aplicar ese corte en silencio.**
+**1. Twilio sube a prioridad 1 de Cristian.** El parche convierte WhatsApp en la tesis del producto y
+el storyboard le da 11 de los 60 segundos, así que el hard-cut #3 dejó de ser un recorte barato.
+Cristian crea la cuenta esta noche y a las 20:45 Twilio es lo primero que toca, con **timebox de 60
+minutos y corte a las 21:45**. Si se corta, se lo dice a Jonatin de inmediato, porque hay que
+reescribir el bloque 0:15–0:26 del storyboard antes de grabar. Lo que no se hace nunca: mockear un
+WhatsApp falso.
 
-**2. El hito de las 23:00 sigue sin dueño con nombre.** Lo señala el propio parche: a las 22:00
-Jonatin pasa al video y la hora siguiente es la del hito crítico. Hay un hueco marcado como
-PENDIENTE en `docs/PLAN.md`.
+**2. El hito de las 23:00 tiene dueño: Jonatin.** Encaja porque a esa hora su bloque es validar los 6
+casos curados, y recorrer el flujo y elegir el caso del video son la misma tarea. Con tres reglas
+escritas en `docs/PLAN.md`: no toca el teclado del backend, dice en voz alta si el flujo existe, y si
+no existe aplica los hard-cuts sin abrir debate. **A las 23:20 vuelve al video pase lo que pase.**
+
+**3.** Se retiró la sección de agradecimientos del README, por decisión del equipo.
 
 ---
 
