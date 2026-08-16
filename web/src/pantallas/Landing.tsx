@@ -84,15 +84,24 @@ export function PantallaLanding() {
               </p>
 
               {/*
-                Un halo del color del mármol, no una caja: despega la serifa del
-                punteado del cuadro sin taparlo.
+                Un halo del color del mármol, no una caja: el resplandor difuso
+                despega la serifa del punteado del cuadro sin taparlo.
               */}
-              <h1
-                className="mt-7 max-w-[19ch] font-serif text-[clamp(2.2rem,4.8vw,3.9rem)] font-normal leading-[1.06] tracking-[-0.015em]"
-                style={{ textShadow: `0 2px 28px ${MARMOL(85)}, 0 1px 6px ${MARMOL(70)}` }}
-              >
-                {t.heroTitulo}
-              </h1>
+              <div className="relative mt-7 w-fit">
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -inset-x-10 -inset-y-8 blur-2xl"
+                  style={{
+                    background: `radial-gradient(58% 62% at 34% 50%, ${MARMOL(78)}, transparent 72%)`,
+                  }}
+                />
+                <h1
+                  className="relative max-w-[19ch] font-serif text-[clamp(2.3rem,5vw,4.1rem)] font-normal leading-[1.05] tracking-[-0.018em]"
+                  style={{ textShadow: `0 2px 30px ${MARMOL(92)}, 0 1px 5px ${MARMOL(78)}` }}
+                >
+                  {t.heroTitulo}
+                </h1>
+              </div>
             </div>
           </div>
 
