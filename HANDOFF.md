@@ -12,6 +12,49 @@ propio archivo, para que cuatro personas no editen el mismo sitio a la vez:
 
 ## Última actualización
 
+**Sábado 15.ago.2026, 19:20 · por el agente de Jonatin**
+
+### Se aplicó el parche v3.1 a todo el repo
+
+Llegó [`docs/patch_v3.1_lumen_usuario_y_pitch.md`](docs/patch_v3.1_lumen_usuario_y_pitch.md), tres
+reemplazos sobre el brief v3 a partir del feedback de una mentora en gestión de riesgo de desastres
+que además es veedora. **No cambia el alcance, el stack, los roles ni el cronograma. Cambia para
+quién es el producto y cómo se cuenta.**
+
+Lo que se propagó:
+
+- **Usuario primario: el veedor**, no "el ciudadano que no sabe qué es SECOP". Ese usuario no existe
+  como usuario activo. El veedor sabe qué quiere revisar; lo que no tiene son las ocho horas que
+  cuesta cruzar SECOP con el RUES contrato por contrato. Y suele ser una persona mayor, lo cual
+  cambia el diseño de la interfaz de verdad, no solo el copy.
+- **`docs/COPY-SENALES.md`, nuevo y fuente única.** Las nueve frases de señal en lenguaje ciudadano,
+  las reglas de copy y la tabla de "no digas / di". Lo comparten B1 (las produce), B2 (narra en ese
+  registro), Andrew (las pinta) y Cristian (las manda por WhatsApp). Se escriben una sola vez.
+- **El disclaimer cambió de texto** a *"Una señal no es prueba de irregularidad. Es un motivo para
+  preguntar."* Está en la constante `DISCLAIMER` de `contracts/modelos.py`, así que quien la use no
+  tiene que hacer nada.
+- **Los fixtures ya traen el copy nuevo**, incluidas las preguntas del lector, que ahora se formulan
+  como se las harías a una persona. Lo que Andrew maquete contra ellos ya es el texto bueno.
+- **Storyboard del video reemplazado:** sin leyes, sin cifras en dólares, con protagonista. Las
+  leyes no se borran, se mudan al README, al cuerpo de la carta y a las respuestas al jurado.
+- **Los cuatro handoffs actualizados** con lo que le cambia a cada quien, y `docs/PLAN.md` tiene una
+  tabla nueva de validación cruzada: quién produce cada pieza del v3.1 y quién la consume.
+
+### Dos cosas que el parche abre y siguen sin decidir
+
+**1. Twilio subió de categoría.** El parche dice que WhatsApp *"no es un truco de distribución, es la
+única interfaz que nuestro usuario real ya usa todos los días"*, y el storyboard le da 11 de los 60
+segundos. Eso choca con el hard-cut #3, que dice que si Twilio falla se muestra la plataforma.
+Seguimos sin cuenta. **Decisión del equipo, y nadie debería aplicar ese corte en silencio.**
+
+**2. El hito de las 23:00 sigue sin dueño con nombre.** Lo señala el propio parche: a las 22:00
+Jonatin pasa al video y la hora siguiente es la del hito crítico. Hay un hueco marcado como
+PENDIENTE en `docs/PLAN.md`.
+
+---
+
+## Bloque anterior
+
 **Sábado 15.ago.2026, 17:30 · por el agente de Jonatin**
 
 ### Qué se hizo en este bloque

@@ -23,9 +23,9 @@ from enum import Enum
 
 from pydantic import BaseModel, Field
 
-DISCLAIMER = (
-    "Herramienta de priorización ciudadana. Una señal no es prueba de irregularidad."
-)
+# Texto del parche v3.1. Va visible en cada resultado, no en un pie de pagina, y
+# es el mismo en la tarjeta, en el WhatsApp y en el video: no cambia de registro.
+DISCLAIMER = "Una señal no es prueba de irregularidad. Es un motivo para preguntar."
 
 
 class NivelAtencion(str, Enum):
@@ -133,9 +133,12 @@ class Senal(BaseModel):
     nivel: NivelAtencion
     regla_legible: str = Field(
         description=(
-            "La regla contada como la entenderia un ciudadano, no la expresion. "
-            "'La empresa se creó 41 días antes de ganar el contrato', no "
-            "'fecha_adjudicacion - fecha_constitucion < 365'"
+            "El hallazgo contado como se lo dirias a tu mama, no la expresion de la "
+            "regla. 'Esta empresa se creó hace 2 meses y ya ganó un contrato de $X', "
+            "no 'fecha_adjudicacion - fecha_constitucion < 365'. "
+            "El texto exacto de cada senal esta en docs/COPY-SENALES.md: es fuente "
+            "unica y la comparten B1, B2 y el frontend. Maximo 20 palabras, sin "
+            "siglas sueltas, cifras en pesos redondeados."
         )
     )
     datos_usados: dict = Field(

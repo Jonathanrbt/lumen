@@ -13,6 +13,38 @@ se va al video.
 
 ---
 
+## 19:20 — Qué me cambió el v3.1, y te toca a ti más que a nadie
+
+El parche dice que no cambia el alcance ni los roles, y es cierto para tres de los cuatro. **A ti te
+mueve el suelo**, porque el Parche 1 reencuadra WhatsApp:
+
+> *"Por eso el canal es WhatsApp. No es un truco de distribución. Es la única interfaz que nuestro
+> usuario real ya usa todos los días, sin instalar nada, sin crear cuenta, sin aprender un
+> dashboard."*
+
+El usuario primario dejó de ser "cualquier ciudadano" y pasó a ser **el veedor**, que suele ser una
+persona mayor. Bajo esa premisa, WhatsApp deja de ser un canal de salida entre varios y pasa a ser
+el argumento de por qué el producto es usable. Y el storyboard nuevo le da **11 de los 60 segundos**
+al teléfono recibiendo la alerta.
+
+**Consecuencia incómoda:** el hard-cut #3 dice que si Twilio falla se muestra la plataforma. Eso ya
+no es un recorte menor — corta la pata que sostiene el pitch. Y seguimos sin cuenta de Twilio. Está
+marcado como decisión pendiente del equipo en `PROYECTO.md`; **no apliques ese corte por tu cuenta
+sin decirlo en voz alta.**
+
+### El copy de la alerta ya no lo escribes tú
+
+Los textos de las señales son fuente única y viven en
+**[`docs/COPY-SENALES.md`](../COPY-SENALES.md)**. El WhatsApp usa exactamente esas frases, las
+mismas que salen en la tarjeta de la ficha y en el video. Máximo 5 líneas, cero siglas, cifras en
+pesos redondeados, y el disclaimer nuevo:
+
+> *"Una señal no es prueba de irregularidad. Es un motivo para preguntar."*
+
+En el mensaje se dice **"la carta para preguntarle a la alcaldía"**, nunca "derecho de petición".
+
+---
+
 ## Lo primero, y es urgente
 
 **Deja un hello world desplegado en Render antes de las 19:00.** El brief lo dejaba para las 03:30 y

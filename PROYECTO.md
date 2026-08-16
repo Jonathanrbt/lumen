@@ -3,31 +3,73 @@
 **Hackathon CTW 2026 · Track 01: Tecnología para la Transparencia**
 Sede: Universidad del Rosario, Claustro, Bogotá · Deadline: **domingo 16.ago 09:00**, sin prórroga.
 
-> El documento largo es [`docs/brief_v3_lumen_ctw2026.md`](docs/brief_v3_lumen_ctw2026.md). Este archivo es el resumen operativo:
-> qué construimos, qué está congelado y qué está fuera. Si los dos se contradicen, **manda este**,
-> porque recoge las decisiones tomadas después de escribir el brief.
+> **Documentos fuente, en orden de mando:**
+> 1. [`docs/patch_v3.1_lumen_usuario_y_pitch.md`](docs/patch_v3.1_lumen_usuario_y_pitch.md) — el parche v3.1. **Lo último que se decidió.**
+> 2. [`docs/brief_v3_lumen_ctw2026.md`](docs/brief_v3_lumen_ctw2026.md) — el brief largo.
+>
+> Este archivo es el resumen operativo: qué construimos, qué está congelado y qué está fuera. Si hay
+> contradicción, **manda este**, porque recoge todas las decisiones tomadas después de escribir el
+> brief. Y si este contradice al parche v3.1, manda el parche y hay que arreglar este.
+
+---
+
+## Para quién es (v3.1 — esto cambió)
+
+**Usuario primario: el veedor.** La persona que ya hace esto. Veedurías ciudadanas, juntas de acción
+comunal, periodistas locales, concejales de oposición, líderes comunitarios, docentes y jubilados
+que le siguen la pista a la obra del pueblo.
+
+El v3 decía que el producto servía "al ciudadano que no sabe qué es SECOP". **Ese usuario no existe
+como usuario activo:** no va a abrir una herramienta de contratación pública un martes. Lo corrigió
+una mentora en gestión de riesgo de desastres, que además es veedora:
+
+> *"Una persona cualquiera ni sabrá qué decirle a la herramienta o cómo usarla. Enfóquenlo en las
+> personas que de por sí ya se dedican a revisar todo eso, para facilitarles las cosas."*
+
+**No le enseñamos a vigilar. Le quitamos el trabajo manual.** Hoy, verificar un solo contrato le
+cuesta a esa persona horas de navegar SECOP, RUES y sanciones por separado. Lumen se lo entrega
+resuelto en segundos, con la evidencia y la carta lista.
+
+**El dato que cambia el diseño:** el veedor suele ser una persona mayor, no un joven con Python. Es
+la mamá, la tía, el jubilado del barrio — que están más pendientes de estas cosas que la mayoría de
+los jóvenes.
+
+**Y de ahí sale la justificación de WhatsApp, que hay que decir en el pitch:** no es un truco de
+distribución. Es la única interfaz que nuestro usuario real ya usa todos los días, sin instalar
+nada, sin crear cuenta y sin aprender un dashboard.
+
+**El acceso sigue siendo público y gratuito.** Enfocar el producto en el veedor no le cierra la
+puerta a nadie: define para quién se diseña la experiencia. Un producto para todos no es usable por
+nadie.
 
 ---
 
 ## Qué es Lumen
 
-Un sistema de vigilancia ciudadana sobre la plata pública, encendido sobre la reconstrucción del
-terremoto del 10 de agosto de 2026. **Un motor, dos modos.**
+Un sistema de vigilancia sobre la plata pública, encendido sobre la reconstrucción del terremoto del
+10 de agosto de 2026. **Un motor, dos modos.**
 
 **Modo Emergencia (push — el hook).** Corre solo. Revisa los contratos nuevos que entran por el
 régimen excepcional de emergencia, lee las justificaciones que la ley exige, detecta patrones que
-merecen revisión y avisa por WhatsApp al veedor, al periodista local o al líder comunal del
-municipio afectado — con la evidencia y con un derecho de petición listo para enviar.
+merecen revisión y le avisa por WhatsApp a la veedora del municipio afectado — con la evidencia y
+con la carta lista para enviar.
 
-**Modo Vigilancia (pull — el que lo hace durar).** El mismo motor, expuesto como agente
-conversacional. Cualquier persona escribe en lenguaje natural y recibe la red de actores detrás del
-contrato, las señales con su evidencia y el artefacto para actuar. Sin pedir un NIT. Sin saber qué
-es SECOP.
+**Modo Vigilancia (pull — el que lo hace durar).** El mismo motor con el disparador invertido: **es
+la mesa de trabajo del veedor.** El push le trae lo que no sabía que existía; el pull le sirve para
+lo que ya está investigando por su cuenta — la obra del colegio, la empresa que vio en la valla, el
+contratista que le suena. Escribe en lenguaje natural y recibe la red de actores, las señales con su
+evidencia y el artefacto para actuar.
 
 **Pitch:** *"El control de la plata de la reconstrucción es posterior. Nosotros lo hacemos hoy."*
 
 **Frase de seguridad, se repite siempre y sale en el video:**
-> *"No acusamos: priorizamos dónde mirar y entregamos evidencia verificable para preguntar mejor."*
+> *"No acusamos. Ayudamos a preguntar."*
+
+**El dolor, una frase por modo (v3.1):**
+> *Emergencia:* "Soy veedora de mi municipio. Va a llegar plata para reconstruir y yo me entero de
+> los contratos cuando ya se firmaron — si me entero."
+> *Vigilancia:* "Sé qué quiero revisar. Lo que no tengo son las ocho horas que me cuesta cruzar
+> SECOP con el RUES y las sanciones, contrato por contrato."
 
 ---
 
@@ -56,8 +98,10 @@ puntos. Impacto, IA y demo solo se ven ahí. Si algo no cabe en 60 segundos, no 
 - **Lector IA de justificaciones** de urgencia manifiesta, con veredicto de tres niveles y cita
   textual. Es la feature estrella.
 - **Resolución de entidades** desde lenguaje natural, con desambiguación por candidatos.
-- **Narración en lenguaje ciudadano** de los hallazgos.
-- **Derecho de petición** generado a partir del hallazgo específico.
+- **Narración en lenguaje ciudadano** de los hallazgos, con los textos únicos de
+  [`docs/COPY-SENALES.md`](docs/COPY-SENALES.md).
+- **La carta para preguntarle a la alcaldía** (un derecho de petición), generada a partir del
+  hallazgo específico. En la interfaz se llama carta; el documento sí cita la norma.
 - **Paquete de evidencia** (sale casi gratis: los datos ya están calculados).
 - **Grafo de actores** curado, de 5 a 12 nodos.
 - **Monitor** que despierta, filtra novedad y arma casos.
@@ -85,6 +129,12 @@ puntos. Impacto, IA y demo solo se ven ahí. Si algo no cabe en 60 segundos, no 
 3. Twilio → se muestra la plataforma en vez del WhatsApp real
 4. Modo Vigilancia en el video → se queda en la plataforma y el README
 
+> **⚠️ El v3.1 pone en duda el puesto 3.** El Parche 1 dice que WhatsApp no es un canal más, sino
+> *"la única interfaz que nuestro usuario real ya usa todos los días"*, y el storyboard nuevo le
+> dedica 11 de los 60 segundos. Si eso es cierto, cortar Twilio ya no es un recorte: destripa el
+> argumento central. **Pendiente de decidir por el equipo.** Hasta entonces el orden se queda como
+> está, pero nadie debería aplicar el corte #3 sin decirlo en voz alta.
+
 ---
 
 ## Decisiones tomadas hoy que corrigen el brief
@@ -97,13 +147,17 @@ puntos. Impacto, IA y demo solo se ven ahí. Si algo no cabe en 60 segundos, no 
 | 4 | **El despliegue se monta hoy temprano**, no a las 03:30 | §11 del brief |
 | 5 | **Twilio sin resolver.** No tenemos cuenta. Decisión aplazada | §5 del brief |
 | 6 | **HeyGen descartado.** Bonus menor, no compensa el tiempo | §8 del brief |
+| 7 | **Usuario primario = el veedor**, no "el ciudadano que no sabe qué es SECOP" | Parche 1 del v3.1 |
+| 8 | **Storyboard nuevo del video:** sin leyes, sin cifras de dólares, con protagonista | Parche 2 del v3.1 |
+| 9 | **Las 8 señales se dicen en lenguaje ciudadano.** Textos únicos en [`docs/COPY-SENALES.md`](docs/COPY-SENALES.md) | Parche 3 del v3.1 |
 
 ---
 
 ## Guardarraíles (no negociables, valen puntos y valen reputación)
 
 1. **Señales, no acusaciones.** Nunca "X es corrupto". Siempre "patrón que merece revisión".
-2. **Disclaimer visible en cada resultado**, no en un footer.
+2. **Disclaimer visible en cada resultado**, no en un footer:
+   *"Una señal no es prueba de irregularidad. Es un motivo para preguntar."*
 3. **Solo fuentes oficiales**, siempre enlazadas, con fecha de consulta.
 4. **`Senal` no se puede construir sin `fuente`.** El guardarraíl vive en el tipo, no en la
    documentación, para que no dependa de que alguien se acuerde.

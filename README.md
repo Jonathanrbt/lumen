@@ -6,8 +6,8 @@
 
 Hackathon CTW 2026 · Track 01: Tecnología para la Transparencia · Bogotá, 15–16 de agosto de 2026.
 
-> **Herramienta de priorización ciudadana. Una señal no es prueba de irregularidad.**
-> No acusamos: priorizamos dónde mirar y entregamos evidencia verificable para preguntar mejor.
+> **Una señal no es prueba de irregularidad. Es un motivo para preguntar.**
+> No acusamos. Ayudamos a preguntar.
 
 ---
 
@@ -35,19 +35,37 @@ primera pregunta.
 
 ---
 
+## Para quién es
+
+**Para el veedor.** La persona que ya hace esto: veedurías ciudadanas, juntas de acción comunal,
+periodistas locales, concejales de oposición, líderes comunitarios, docentes y jubilados que le
+siguen la pista a la obra del pueblo.
+
+No le enseñamos a vigilar — sabe más que nosotros. **Le quitamos el trabajo manual.** Hoy, verificar
+un solo contrato le cuesta horas de navegar SECOP, RUES y sanciones por separado. Lumen se lo
+entrega resuelto en segundos, con la evidencia y la carta lista.
+
+Ese usuario suele ser una persona mayor. Por eso el canal principal es WhatsApp: no es un truco de
+distribución, es la única interfaz que ya usa todos los días, sin instalar nada, sin crear cuenta y
+sin aprender un dashboard.
+
+El acceso es público y gratuito. Enfocar el producto en el veedor no le cierra la puerta a nadie:
+define para quién se diseña la experiencia.
+
 ## Qué hace Lumen
 
 Un motor, dos modos.
 
 **Modo Emergencia (push).** Corre solo. Revisa los contratos nuevos que entran por el régimen
 excepcional de emergencia, lee las justificaciones que la ley exige, detecta patrones que merecen
-revisión, y avisa por WhatsApp al veedor, al periodista local o al líder comunal del municipio
-afectado — con la evidencia y con un derecho de petición listo para enviar.
+revisión, y le avisa por WhatsApp a la veedora del municipio afectado — con la evidencia y con la
+carta lista para enviar.
 
-**Modo Vigilancia (pull).** El mismo motor, expuesto como agente conversacional. Cualquier persona
-escribe en lenguaje natural — *"¿la alcaldía de mi pueblo tiene algo raro?"*, el nombre de una
-empresa que vio en una valla — y recibe la red de actores detrás del contrato, las señales con su
-evidencia y el artefacto para actuar. **Sin pedir un NIT. Sin saber qué es SECOP.**
+**Modo Vigilancia (pull).** El mismo motor con el disparador invertido: **la mesa de trabajo del
+veedor.** El push le trae lo que no sabía que existía; el pull le sirve para lo que ya está
+investigando por su cuenta — la obra del colegio, la empresa que vio en la valla, el contratista que
+le suena. Escribe en lenguaje natural y recibe la red de actores, las señales con su evidencia y el
+artefacto para actuar.
 
 > El sismo es la ventana que está abierta hoy. La fuga de plata pública está abierta todos los días.
 
@@ -208,7 +226,8 @@ que fallan si alguien los rompe.
 1. **Señales, no acusaciones.** Nunca "X es corrupto". Siempre "patrón que merece revisión".
 2. **`Senal` no se puede construir sin `fuente`.** Sin fuente oficial con fecha, no hay señal.
 3. **`nivel_atencion` es un enum de tres valores**, nunca un score numérico de corrupción.
-4. **Disclaimer visible en cada resultado**, no en un pie de página.
+4. **Disclaimer visible en cada resultado**, no en un pie de página:
+   *"Una señal no es prueba de irregularidad. Es un motivo para preguntar."*
 5. **El lector de IA nunca afirma sin citar.** Si no puede citar el fragmento, dice que no concluye.
 6. **No exponemos datos sensibles de personas.** El análisis es sobre empresas y contratos. Las
    personas aparecen solo en su rol público de representante legal y solo con registro mercantil.
@@ -236,6 +255,19 @@ que gastó bien.
 
 **El modelo:** núcleo abierto y gratuito para ciudadanía y veedurías; monitoreo dedicado, API y
 reportes fiduciarios como servicio pagado.
+
+---
+
+## Agradecimientos
+
+El enfoque de este producto lo corrigió una mentora en gestión de riesgo de desastres, que además es
+veedora, durante el propio hackathon. Nuestra primera versión hablaba de servir "al ciudadano que no
+sabe qué es SECOP"; ella señaló que ese usuario no existe como usuario activo, y que había que
+diseñar para quien ya se dedica a revisar esto. Cambió el producto.
+
+> `[PENDIENTE: nombre de la mentora, con su permiso]`
+
+---
 
 ### Roadmap
 

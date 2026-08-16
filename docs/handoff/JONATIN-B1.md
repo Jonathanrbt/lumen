@@ -11,25 +11,68 @@ voy al video · 03:30 primer corte grabado · 08:00 video final subido.
 
 ---
 
-## 17:30 — Andamio montado
+## 19:20 — Qué me cambió el v3.1
 
-**Qué cambié.** Monté el repositorio entero desde cero: git, protección de secretos, los documentos
-que `AGENTS.md` exige, el contrato de la API con sus fixtures, el esqueleto de FastAPI y el cliente
-de Croma.
+El parche no toca mis endpoints ni mi cronograma, pero me cambia **qué texto tiene que salir del
+motor** y **cómo se cuenta el video**. Dos cosas nuevas, ninguna trivial.
 
-**El hallazgo importante.** Croma es un servidor MCP remoto, no una API REST. Lo probé en vivo: es
+### 1. Soy dueño de las nueve frases de señal
+
+El Parche 3 traduce las 8 señales a lenguaje ciudadano. Esos textos salen en el campo
+`regla_legible` de cada `Senal`, que es mío, así que **los escribo yo** — pero los leen tres
+personas más: Freddy los usa de referencia para narrar, Andrew los pinta en las tarjetas y Cristian
+los mete en el WhatsApp.
+
+Por eso viven en un solo sitio: **[`docs/COPY-SENALES.md`](../COPY-SENALES.md)**. Si me invento una
+variante al escribir la señal S4, el veedor lee dos voces distintas en la misma pantalla.
+
+Las reglas duras: máximo 20 palabras, sujeto-verbo-cifra, cero siglas sueltas en texto visible
+("RUES", "SECOP" y "BDME" van solo en la línea de fuente), y la cifra en pesos redondeados. El test
+es literal: **si mi mamá no lo entiende, se reescribe.**
+
+Ojo con una tentación: la plantilla no puede quedar genérica. "Esta empresa se creó hace 2 meses y
+ya ganó un contrato de $X" necesita que yo calcule los meses y formatee los pesos, no que imprima
+`dias_transcurridos=41`. El dato crudo va en `datos_usados`, que es para auditar; la frase es para
+leer.
+
+### 2. El video cambió de guion entero
+
+Nada de leyes, nada de cifras en dólares, y hay protagonista. El storyboard v3.1 completo está en
+[`docs/patch_v3.1_lumen_usuario_y_pitch.md`](../patch_v3.1_lumen_usuario_y_pitch.md) §Parche 2.
+
+Lo que tengo que interiorizar antes de las 22:00:
+
+- **Abre con una pregunta, no con una cifra.** "Llega la plata para reconstruir." → "¿Quién está
+  mirando?" La cifra de US$450 millones impresiona a un economista; la pregunta le llega a
+  cualquiera.
+- **Hay una persona.** "Ella es veedora de su municipio." Un producto con usuario se recuerda; una
+  plataforma no.
+- **Se dice "la carta para preguntarle a la alcaldía"**, no "derecho de petición".
+- **Se muestra el hallazgo, no se explica la norma.** "El documento que justifica la urgencia no
+  menciona ningún daño del terremoto" en vez de citar el artículo 46.
+- Las leyes no desaparecen: se mudan al README y a las respuestas al jurado.
+- Test antes de grabar: **si mi mamá no entiende los primeros siete segundos, se regraba.**
+
+Se conservan las reglas de producción del v3: grabar a tamaño de teléfono real y hacer zoom, una
+tipografía, un color de acento, subtítulos quemados, y respaldo grabado apenas exista el flujo.
+
+---
+
+## Lo que hice antes (17:30) — el andamio
+
+Monté el repositorio entero: git, protección de secretos, los documentos que `AGENTS.md` exige, el
+contrato de la API con sus fixtures, el esqueleto de FastAPI y el cliente de Croma.
+
+**El hallazgo importante:** Croma es un servidor MCP remoto, no una API REST. Lo probé en vivo, es
 stateless, un `POST` JSON-RPC basta, y devuelve datos reales. El transporte ya está resuelto en
 `api/lumen/croma/client.py`, así que arranco directo en las reglas de señales.
 
-**Qué quedó a medias.** `api/lumen/senales/` está vacío salvo el esqueleto. Ninguna de las 8 señales
-está implementada.
-
-**Qué no hay que tocar.** El cliente de Croma mientras yo esté dentro. Si necesitas una herramienta
-nueva de Croma, `client.call_tool(nombre, argumentos)` ya sirve para cualquiera de las que expone el
-servidor: no hace falta modificar el cliente.
-
-**Cómo se prueba lo mío en 30 segundos.** `GET /health/croma` hace una llamada real y devuelve el
+**Cómo se prueba lo mío en 30 segundos:** `GET /health/croma` hace una llamada real y devuelve el
 nombre del servidor y cuántas herramientas expone.
+
+**Qué no hay que tocar:** el cliente de Croma mientras yo esté dentro. Si necesitas una herramienta
+nueva, `client.call_tool(nombre, argumentos)` ya sirve para cualquiera de las 76 que expone el
+servidor: no hace falta modificar el cliente.
 
 ---
 
@@ -37,15 +80,19 @@ nombre del servidor y cuántas herramientas expone.
 
 1. **Verificar las tres capas de datos de §6 antes de las 20:00.** Es el riesgo número uno del
    proyecto. Si el análogo histórico no da señales, hay que saberlo esta noche.
-2. Las 8 señales corriendo en CLI, cada una con regla legible, dato y fuente con fecha.
+2. Las 8 señales corriendo en CLI, cada una con su frase de `COPY-SENALES.md`, su dato y su fuente
+   con fecha.
 3. Grafo de actores, curado, entre 5 y 12 nodos.
 4. Validar a mano los 6 casos del catálogo. Ninguno puede tener un falso positivo vergonzoso:
    aparecen en el video.
+5. **Designar por nombre al dueño del hito de las 23:00.** Lo pide el propio parche y es la única
+   hora del reloj sin dueño explícito, justo cuando yo ya estoy en el video.
 
 ---
 
 ## Notas para el video (se llenan desde las 22:00)
 
-- Caso elegido para el bloque de 0:28–0:40:
-- Documento de urgencia manifiesta que se muestra:
+- Caso elegido para el bloque de 0:26–0:38:
+- Documento de urgencia que se muestra:
 - Teléfono que recibe la alerta:
+- Quién es "ella", la veedora del guion (voz en off o texto):

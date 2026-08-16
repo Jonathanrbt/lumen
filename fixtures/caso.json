@@ -15,7 +15,7 @@
       "codigo": "S1",
       "nombre": "Empresa recién creada que gana",
       "nivel": "alto",
-      "regla_legible": "La empresa se registró 41 días antes de que le adjudicaran este contrato.",
+      "regla_legible": "Esta empresa se creó hace mes y medio y ya ganó un contrato de $4.200 millones.",
       "datos_usados": {
         "fecha_registro": "2026-07-04",
         "fecha_adjudicacion": "2026-08-14",
@@ -31,7 +31,7 @@
       "codigo": "S7",
       "nombre": "Concentración del valor en un solo proveedor",
       "nivel": "medio",
-      "regla_legible": "El 61 % del valor que esta alcaldía contrató desde la emergencia se lo llevaron 2 empresas.",
+      "regla_legible": "Dos empresas se llevaron el 61 % de toda la plata que contrató esta alcaldía desde el terremoto.",
       "datos_usados": {
         "porcentaje_concentrado": 61,
         "numero_proveedores": 2,
@@ -48,14 +48,14 @@
     "veredicto": "generica",
     "puntos": [
       {
-        "pregunta": "¿La justificación menciona daños concretos, ubicados y verificables?",
+        "pregunta": "¿El documento dice qué se dañó y dónde, o habla en general?",
         "hallazgo": "El documento describe la afectación en términos generales y no identifica ninguna dirección, barrio ni estructura concreta.",
         "cita_textual": "…debido a los graves daños ocasionados por el evento sísmico en la infraestructura del municipio…",
         "pagina": 2,
         "no_concluye_por": null
       },
       {
-        "pregunta": "¿Se invocan los diagnósticos técnicos que la norma exige?",
+        "pregunta": "¿Hay estudios técnicos que respalden que esto era urgente?",
         "hallazgo": "No fue posible determinarlo con el documento disponible.",
         "cita_textual": null,
         "pagina": null,
@@ -105,7 +105,7 @@
       }
     ]
   },
-  "narracion": "Esta alcaldía adjudicó de forma directa un contrato de 4.200 millones para retirar escombros. La empresa que lo ganó se había registrado 41 días antes. Además, su representante legal aparece también al frente de otra empresa que contrata con la misma alcaldía. La justificación de urgencia habla de daños del sismo, pero no señala ninguna dirección ni estructura concreta. Nada de esto prueba una irregularidad: son motivos para preguntar.",
-  "disclaimer": "Herramienta de priorización ciudadana. Una señal no es prueba de irregularidad.",
+  "narracion": "Esta alcaldía le dio, sin concurso, un contrato de $4.200 millones para retirar escombros. La empresa que lo ganó se creó hace mes y medio. Su representante también está al frente de otra empresa que le contrata a la misma alcaldía. Y el documento que explica por qué era urgente no menciona ningún daño concreto del terremoto. Nada de esto prueba una irregularidad: son motivos para preguntar.",
+  "disclaimer": "Una señal no es prueba de irregularidad. Es un motivo para preguntar.",
   "generado_en": "2026-08-15T17:20:00-05:00"
 }

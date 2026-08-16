@@ -4,7 +4,8 @@ Somos cuatro personas metiendo commits al mismo monorepo con quince horas por de
 existe para una sola cosa: **que nadie se pise con nadie.** Léelo entero una vez, ahora. Después es
 consulta.
 
-Congelado el sábado 15.ago.2026 a las 17:30.
+Congelado el sábado 15.ago.2026 a las 17:30. Actualizado a las 19:20 con el reparto del parche v3.1
+y el dueño del hito de las 23:00.
 
 ---
 
@@ -50,6 +51,35 @@ territorio ajeno, lo pides por el chat del equipo. Cuesta un minuto y ahorra un 
 | `video/` | **Jonatin y nadie más** | |
 | `docs/handoff/<TU-NOMBRE>.md` | Cada uno el suyo | |
 | `PROYECTO.md`, `README.md`, `HANDOFF.md` | Jonatin | Coordinación |
+
+### Quién es dueño de qué en el v3.1 (validación cruzada)
+
+El parche v3.1 añade trabajo que no estaba repartido. Esto lo reparte, sin cambiar los roles:
+
+| Lo que pide el v3.1 | Dueño | Quién lo consume | Dónde vive |
+|---|---|---|---|
+| Escribir las 9 frases de señal en lenguaje ciudadano | **Jonatin** (es su campo `regla_legible`) | Freddy, Andrew, Cristian | `docs/COPY-SENALES.md` |
+| Que la narración y el lector hablen en ese mismo registro | **Freddy** | Andrew | `api/lumen/ia/` |
+| Que las tarjetas y los botones usen ese texto sin reescribirlo | **Andrew** | — | `web/` |
+| Que el WhatsApp use las mismas frases, máximo 5 líneas | **Cristian** | — | `api/lumen/plataforma/` |
+| Storyboard nuevo del video, sin leyes y con protagonista | **Jonatin**, desde las 22:00 | — | `video/` |
+| Que las leyes sigan íntegras donde sí suman | **Jonatin** (README) y **Freddy** (cuerpo de la carta) | Jurado | `README.md`, `/accion` |
+| Reconocer a la mentora, si autoriza | **Jonatin** | — | `README.md` |
+| Decidir qué pasa con Twilio ahora que WhatsApp es la tesis | **El equipo** | — | pendiente |
+
+**La regla que hace que esto funcione:** las nueve frases se escriben **una sola vez**, en
+[`COPY-SENALES.md`](COPY-SENALES.md). Nadie las reescribe en su capa. Si cuatro personas maquillan el
+mismo texto, el veedor lee cuatro voces distintas en la misma pantalla y el video se nota cosido.
+
+### El dueño del hito de las 23:00
+
+El propio parche v3.1 lo señala como el único hueco del reloj: a las 22:00 Jonatin pasa a ser dueño
+del video, y el hito crítico es a la hora siguiente.
+
+> **Dueño del hito de las 23:00: `[PENDIENTE — designar por nombre, no a las 23:05]`**
+
+Quien sea, su trabajo esa hora no es codear: es recorrer el flujo completo de punta a punta, decir
+en voz alta si existe o no, y si no existe, **aplicar los hard-cuts sin pedir permiso**.
 
 ### Los tres archivos compartidos, y cómo no romperlos
 
