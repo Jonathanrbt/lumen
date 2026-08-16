@@ -124,6 +124,55 @@ Si termino usando Evolution API en su lugar, este detalle no aplica y lo anoto a
 
 ## Bitácora
 
+### 03:30 — Prueba exhaustiva del orquestador: un bug real encontrado y arreglado
+
+**Contexto:** el equipo pidió probar `/chat` con datos variados de verdad antes de dar por
+cerrado el bloque de IA. Corrí ~10 casos distintos contra Croma y Cursor reales: NIT con
+contratos (nivel medio, real), entidad pública (Secretaría Distrital de Hacienda, nivel bajo),
+casos "delgados" con 0 contratos (Ruta del Sol/Odinsa), texto vacío, gibberish, preguntas sin
+nombre concreto, desambiguación con nombre real (Odinsa, 5 candidatos). Todos correctos, nada se
+cayó, ninguna narración inventó un hecho que no estuviera en las señales.
+
+**El bug real:** un caso que `/chat` descubre por primera vez (Modo Vigilancia, alguien pregunta
+por una empresa nueva) **nunca se guardaba en ningún lado**. `POST /accion` sobre ese mismo
+`caso_id` daba 404 siempre — confirmado en vivo con un NIT que nadie había precomputado
+(Odinsa Aeropuertos, 901645491). Esto rompía literalmente el paso 6 del Flujo B del brief
+("siempre se ofrece el siguiente paso: generar evidencia, redactar la carta") para cualquier
+caso que no fuera del catálogo curado de 6. Y confirmé que es un problema real de integración,
+no teórico: el frontend de Andrew (rama `Lumen-web`, todavía no fusionada a `main`) ya tiene
+`api.accion(caso_id, tipo)` esperando exactamente ese flujo.
+
+**El arreglo:** `responder_chat` ahora llama a `guardar_caso` (de Cristian, mismo patrón que ya
+usa `monitor.py`) apenas analiza un caso nuevo, **best-effort** — `guardar_caso` no respeta
+`LUMEN_USAR_DUMP_LOCAL` a diferencia de `obtener_caso`, así que en modo respaldo de grabación
+sin Supabase real esto seguirá fallando (registrado, no rompe el chat) hasta que haya una
+Supabase real conectada. Con eso, en producción de verdad, el ciclo completo (`/chat` descubre →
+`/accion` genera la carta) queda cerrado.
+
+**De paso, encontré y arreglé una fuga de aislamiento entre tests:** `get_supabase()` tiene su
+propio `@lru_cache` que nadie limpia; mi código nuevo disparaba un cliente real (con las
+credenciales, aunque inválidas, que tenía en mi `.env` local) durante un test que no lo
+esperaba, y ese cliente cacheado rompía después `test_plataforma.py` de Cristian en la misma
+corrida de pytest. Arreglado con un fixture `autouse` en `test_chat.py` que mockea
+`guardar_caso` por defecto — no toqué el archivo de Cristian.
+
+**Hallazgo de latencia, no un bug, pero real:** `sicaac_insolvency_cases` (una de las 9 llamadas
+que hace el motor de Jonatin por NIT) tarda consistentemente ~57-60s en resolver un job
+asíncrono de Croma. Un análisis completo por NIT puede tomar 80-100 segundos de punta a punta.
+Para el video no importa (los 6 casos del catálogo se precomputan), pero si alguien piensa
+dejar `/chat` respondiendo en vivo sin caché durante la grabación, esto muerde.
+
+**Credenciales de Supabase:** las que me pasaron (`sbp_...`) son un Personal Access Token de la
+cuenta, no las API keys del proyecto — dan 401 "Invalid API key". Faltan las keys reales
+(`anon`/`service_role`, JWT largos) desde Project Settings → API del dashboard. Sin esas, todo
+lo de arriba corrió sobre el dump local; el arreglo del guardado está listo pero sin probar
+contra Supabase real todavía.
+
+**Tests:** 2 nuevos en `test_chat.py` (el guardado se intenta, y que un fallo de guardado no
+tumba la respuesta). Suite completa: 77 passed.
+
+### 02:45 — /justificacion vivo: el núcleo del producto, probado en los dos extremos
+
 ### 03:20 — /chat vivo: los cuatro endpoints de IA completos, probados end-to-end
 
 **Qué cambié.** `api/lumen/ia/chat.py` + wireado en `routers/ia.py`. Dos caminos: si `contexto`

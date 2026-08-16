@@ -16,10 +16,23 @@ probablemente sin revisar código — el video es el entregable que más pesa. V
 [`docs/GUION-VIDEO-v3.2.md`](docs/GUION-VIDEO-v3.2.md) (propuesta de Freddy, actualiza el
 storyboard v3.1 con Telegram y el chat ya no como hard-cut).
 
-🚨 **`web/` sigue vacío — sin commits desde el andamio inicial (17:56), bitácora de Andrew sin
-actualizar desde las 17:30.** Sin frontend no hay nada que grabar para los bloques 0:26–0:55 del
-video, sin importar qué tan bueno esté el guion. Es el riesgo más grande del proyecto ahora
-mismo. Andrew está trabajando, se espera su push.
+✅ **Falsa alarma: Andrew sí está trabajando.** Pusheó a la rama `Lumen-web` (no a `main` todavía)
+— React + Vite + TypeScript, las 4 pantallas (Alerta, Caso, Chat, Artefacto) más Landing, grafo
+interactivo con react-flow, cliente API que ya coincide con el contrato exacto y cae a los
+fixtures si la red falla. Falta fusionarla a `main` cuando esté lista.
+
+🚨 **Bug real encontrado y arreglado probando `/chat` a fondo (16.ago ~03:30):** un caso nuevo
+descubierto por Modo Vigilancia nunca se guardaba, así que `/accion` daba 404 siempre después
+del primer turno — y el frontend de Andrew ya depende de ese flujo (`api.accion(caso_id, tipo)`).
+Arreglado en `api/lumen/ia/chat.py`. Sigue sin poder probarse contra Supabase real: las
+credenciales que circularon (`sbp_...`) son un Personal Access Token de cuenta, no las API keys
+del proyecto — faltan las reales. Detalle en
+[`docs/handoff/FREDDY-B2.md`](docs/handoff/FREDDY-B2.md).
+
+**Hallazgo de latencia, no bug:** un análisis completo por NIT puede tardar 80-100 segundos
+(un endpoint de Croma, `sicaac_insolvency_cases`, tarda ~57-60s en resolver un job async). No
+afecta el video (los 6 casos van precomputados), pero si alguien deja `/chat` respondiendo en
+vivo sin caché, se nota.
 
 🚨 **Jonatin (dueño del video) no está disponible ahora mismo.** El equipo necesita decidir quién
 graba si él no puede retomarlo a tiempo para el corte de las 08:00.

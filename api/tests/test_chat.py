@@ -56,6 +56,21 @@ async def _preguntar_falso(prompt: str, modelo) -> str:
     return "Narración de prueba en lenguaje ciudadano."
 
 
+@pytest.fixture(autouse=True)
+def _no_tocar_supabase_de_verdad(monkeypatch: pytest.MonkeyPatch):
+    """`guardar_caso` no está mockeada por defecto en la mayoría de estos
+    tests. Sin este fixture, cualquier test que llegue a `caso is not None`
+    dispara un `get_supabase()` real -- y como esa función tiene su propio
+    `@lru_cache` que nadie limpia entre tests, un `.env` local con
+    credenciales de Supabase (aunque sean inválidas) queda cacheado y
+    contamina tests de OTROS archivos que corran después en la misma
+    sesión de pytest. Confirmado en vivo (16.ago ~03:15): rompía
+    test_plataforma.py::test_caso_sin_supabase_ni_dump_da_503_explicito.
+    Los dos tests que sí quieren probar el guardado real de otra forma
+    sobreescriben este mock localmente."""
+    monkeypatch.setattr(chat, "guardar_caso", lambda caso: None)
+
+
 def test_sin_candidatos_dice_no_se_con_alternativa(monkeypatch: pytest.MonkeyPatch) -> None:
     async def _resolver_falso(texto: str):
         return []
@@ -149,3 +164,48 @@ def test_narracion_se_degrada_si_el_llm_falla_no_tumba_la_respuesta(
     assert "creó hace 2 meses" in resultado.narracion  # cae a la señal tal cual
     assert "corrupto" not in resultado.narracion.lower()
     assert "ilegal" not in resultado.narracion.lower()
+
+
+def test_caso_analizado_se_guarda_para_que_accion_lo_pueda_encontrar_despues(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Confirmado en vivo (16.ago ~03:00): sin esto, /accion sobre un caso
+    que /chat acaba de descubrir siempre daba 404 -- el caso nunca quedaba
+    en ningún lado. Este test fija que responder_chat SIEMPRE intenta
+    guardarlo cuando analiza uno nuevo."""
+    guardados = []
+
+    async def _analizar_falso(peticion):
+        return _caso()
+
+    monkeypatch.setattr(chat, "analizar", _analizar_falso)
+    monkeypatch.setattr(chat, "preguntar", _preguntar_falso)
+    monkeypatch.setattr(chat, "guardar_caso", guardados.append)
+
+    resultado = _run(chat.responder_chat("x", contexto={"nit": "900000000"}))
+
+    assert len(guardados) == 1
+    assert guardados[0].id == resultado.caso.id
+
+
+def test_si_guardar_el_caso_falla_la_respuesta_del_chat_no_se_cae(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """guardar_caso no respeta LUMEN_USAR_DUMP_LOCAL (a diferencia de
+    obtener_caso): en modo respaldo de grabación, sin Supabase real, esto
+    va a fallar siempre. Tiene que ser best-effort, nunca tumbar /chat."""
+
+    async def _analizar_falso(peticion):
+        return _caso()
+
+    def _guardar_roto(caso):
+        raise RuntimeError("Supabase no configurado")
+
+    monkeypatch.setattr(chat, "analizar", _analizar_falso)
+    monkeypatch.setattr(chat, "preguntar", _preguntar_falso)
+    monkeypatch.setattr(chat, "guardar_caso", _guardar_roto)
+
+    resultado = _run(chat.responder_chat("x", contexto={"nit": "900000000"}))
+
+    assert resultado.caso is not None
+    assert resultado.narracion

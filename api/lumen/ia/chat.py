@@ -26,6 +26,7 @@ from __future__ import annotations
 import logging
 
 from ..contracts import AnalizarRequest, Caso, ChatResponse
+from ..plataforma.casos import guardar_caso
 from ..routers.analisis import analizar
 from .llm_client import CursorAgentError, LLMEjecucionError, Modelo, preguntar
 from .resolver import resolver_candidatos
@@ -84,6 +85,30 @@ async def _analizar_desde_contexto(contexto: dict) -> Caso | None:
     return await analizar(AnalizarRequest(**llaves))
 
 
+def _guardar_caso_best_effort(caso: Caso) -> None:
+    """Sin esto, un caso que el Modo Vigilancia descubre por primera vez
+    nunca queda accesible por `/accion` (`caso_id` no existe en ningún
+    lado) — confirmado en vivo el 16.ago ~03:00: /chat devuelve el caso,
+    /accion sobre ese mismo caso_id da 404. El monitor de Cristian ya
+    guarda los suyos (`plataforma/monitor.py`); esto hace lo mismo para
+    el camino de una persona preguntando.
+
+    `guardar_caso` no respeta `LUMEN_USAR_DUMP_LOCAL` (a diferencia de
+    `obtener_caso`), así que esto es best-effort a propósito: si Supabase
+    no está configurado o falla, se registra y se sigue — el chat nunca se
+    cae por un problema de persistencia, igual que `scripts/precomputar_casos_demo.py`.
+    """
+    try:
+        guardar_caso(caso)
+    except Exception:  # noqa: BLE001 - persistir es deseable, no imprescindible aquí
+        log.warning(
+            "No se pudo guardar el caso %s desde el chat (Supabase no disponible); "
+            "/accion no podrá encontrarlo por su id hasta que se guarde en algún lado.",
+            caso.id,
+            exc_info=True,
+        )
+
+
 async def responder_chat(mensaje: str, contexto: dict | None = None) -> ChatResponse:
     """Dos caminos, en este orden:
 
@@ -98,6 +123,7 @@ async def responder_chat(mensaje: str, contexto: dict | None = None) -> ChatResp
 
     caso = await _analizar_desde_contexto(contexto)
     if caso is not None:
+        _guardar_caso_best_effort(caso)
         narracion = await _narrar_caso(caso)
         return ChatResponse(
             narracion=narracion,
