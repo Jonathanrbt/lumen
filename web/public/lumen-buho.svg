@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!--
+    La lechuza en macizo: silueta, dos ojos y el pico.
+    La marca completa es de trazo fino y a 16 px se deshace; así aguanta el
+    tamaño de una pestaña.
+  -->
+  <rect width="32" height="32" fill="#fdfcfa" />
+  <path
+    fill="#0131fc"
+    d="M16 5C14.4 3.2 11.6 2.4 9.4 3.6 6.6 5.2 5.2 8.6 5.2 13c0 2.4.2 4.6.8 6.6C7.4 25 11.2 29.2 16 29.2s8.6-4.2 10-9.6c.6-2 .8-4.2.8-6.6 0-4.4-1.4-7.8-4.2-9.4C20.4 2.4 17.6 3.2 16 5Z"
+  />
+  <circle cx="11.3" cy="13" r="3.2" fill="#fdfcfa" />
+  <circle cx="20.7" cy="13" r="3.2" fill="#fdfcfa" />
+  <path fill="#fdfcfa" d="M16 16.4 17.3 20 14.7 20Z" />
+</svg>
