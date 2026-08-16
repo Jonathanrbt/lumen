@@ -122,6 +122,41 @@ Si termino usando Evolution API en su lugar, este detalle no aplica y lo anoto a
 
 ## Bitácora
 
+### 01:15 — llm_client vivo, modelos fijados con Cursor.models.list() real
+
+**Qué cambié.** `Cursor.models.list()` corrido de verdad (no hardcodeado a ciegas): confirmé
+`LUMEN_MODELO_RAPIDO=composer-2.5` (ya era el default sugerido) y fijé
+`LUMEN_MODELO_FUERTE=claude-opus-5` para el lector de justificaciones — el más nuevo y capaz de
+los disponibles en la cuenta, y hace pocas llamadas. `api/lumen/ia/llm_client.py`: único punto de
+entrada al LLM (`preguntar(prompt, Modelo.RAPIDO|FUERTE)`), con las seis reglas de presupuesto del
+handoff — `cwd`/`setting_sources` apuntando a `LUMEN_SCRATCH_DIR` nunca al repo,
+`AsyncClient.launch_bridge` con `try/finally` + `aclose()` (nunca mezclar sync/async), y la higiene
+de errores: `CursorAgentError` (nunca arrancó) vs `LLMEjecucionError` nueva (arrancó y no terminó
+`finished`) son excepciones distintas a propósito.
+
+**Hallazgo de presupuesto, medido en vivo:** sin restringir herramientas, cada llamada carga ~11.3k
+tokens de entrada en definiciones de herramientas que este producto no usa (no navegamos el repo,
+solo analizamos texto). Con `tools=[]` baja a ~3.3k — el default ahora, no una opción. Con US$50 de
+presupuesto total esa diferencia importa.
+
+**Instalación real:** `cursor-sdk==1.0.28` (confirmado instalándolo, no adivinado — requiere Python
+≥3.10, que agregué al `.venv` local vía `brew install python@3.13` para tener el mismo entorno que
+Render). Agregado al final de `api/requirements.txt`. `.env.example` y mi `.env` local ya traen
+`LUMEN_MODELO_FUERTE=claude-opus-5`.
+
+**Probado:** smoke test real contra la cuenta (gastó unos tokens, ~$0.00x) confirmó `status=finished`
+end-to-end. `api/tests/test_llm_client.py` (5 tests, mockeados, sin gastar presupuesto en CI) fija
+el guardarraíl de la higiene de errores. Suite completa: 44 passed.
+
+**Qué sigue, en orden:** `/resolver` (contra el catálogo curado + `llm_client` para desambiguar),
+luego `/justificacion` (el lector — el núcleo del producto), `/accion`, `/chat`.
+
+**Nota de Twilio, en pausa:** el trial de Twilio (2026) exige `ContentSid` para mandar texto libre
+por WhatsApp, y el sandbox clásico (+14155238886) ya no existe para cuentas nuevas — confirmado con
+la API real y con la doc oficial. Sin resolver todavía: o encontramos la plantilla pre-aprobada del
+trial, o se decide si vale la pena el upgrade de cuenta. Pausado por decisión de Freddy para priorizar
+el bloque de IA, que estaba en cero.
+
 ### 22:35 — Esqueleto de WhatsApp listo, Twilio funcionando
 
 **Qué cambié.** Paquete nuevo `api/lumen/whatsapp/`: `base.py` (interfaz `WhatsAppClient`,

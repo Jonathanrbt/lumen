@@ -27,10 +27,6 @@ supabase==2.31.0
 pytest==9.1.1
 
 # --- Anade aqui abajo ---
-#
-# Nota para Freddy (B2): el SDK de Cursor va aqui cuando confirmes el nombre
-# exacto del paquete y su version. El brief lo llama `cursor-sdk`. No lo fijamos
-# a ciegas: instalalo, comprueba que importa, y anade la linea con su version.
 
 # Twilio: envio de alertas por WhatsApp sandbox. Dueno: Cristian (B3).
 twilio==9.11.0
@@ -38,3 +34,8 @@ twilio==9.11.0
 # Zonas IANA en Windows. Sin esto ZoneInfo("America/Bogota") de Cristian
 # tumba cualquier import de la app (incluido POST /analizar).
 tzdata==2025.2
+
+# SDK de Cursor: llm_client, lector de justificaciones, narracion. Dueno:
+# Freddy (B2). Nombre confirmado instalandolo, no a ciegas: `cursor-sdk`.
+# Requiere Python >=3.10.
+cursor-sdk==1.0.28
