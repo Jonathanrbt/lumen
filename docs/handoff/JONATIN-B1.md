@@ -57,7 +57,7 @@ leer.
 ### 2. El video cambió de guion entero
 
 Nada de leyes, nada de cifras en dólares, y hay protagonista. El storyboard v3.1 completo está en
-[`docs/patch_v3.1_lumen_usuario_y_pitch.md`](../patch_v3.1_lumen_usuario_y_pitch.md) §Parche 2.
+[`docs/brief-final-claude.md`](../brief-final-claude.md) §8.
 
 Lo que tengo que interiorizar antes de las 22:00:
 

@@ -1,6 +1,6 @@
 # Copy de las señales — fuente única
 
-Viene del **Parche 3 del v3.1**. Estos textos los usan tres personas a la vez, así que viven aquí y
+Viene del **§9.1 de [`brief-final-claude.md`](brief-final-claude.md)** (parche v3.1). Estos textos los usan tres personas a la vez, así que viven aquí y
 no en la cabeza de nadie:
 
 - **Jonatin (B1)** los produce en el campo `regla_legible` de cada `Senal`.

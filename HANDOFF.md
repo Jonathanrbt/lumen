@@ -16,10 +16,11 @@ propio archivo, para que cuatro personas no editen el mismo sitio a la vez:
 
 ### Se aplicó el parche v3.1 a todo el repo
 
-Llegó [`docs/patch_v3.1_lumen_usuario_y_pitch.md`](docs/patch_v3.1_lumen_usuario_y_pitch.md), tres
-reemplazos sobre el brief v3 a partir del feedback de una mentora en gestión de riesgo de desastres
-que además es veedora. **No cambia el alcance, el stack, los roles ni el cronograma. Cambia para
-quién es el producto y cómo se cuenta.**
+El parche v3.1 y el brief v3 quedaron unificados en
+[`docs/brief-final-claude.md`](docs/brief-final-claude.md). Tres reemplazos sobre el v3 a partir del
+feedback de una mentora en gestión de riesgo de desastres que además es veedora. **No cambia el
+alcance. Cambia para quién es el producto y cómo se cuenta.** Más las decisiones del equipo (roles
+con nombre, Twilio, hito 23:00).
 
 Lo que se propagó:
 

@@ -1,3 +1,5 @@
+> **Supersedido.** El documento vivo es [`brief-final-claude.md`](brief-final-claude.md). Este archivo se conserva como archivo del v3.
+
 # LUMEN — Brief v3 (final)
 
 **Hackathon CTW 2026 · Track 01: Tecnología para la Transparencia**

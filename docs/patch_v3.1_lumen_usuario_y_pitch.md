@@ -1,3 +1,5 @@
+> **Supersedido.** El documento vivo es [`brief-final-claude.md`](brief-final-claude.md). Este archivo se conserva como archivo del parche v3.1.
+
 # LUMEN — Parche v3.1
 
 **Qué es esto:** tres reemplazos sobre el brief v3, a partir del feedback de la mentora en gestión de riesgo de desastres (15.ago, ~17:00). No cambia el alcance, el stack, los roles ni el cronograma. **Cambia para quién es y cómo se cuenta.**
