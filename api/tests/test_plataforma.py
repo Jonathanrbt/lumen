@@ -10,6 +10,9 @@ los guardarraíles del contrato se conservan, y nunca se fabrica un éxito.
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -19,7 +22,31 @@ from lumen.plataforma.dump_local import limpiar_cache_de_dump
 
 cliente = TestClient(app)
 
-CASO_DUMP_ID = "caso-ejemplo-0001"  # ver fixtures/casos_demo.json
+RAIZ = Path(__file__).resolve().parents[2]
+DUMP = RAIZ / "fixtures" / "casos_demo.json"
+
+
+def _casos_del_dump() -> list[dict]:
+    crudo = json.loads(DUMP.read_text(encoding="utf-8"))
+    return crudo if isinstance(crudo, list) else crudo.get("casos", [])
+
+
+def _un_caso_con_senales() -> dict:
+    """Un caso del dump que tenga al menos una señal.
+
+    No se fija un id a mano: el dump se regenera con
+    `scripts/precomputar_casos_demo.py` y los ids cambian con los datos reales,
+    así que hardcodearlos hace que estas pruebas fallen cada vez que alguien
+    actualiza el respaldo de grabación.
+    """
+    casos = _casos_del_dump()
+    con_senales = [c for c in casos if c.get("senales")]
+    if not con_senales:
+        pytest.skip("El dump no trae ningún caso con señales todavía")
+    return con_senales[0]
+
+
+CASO_DUMP_ID = (_casos_del_dump() or [{}])[0].get("id", "sin-casos-en-el-dump")
 
 
 @pytest.fixture(autouse=True)
@@ -36,8 +63,9 @@ def _limpiar_cachés_de_settings():
 
 def test_caso_local_respeta_los_guardarrailes_del_contrato(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("LUMEN_USAR_DUMP_LOCAL", "true")
+    esperado = _un_caso_con_senales()
 
-    r = cliente.get(f"/caso/{CASO_DUMP_ID}")
+    r = cliente.get(f"/caso/{esperado['id']}")
 
     assert r.status_code == 200
     caso = r.json()

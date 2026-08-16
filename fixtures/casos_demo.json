@@ -1,140 +1,279 @@
 {
-  "_nota": "PLACEHOLDER generado por el change plataforma-b3-flujo-completo, no por scripts/precomputar_casos_demo.py. Contiene una copia de fixtures/caso.json para que el flag LUMEN_USAR_DUMP_LOCAL y el endpoint GET /caso/{caso_id} tengan algo real que servir mientras el catalogo curado de 6 casos (brief SS4.5.4) no se ha corrido contra Croma/Supabase de verdad. Los valores son ILUSTRATIVOS: ningun dato de aqui puede aparecer en el video ni en la demo. Cuando Jonatin valide el catalogo (bloque 23:00-02:00), correr scripts/precomputar_casos_demo.py para reemplazar este archivo con los 6 casos reales.",
+  "_nota": "Generado por scripts/precomputar_casos_demo.py. Reemplaza al placeholder.",
   "casos": [
     {
-      "_nota": "Ejemplo de salida de POST /analizar y GET /caso/{caso_id}. La estructura es real y validada contra los modelos Pydantic (ver api/tests/test_contrato.py). Los valores son ILUSTRATIVOS y solo sirven para maquetar: ningun dato de aqui puede aparecer en el video ni en la demo. Lo que se grabe sale del motor corriendo contra Croma.",
-      "id": "caso-ejemplo-0001",
-      "modo": "emergencia",
-      "entidad": "Alcaldía Municipal de ejemplo",
-      "proveedor": "Constructora de ejemplo S.A.S.",
-      "municipio": "Municipio de ejemplo",
-      "departamento": "Departamento de ejemplo",
-      "valor": 4200000000.0,
-      "objeto": "Retiro de escombros y demolición de estructuras afectadas",
-      "fecha": "2026-08-14",
-      "nivel_atencion": "alto",
+      "id": "caso-38d879c8695f",
+      "modo": "vigilancia",
+      "entidad": "ALCALDIA LOCAL DE KENNEDY",
+      "proveedor": "JAIRO MARTINEZ AMAYA",
+      "municipio": "No Definido",
+      "departamento": "Bogotá",
+      "valor": 23808000.0,
+      "objeto": "PRESTAR LOS SERVICIOS DE APOYO EN LAS ACCIONES ENCAMINADAS AL RESTABLECIMIENTO DE LA ARMONA; PAZ; SEGURIDAD Y \nCONVIVENCIA CIUDADANA; GENERANDO ATENCIÃN DE MOVILIZACIONES Y AGLOMERACIONES EN EL TERRITORIO DE ACUERDO CON LO \nCONTEMPLADO EN ELPROYECTO KENNEDY SEGURA Y EN PAZ.",
+      "fecha": "2026-01-27",
+      "nivel_atencion": "medio",
       "senales": [
         {
-          "codigo": "S1",
-          "nombre": "Empresa recién creada que gana",
-          "nivel": "alto",
-          "regla_legible": "Esta empresa se creó hace mes y medio y ya ganó un contrato de $4.200 millones.",
-          "datos_usados": {
-            "fecha_registro": "2026-07-04",
-            "fecha_adjudicacion": "2026-08-14",
-            "dias_transcurridos": 41
-          },
-          "fuente": {
-            "herramienta_croma": "rues_entity_by_nit",
-            "url_oficial": "https://www.rues.org.co/",
-            "consultado_en": "2026-08-15T17:20:00-05:00"
-          }
-        },
-        {
-          "codigo": "S7",
-          "nombre": "Concentración del valor en un solo proveedor",
+          "codigo": "S8",
+          "nombre": "Contratación directa recurrente",
           "nivel": "medio",
-          "regla_legible": "Dos empresas se llevaron el 61 % de toda la plata que contrató esta alcaldía desde el terremoto.",
+          "regla_legible": "Una empresa se llevó el 100 % de toda la plata de esta entidad.",
           "datos_usados": {
-            "porcentaje_concentrado": 61,
-            "numero_proveedores": 2,
-            "contratos_evaluados": 9
+            "contratos_directos": 5,
+            "contratos_totales": 5,
+            "porcentaje_valor_directo": 100,
+            "minimo_directos": 2
           },
           "fuente": {
-            "herramienta_croma": "secop_processes_by_entity",
+            "herramienta_croma": "secop_contracts_by_provider",
             "url_oficial": "https://www.colombiacompra.gov.co/secop",
-            "consultado_en": "2026-08-15T17:20:00-05:00"
+            "consultado_en": "2026-08-16T05:22:19.641097Z"
           }
         }
       ],
-      "lectura": {
-        "veredicto": "generica",
-        "puntos": [
-          {
-            "pregunta": "¿El documento dice qué se dañó y dónde, o habla en general?",
-            "hallazgo": "El documento describe la afectación en términos generales y no identifica ninguna dirección, barrio ni estructura concreta.",
-            "cita_textual": "…debido a los graves daños ocasionados por el evento sísmico en la infraestructura del municipio…",
-            "pagina": 2,
-            "no_concluye_por": null
-          },
-          {
-            "pregunta": "¿Hay estudios técnicos que respalden que esto era urgente?",
-            "hallazgo": "No fue posible determinarlo con el documento disponible.",
-            "cita_textual": null,
-            "pagina": null,
-            "no_concluye_por": "El PDF no incluye los anexos técnicos que menciona en su encabezado."
-          }
-        ],
-        "documento_url": "https://ejemplo.gov.co/justificacion.pdf",
-        "analizado_en": "2026-08-15T17:20:00-05:00"
-      },
+      "lectura": null,
       "grafo": {
         "nodos": [
           {
-            "id": "n1",
+            "id": "ent-899999061",
             "tipo": "entidad",
-            "nombre": "Alcaldía Municipal de ejemplo",
-            "nit": "800000000",
+            "nombre": "ALCALDIA LOCAL DE KENNEDY",
+            "nit": "899999061",
             "rol": "contratante"
           },
           {
-            "id": "n2",
+            "id": "prov-79372917",
             "tipo": "empresa",
-            "nombre": "Constructora de ejemplo S.A.S.",
-            "nit": "901000000",
+            "nombre": "JAIRO MARTINEZ AMAYA",
+            "nit": "79372917",
             "rol": "proveedor"
           },
           {
-            "id": "n3",
+            "id": "rep-contrato",
             "tipo": "persona",
-            "nombre": "Representante legal de ejemplo",
+            "nombre": "JAIRO MARTINEZ AMAYA",
             "nit": null,
             "rol": "representante legal"
+          }
+        ],
+        "aristas": [
+          {
+            "origen": "ent-899999061",
+            "destino": "prov-79372917",
+            "tipo": "contrato_a",
+            "fuente": {
+              "herramienta_croma": "secop_contracts_by_provider",
+              "url_oficial": "https://www.colombiacompra.gov.co/secop",
+              "consultado_en": "2026-08-16T05:22:19.641097Z"
+            }
           },
           {
-            "id": "n4",
+            "origen": "rep-contrato",
+            "destino": "prov-79372917",
+            "tipo": "representante_legal_de",
+            "fuente": {
+              "herramienta_croma": "secop_contracts_by_provider",
+              "url_oficial": "https://www.colombiacompra.gov.co/secop",
+              "consultado_en": "2026-08-16T05:22:19.641097Z"
+            }
+          }
+        ]
+      },
+      "narracion": null,
+      "disclaimer": "Una señal no es prueba de irregularidad. Es un motivo para preguntar.",
+      "generado_en": "2026-08-16T05:23:40.989217Z"
+    },
+    {
+      "id": "caso-90c315f15051",
+      "modo": "vigilancia",
+      "entidad": "SECRETARIA DISTRITAL DE HACIENDA",
+      "proveedor": null,
+      "municipio": null,
+      "departamento": null,
+      "valor": 639935298450.0,
+      "objeto": "El ACREEDOR le otorga al DISTRITO a título de empréstito externo la suma de CIENTO CINCUENTA MILLONES DE EUROS EUR$150.000.000 o su equivalente en pesos colombianos y el distrito acepta dichos recurso",
+      "fecha": null,
+      "nivel_atencion": "bajo",
+      "senales": [],
+      "lectura": null,
+      "grafo": {
+        "nodos": [
+          {
+            "id": "ent-899999061",
+            "tipo": "entidad",
+            "nombre": "SECRETARIA DISTRITAL DE HACIENDA",
+            "nit": "899999061",
+            "rol": "contratante"
+          },
+          {
+            "id": "prov-desconocido",
             "tipo": "empresa",
-            "nombre": "Segunda empresa de ejemplo S.A.S.",
-            "nit": "901000001",
+            "nombre": "Proveedor",
+            "nit": null,
             "rol": "proveedor"
           }
         ],
         "aristas": [
           {
-            "origen": "n1",
-            "destino": "n2",
+            "origen": "ent-899999061",
+            "destino": "prov-desconocido",
             "tipo": "contrato_a",
             "fuente": {
-              "herramienta_croma": "secop_processes_by_entity",
+              "herramienta_croma": "secop_contracts_by_provider",
               "url_oficial": "https://www.colombiacompra.gov.co/secop",
-              "consultado_en": "2026-08-15T17:20:00-05:00"
-            }
-          },
-          {
-            "origen": "n3",
-            "destino": "n2",
-            "tipo": "representante_legal_de",
-            "fuente": {
-              "herramienta_croma": "rues_entity_by_nit",
-              "url_oficial": "https://www.rues.org.co/",
-              "consultado_en": "2026-08-15T17:20:00-05:00"
-            }
-          },
-          {
-            "origen": "n3",
-            "destino": "n4",
-            "tipo": "representante_legal_de",
-            "fuente": {
-              "herramienta_croma": "rues_entity_by_nit",
-              "url_oficial": "https://www.rues.org.co/",
-              "consultado_en": "2026-08-15T17:20:00-05:00"
+              "consultado_en": "2026-08-16T05:23:41.001100Z"
             }
           }
         ]
       },
-      "narracion": "Esta alcaldía le dio, sin concurso, un contrato de $4.200 millones para retirar escombros. La empresa que lo ganó se creó hace mes y medio. Su representante también está al frente de otra empresa que le contrata a la misma alcaldía. Y el documento que explica por qué era urgente no menciona ningún daño concreto del terremoto. Nada de esto prueba una irregularidad: son motivos para preguntar.",
+      "narracion": null,
       "disclaimer": "Una señal no es prueba de irregularidad. Es un motivo para preguntar.",
-      "generado_en": "2026-08-15T17:20:00-05:00"
+      "generado_en": "2026-08-16T05:23:41.581088Z"
+    },
+    {
+      "id": "caso-20ed08ad5a07",
+      "modo": "vigilancia",
+      "entidad": "Entidad no identificada",
+      "proveedor": "ODINSA S.A.",
+      "municipio": null,
+      "departamento": null,
+      "valor": null,
+      "objeto": null,
+      "fecha": null,
+      "nivel_atencion": "bajo",
+      "senales": [],
+      "lectura": null,
+      "grafo": {
+        "nodos": [
+          {
+            "id": "ent-sin-nit",
+            "tipo": "entidad",
+            "nombre": "Entidad no identificada",
+            "nit": null,
+            "rol": "contratante"
+          },
+          {
+            "id": "prov-800169499",
+            "tipo": "empresa",
+            "nombre": "ODINSA S.A.",
+            "nit": "800169499",
+            "rol": "proveedor"
+          },
+          {
+            "id": "herm-43259984",
+            "tipo": "empresa",
+            "nombre": "JULIANA  MATALLANA CORREA",
+            "nit": "43259984",
+            "rol": "empresa relacionada"
+          },
+          {
+            "id": "herm-71787995",
+            "tipo": "empresa",
+            "nombre": "JEAN PIERRE SERANI TORO",
+            "nit": "71787995",
+            "rol": "empresa relacionada"
+          }
+        ],
+        "aristas": [
+          {
+            "origen": "ent-sin-nit",
+            "destino": "prov-800169499",
+            "tipo": "contrato_a",
+            "fuente": {
+              "herramienta_croma": "secop_contracts_by_provider",
+              "url_oficial": "https://www.colombiacompra.gov.co/secop",
+              "consultado_en": "2026-08-16T05:23:41.588163Z"
+            }
+          },
+          {
+            "origen": "prov-800169499",
+            "destino": "herm-43259984",
+            "tipo": "representante_legal_compartido",
+            "fuente": {
+              "herramienta_croma": "rues_entity_by_nit",
+              "url_oficial": "https://www.rues.org.co/",
+              "consultado_en": "2026-08-16T05:23:41.588163Z"
+            }
+          },
+          {
+            "origen": "prov-800169499",
+            "destino": "herm-71787995",
+            "tipo": "representante_legal_compartido",
+            "fuente": {
+              "herramienta_croma": "rues_entity_by_nit",
+              "url_oficial": "https://www.rues.org.co/",
+              "consultado_en": "2026-08-16T05:23:41.588163Z"
+            }
+          }
+        ]
+      },
+      "narracion": null,
+      "disclaimer": "Una señal no es prueba de irregularidad. Es un motivo para preguntar.",
+      "generado_en": "2026-08-16T05:25:46.137807Z"
+    },
+    {
+      "id": "caso-457c0dc5111b",
+      "modo": "vigilancia",
+      "entidad": "Entidad no identificada",
+      "proveedor": "CONALVIAS CONSTRUCCIONES S.A.S. EN LIQUIDACION JUDICIAL",
+      "municipio": null,
+      "departamento": null,
+      "valor": null,
+      "objeto": null,
+      "fecha": null,
+      "nivel_atencion": "bajo",
+      "senales": [],
+      "lectura": null,
+      "grafo": {
+        "nodos": [
+          {
+            "id": "ent-sin-nit",
+            "tipo": "entidad",
+            "nombre": "Entidad no identificada",
+            "nit": null,
+            "rol": "contratante"
+          },
+          {
+            "id": "prov-890318278",
+            "tipo": "empresa",
+            "nombre": "CONALVIAS CONSTRUCCIONES S.A.S. EN LIQUIDACION JUDICIAL",
+            "nit": "890318278",
+            "rol": "proveedor"
+          },
+          {
+            "id": "herm-19246069",
+            "tipo": "empresa",
+            "nombre": "LUIS FERNANDO ALVARADO ORTIZ",
+            "nit": "19246069",
+            "rol": "empresa relacionada"
+          }
+        ],
+        "aristas": [
+          {
+            "origen": "ent-sin-nit",
+            "destino": "prov-890318278",
+            "tipo": "contrato_a",
+            "fuente": {
+              "herramienta_croma": "secop_contracts_by_provider",
+              "url_oficial": "https://www.colombiacompra.gov.co/secop",
+              "consultado_en": "2026-08-16T05:25:46.148852Z"
+            }
+          },
+          {
+            "origen": "prov-890318278",
+            "destino": "herm-19246069",
+            "tipo": "representante_legal_compartido",
+            "fuente": {
+              "herramienta_croma": "rues_entity_by_nit",
+              "url_oficial": "https://www.rues.org.co/",
+              "consultado_en": "2026-08-16T05:25:46.148852Z"
+            }
+          }
+        ]
+      },
+      "narracion": null,
+      "disclaimer": "Una señal no es prueba de irregularidad. Es un motivo para preguntar.",
+      "generado_en": "2026-08-16T05:27:42.451762Z"
     }
   ]
 }

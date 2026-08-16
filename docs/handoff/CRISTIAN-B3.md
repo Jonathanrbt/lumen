@@ -110,6 +110,57 @@ las fechas que salgan a Croma (`from_date`, `to_date`) y todo lo que se guarde e
 
 ## Bitácora
 
+### 00:50 — Supabase vivo, barrido real y la suite vuelve a correr en segundos
+
+Change `cerrar-flujo-emergencia-b3`. Las cuatro preguntas del ritual:
+
+**1. Qué cambié**
+
+- **Supabase aplicado.** Migración `20260815205000_esquema_minimo` corrida contra el proyecto
+  `hsjosillhpejxwlsucpl`. Las tres tablas existen (`casos`, `suscripciones_whatsapp`,
+  `cache_croma`) con **RLS activo y sin políticas**, que es lo que impide que la llave `anon`
+  pública lea los teléfonos de las veedoras.
+- **El barrido del monitor ahora es real.** Recorre los 4 NITs que Jonatin verificó
+  (`senales/entidades_emergencia`) con `secop_processes_by_entity`. Comprobado en vivo:
+  213 / 95 / 83 / 36 procesos, exactamente los números de su commit.
+- **Arreglado un bug mío que devolvía `[]` pareciendo sano:** el monitor buscaba
+  `id`/`contrato_id`/`numero_contrato`, campos que Croma no devuelve nunca, así que descartaba
+  todos los procesos en silencio. La llave real es `notice_uid`.
+- **Se analiza por entidad, no por proceso.** Los procesos son pre-adjudicación y su `notice_uid`
+  (`CO1.NTC.*`) **no** es el `contract_id` (`CO1.PCCNTR.*`) que espera `/analizar`: pasarlo
+  devuelve `found:false` y un caso vacío. Además son 4 análisis en vez de 427, que es lo único que
+  cabe en la cuota compartida. Tope configurable en `LUMEN_MONITOR_MAX_CASOS`.
+- **La suite pasó de 123s a 0.23s.** El marcador `croma` estaba declarado en `pytest.ini` pero
+  **no aplicado a ninguna prueba**: `test_senales_croma` solo tenía `skipif`, que no salta nada
+  cuando la llave sí está. Le añadí `pytest.mark.croma` y `pytest.ini` los deselecciona por
+  defecto. `pytest -m croma` sigue corriendo la integración real.
+- `cache_croma` y `contrato_ya_conocido` ya no revientan sin Supabase: degradan avisando una vez.
+
+**2. Qué quedó a medias y dónde exactamente**
+
+- **Falta `SUPABASE_SERVICE_ROLE_KEY` en `.env`.** El MCP de Supabase no expone esa llave (solo las
+  publicables), así que el backend Python todavía no puede escribir en la base. Sin eso,
+  `/caso/{id}` y `/monitor/nuevos` siguen respondiendo `503`, y el barrido no puede guardar.
+  Está en Settings → API del proyecto.
+- **Render sigue sin existir.** No hay ningún servicio en la cuenta. Se decidió crearlo por
+  Blueprint desde el dashboard, para que `render.yaml` siga siendo la única fuente de verdad.
+- `pytest.ini` es archivo compartido: **hay que avisarlo en el chat** (lo pide `docs/PLAN.md`).
+
+**3. Qué no hay que tocar**
+
+- No toqué `api/lumen/senales/` ni `api/lumen/whatsapp/`: se consumen, no se editan. La única
+  excepción es `api/tests/test_senales_croma.py`, donde añadí el marcador `croma` sin cambiar la
+  lógica del `skipif` — está comentado en el archivo.
+- El razonamiento de cada decisión está en `openspec/changes/cerrar-flujo-emergencia-b3/design.md`.
+
+**4. Cómo se prueba en 30 segundos**
+
+```bash
+source .venv/bin/activate
+python -m pytest -q        # 39 passed, 3 deselected, <1s
+python -m pytest -m croma  # integración real contra Croma (lenta, gasta cuota)
+```
+
 ### 21:50 — Implementados los tres endpoints, Supabase, cache y keep-alive
 
 Change de OpenSpec `plataforma-b3-flujo-completo` (`openspec/changes/plataforma-b3-flujo-completo/`)

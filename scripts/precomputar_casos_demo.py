@@ -32,36 +32,56 @@ from lumen.routers.analisis import analizar  # noqa: E402
 
 DESTINO = RAIZ / "fixtures" / "casos_demo.json"
 
-# TODO(Jonatin/B1): completar nit o entidad_id de cada caso validado a mano
-# (brief SS4.5.4, catalogo curado de 6 casos). Mientras el valor sea None, el
-# script salta ese caso y avisa por consola en vez de inventar un identificador.
-CATALOGO_CURADO: dict[str, str | None] = {
+# Sujetos que Jonatin (B1) verifico EN VIVO contra Croma, con lo que salio de
+# cada uno (tabla en docs/handoff/JONATIN-B1.md). No se inventa ninguno: los
+# que el marco como no resueltos van en None y el script los salta avisando.
+#
+# `clave`: que campo de AnalizarRequest usar. Un NIT de entidad publica va como
+# `entidad_id` (el motor le busca procesos); un proveedor va como `nit`.
+CATALOGO_CURADO: dict[str, dict[str, str] | None] = {
+    # Verificados con datos reales:
+    "Proveedor con contratos SECOP": {"nit": "79372917"},
+    "Entidades de Bogotá": {"entidad_id": "899999061"},
+    # Verificados en RUES pero con 0 contratos en SECOP: el caso sale delgado
+    # (sin señales de contratacion), aun asi es real y sirve de contraste.
+    "Ruta del Sol / Odinsa": {"nit": "800169499"},
+    "Conalvías (en liquidación)": {"nit": "890318278"},
+    # Sin resolver. Jonatin: "Metro de Bogota no aparece como Empresa Metro en
+    # RUES. No inventar." y el NIT que se creia de la UNGRD (900144920) da 0
+    # procesos, asi que no se usa.
     "Metro de Bogotá": None,
-    "Ruta del Sol": None,
-    "Centros Poblados / MinTIC": None,
     "UNGRD 2024": None,
-    "Mocoa 2017": None,
-    "Providencia post-Iota 2020": None,
 }
 
 
 async def main() -> None:
     casos = []
 
-    for nombre, nit in CATALOGO_CURADO.items():
-        if not nit:
-            print(f"[omitido] {nombre}: falta nit/entidad_id en CATALOGO_CURADO")
+    for nombre, llaves in CATALOGO_CURADO.items():
+        if not llaves:
+            print(f"[omitido] {nombre}: sin identificador verificado (ver CATALOGO_CURADO)")
             continue
 
         try:
-            caso = await analizar(AnalizarRequest(nit=nit))
+            caso = await analizar(AnalizarRequest(**llaves))
         except HTTPException as err:
             print(f"[omitido] {nombre}: /analizar respondió {err.status_code} — {err.detail}")
             continue
 
-        guardar_caso(caso)
+        # Guardar en Supabase es deseable, no imprescindible: el dump es un
+        # archivo versionado y su razon de ser es sobrevivir a que la red o la
+        # base fallen. Si no hay base, se genera igual y se avisa.
+        try:
+            guardar_caso(caso)
+            persistido = "guardado en Supabase"
+        except Exception as err:  # noqa: BLE001 - el dump es el entregable, no la fila
+            persistido = f"NO guardado ({type(err).__name__})"
+
         casos.append(json.loads(caso.model_dump_json()))
-        print(f"[ok] {nombre} -> {caso.id}")
+        print(
+            f"[ok] {nombre} -> {caso.id} "
+            f"({len(caso.senales)} señales, nivel {caso.nivel_atencion.value}, {persistido})"
+        )
 
     if not casos:
         print(
