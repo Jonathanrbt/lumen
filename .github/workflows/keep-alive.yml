@@ -1,0 +1,29 @@
+name: keep-alive
+
+# Dueno: Cristian (B3). Render free tier apaga el servicio tras 15 minutos sin
+# trafico (cold start de 30-50s en la siguiente peticion). Este workflow hace
+# ping a /health cada 10 minutos para que eso nunca ocurra durante el
+# hackathon — ver design.md de la change plataforma-b3-flujo-completo,
+# Decision 2 (se prefiere esto sobre un cron nativo de Render porque no
+# depende de que el plan gratuito soporte un segundo tipo de servicio, y sobre
+# un pinger externo porque queda versionado en el repo del equipo).
+#
+# Para apuntar a la URL real si difiere del nombre de servicio de render.yaml
+# ("lumen-api"): Settings -> Secrets and variables -> Actions -> Variables ->
+# nueva variable LUMEN_RENDER_HEALTH_URL con la URL completa, incluido /health.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /health en Render
+        env:
+          HEALTH_URL: ${{ vars.LUMEN_RENDER_HEALTH_URL || 'https://lumen-api.onrender.com/health' }}
+        run: |
+          echo "Pinging $HEALTH_URL"
+          curl --fail --silent --show-error --max-time 20 "$HEALTH_URL"

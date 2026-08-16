@@ -49,6 +49,11 @@ class Settings(BaseSettings):
     lumen_log_level: str = "info"
     lumen_cors_origins: str = "*"
 
+    # Dominio del frontend de Andrew, una vez lo declare. Solo se usa para
+    # construir el enlace a la ficha dentro del mensaje de WhatsApp; no
+    # reemplaza a LUMEN_CORS_ORIGINS, que es quien controla seguridad.
+    lumen_frontend_url: str = ""
+
     # Respaldo de grabacion: la API responde desde el dump JSON versionado en vez
     # de tocar Supabase o Croma. Existe para que un corte de red a las 07:00 no
     # cueste el hackathon. No es la arquitectura.

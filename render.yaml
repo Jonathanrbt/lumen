@@ -61,3 +61,27 @@ services:
       # minutos justo en la integracion.
       - key: LUMEN_CORS_ORIGINS
         sync: false
+
+      # El enlace que va dentro del mensaje de WhatsApp (no controla CORS).
+      # Mismo dominio que LUMEN_CORS_ORIGINS de arriba, sin coma si es solo uno.
+      - key: LUMEN_FRONTEND_URL
+        sync: false
+
+# --- Keep-alive: el porque de que Render nunca tenga que despertar en frio ---
+#
+# El plan gratuito apaga el servicio tras 15 minutos sin trafico. La via
+# principal es el workflow .github/workflows/keep-alive.yml (cada 10 min, no
+# depende de si este plan admite un segundo tipo de servicio). Si en el bloque
+# de despliegue se confirma que el plan gratuito soporta un "Cron Job" sin
+# friccion de facturacion, esta es la alternativa nativa, en el mismo archivo
+# que ya es de Cristian — descomentar y ajustar la URL real del servicio:
+#
+# - type: cron
+#   name: lumen-api-keep-alive
+#   runtime: python
+#   plan: free
+#   region: oregon
+#   branch: main
+#   schedule: "*/10 * * * *"
+#   buildCommand: "true"
+#   startCommand: curl --fail --silent --show-error --max-time 20 https://lumen-api.onrender.com/health

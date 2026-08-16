@@ -31,3 +31,6 @@ pytest==9.1.1
 # Nota para Freddy (B2): el SDK de Cursor va aqui cuando confirmes el nombre
 # exacto del paquete y su version. El brief lo llama `cursor-sdk`. No lo fijamos
 # a ciegas: instalalo, comprueba que importa, y anade la linea con su version.
+
+# Twilio: envio de alertas por WhatsApp sandbox. Dueno: Cristian (B3).
+twilio==9.11.0

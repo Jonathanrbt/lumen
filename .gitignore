@@ -47,6 +47,12 @@ supabase/.branches/
 supabase/.temp/
 
 # ---------------------------------------------------------------------------
+# OpenSpec. Artefactos de planificacion (proposal/specs/design/tasks) para uso
+# local del agente: no son parte del entregable del hackathon y no se pushean.
+# ---------------------------------------------------------------------------
+openspec/
+
+# ---------------------------------------------------------------------------
 # Sistema y editor
 # ---------------------------------------------------------------------------
 .DS_Store

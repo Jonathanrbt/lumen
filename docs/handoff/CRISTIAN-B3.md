@@ -77,9 +77,7 @@ En el mensaje se dice **"la carta para preguntarle a la alcaldía"**, nunca "der
 
 **Deja un hello world desplegado en Render antes de las 19:00.** El brief lo dejaba para las 03:30 y
 eso es un error: un despliegue que se estrena de madrugada es un despliegue que falla de madrugada.
-Con `render.yaml` en la raíz y el repo conectado debería costar quince minutos. El agente de Jonatin
-tiene Render conectado por MCP y puede crear el servicio, poner las variables de entorno y disparar
-el deploy sin salir del editor — pídeselo si te sirve.
+Con `render.yaml` en la raíz y el repo conectado debería costar quince minutos.
 
 Está listo cuando la URL de Render responde `/health` **desde el celular de alguien, con datos
 móviles.** No desde tu navegador con la caché caliente.
@@ -111,6 +109,72 @@ las fechas que salgan a Croma (`from_date`, `to_date`) y todo lo que se guarde e
 ---
 
 ## Bitácora
+
+### 21:50 — Implementados los tres endpoints, Supabase, cache y keep-alive
+
+Change de OpenSpec `plataforma-b3-flujo-completo` (`openspec/changes/plataforma-b3-flujo-completo/`)
+aplicado. Resumen de las cuatro preguntas del ritual:
+
+**1. Qué cambié**
+
+- Los tres endpoints de `api/lumen/routers/plataforma.py` dejaron de ser `501`:
+  `GET /caso/{caso_id}`, `GET /monitor/nuevos`, `POST /alerta` ya tienen lógica real.
+- Paquete nuevo `api/lumen/plataforma/`: `supabase_client.py`, `casos.py`, `cache_croma.py`,
+  `monitor.py`, `whatsapp.py` (Twilio), `suscripciones.py`, `dump_local.py`, `tiempo.py`.
+- Primera migración de Supabase: `supabase/migrations/20260815205000_esquema_minimo.sql` — tres
+  tablas (`casos`, `suscripciones_whatsapp`, `cache_croma`), no cinco: `senales`/`lecturas` viven
+  dentro del `jsonb` de `casos` (ver Decisión 3 del `design.md` del change).
+- `.github/workflows/keep-alive.yml`: ping a `/health` cada 10 minutos para que Render free tier
+  nunca duerma. **No corre hasta que esto se pushee a `main`** — GitHub Actions no lee workflows
+  locales.
+- `render.yaml`: bloque comentado con la alternativa nativa (`type: cron`), más `LUMEN_FRONTEND_URL`
+  como variable nueva (para el enlace del WhatsApp, no para CORS).
+- `config.py` y `.env.example`: campo nuevo `LUMEN_FRONTEND_URL` (opcional, vacío por defecto).
+- `api/requirements.txt`: añadido `twilio==9.11.0` al final del archivo.
+- `fixtures/casos_demo.json`: existe, pero es un **placeholder** (copia de `fixtures/caso.json`),
+  no los 6 casos reales.
+- `scripts/precomputar_casos_demo.py`: script para generar el dump real, con un diccionario
+  `CATALOGO_CURADO` a la espera de que alguien (yo, con Jonatin) ponga los NIT de los 6 casos.
+- `api/tests/test_plataforma.py`: 6 pruebas nuevas. Suite completa: **20/20 pasan**.
+
+**2. Qué quedó a medias y dónde exactamente**
+
+- **Nada de esto se probó contra servicios reales** — este entorno no tenía `.env`, ni cuenta de
+  Twilio, ni proyecto de Supabase, ni acceso físico a un teléfono. Todo lo anterior corre sin red
+  usando `LUMEN_USAR_DUMP_LOCAL=true` y pruebas automatizadas.
+- El proyecto de Supabase **no existe todavía**: hay que crearlo y aplicar la migración con la
+  CLI (`supabase link` + `supabase db push` o equivalente).
+- Twilio **no está probado con un mensaje real**. El timebox del `PLAN.md` (corte 21:45) ya pasó
+  la hora del reloj mientras yo trabajaba — corre esto ya, con prioridad, en cuanto tengas `.env`.
+- `monitor.py` tiene dos `TODO(Jonatin/B1)`: el nombre exacto de la herramienta de Croma para un
+  barrido amplio por departamento (no está en `HERRAMIENTAS.md`, que solo documenta herramientas
+  puntuales por entidad/proveedor) y la lista `DEPARTAMENTOS_AFECTADOS` (vacía a propósito, para
+  no inventar departamentos sin fuente). Sin esos dos datos, `/monitor/nuevos` no va a encontrar
+  nada real, aunque no se cae.
+- `/monitor/nuevos` también depende de que Jonatin implemente `/analizar` (sigue en `501`): mientras
+  tanto, cada contrato que el monitor encuentre se salta con una advertencia en el log, no con un
+  error. Es el comportamiento esperado, no un bug.
+- `scripts/precomputar_casos_demo.py` no se pudo correr: falta el mapeo NIT/entidad_id de los 6
+  casos del catálogo curado (brief §4.5.4), que es la validación a mano de Jonatin.
+
+**3. Qué no hay que tocar**
+
+- Todo lo de arriba sigue siendo mío (`api/lumen/plataforma/`, `routers/plataforma.py`,
+  `supabase/migrations/`). Si algo de esto necesita cambiar, pídelo por el chat como siempre.
+- No toqué `api/lumen/senales/`, `api/lumen/ia/`, `api/lumen/croma/client.py`, ni
+  `routers/analisis.py` o `routers/ia.py` — siguen intactos, tal como los dejaron Jonatin y Freddy.
+- `openspec/changes/plataforma-b3-flujo-completo/` documenta el porqué de cada decisión (por
+  ejemplo, por qué 3 tablas y no 5, por qué GitHub Actions y no un cron nativo de Render).
+
+**4. Cómo se prueba en 30 segundos**
+
+```bash
+source .venv/bin/activate   # o crea uno: python3 -m venv .venv
+python -m pytest -q         # 20 passed
+```
+
+Sin `.env` y sin red. Para ver el flujo de casos "a mano": `LUMEN_USAR_DUMP_LOCAL=true uvicorn
+lumen.main:app --reload --app-dir api` y luego `GET /caso/caso-ejemplo-0001`.
 
 ### 17:30 — Punto de partida
 
