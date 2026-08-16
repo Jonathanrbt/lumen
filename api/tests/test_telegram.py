@@ -69,3 +69,27 @@ def test_telegram_rechaza_nunca_dice_enviado(monkeypatch: pytest.MonkeyPatch) ->
 
     assert estado == "error"
     assert "chat not found" in detalle
+
+
+def test_parse_mode_es_opcional_y_por_defecto_no_se_manda(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Sin parse_mode explícito, el comportamiento no cambia -- /alerta y el
+    monitor no se enteran de este parámetro nuevo."""
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:falso")
+    import json
+
+    capturado = {}
+
+    def _handler(request: httpx.Request) -> httpx.Response:
+        capturado["json"] = json.loads(request.content)
+        return httpx.Response(200, json={"ok": True, "result": {"message_id": 1}})
+
+    _ClienteReal = httpx.AsyncClient
+    monkeypatch.setattr(
+        httpx, "AsyncClient", lambda **kw: _ClienteReal(transport=httpx.MockTransport(_handler), **kw)
+    )
+
+    _run(telegram_cliente.enviar("123456", "hola"))
+    assert "parse_mode" not in capturado["json"]
+
+    _run(telegram_cliente.enviar("123456", "<b>hola</b>", parse_mode="HTML"))
+    assert capturado["json"]["parse_mode"] == "HTML"

@@ -23,15 +23,27 @@ def _configurado(ajustes: Settings) -> bool:
     return bool(ajustes.telegram_bot_token)
 
 
-async def enviar(destinatario: str, mensaje: str) -> tuple[str, str | None]:
+async def enviar(
+    destinatario: str, mensaje: str, *, parse_mode: str | None = None
+) -> tuple[str, str | None]:
+    """`parse_mode` es opcional y por defecto `None` (texto plano, el
+    comportamiento de siempre — no cambia nada de `/alerta` ni del monitor).
+    Pasar `"HTML"` permite `<b>`, `<i>`, `<code>` etc. en `mensaje`; quien lo
+    use es responsable de escapar `&`, `<`, `>` en el texto dinámico
+    (`html.escape`) para no romper el parseo de Telegram.
+    """
     ajustes = get_settings()
     if not _configurado(ajustes):
         return "error", "Telegram no está configurado (falta TELEGRAM_BOT_TOKEN en el entorno)."
 
+    cuerpo_peticion = {"chat_id": destinatario, "text": mensaje}
+    if parse_mode:
+        cuerpo_peticion["parse_mode"] = parse_mode
+
     url = f"{BASE_URL}/bot{ajustes.telegram_bot_token}/sendMessage"
     try:
         async with httpx.AsyncClient(timeout=15.0) as cliente:
-            resp = await cliente.post(url, json={"chat_id": destinatario, "text": mensaje})
+            resp = await cliente.post(url, json=cuerpo_peticion)
             cuerpo = resp.json()
     except httpx.HTTPError as err:
         log.error("Telegram no respondió al enviar a %s: %s", destinatario, err)
