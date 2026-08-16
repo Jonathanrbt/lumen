@@ -12,6 +12,55 @@ propio archivo, para que cuatro personas no editen el mismo sitio a la vez:
 
 ## Última actualización
 
+**Sábado 15.ago.2026, 19:20 · por el agente de Jonatin**
+
+### Se aplicó el parche v3.1 a todo el repo
+
+El parche v3.1 y el brief v3 quedaron unificados en
+[`docs/brief-final-claude.md`](docs/brief-final-claude.md). Tres reemplazos sobre el v3 a partir del
+feedback de una mentora en gestión de riesgo de desastres que además es veedora. **No cambia el
+alcance. Cambia para quién es el producto y cómo se cuenta.** Más las decisiones del equipo (roles
+con nombre, Twilio, hito 23:00).
+
+Lo que se propagó:
+
+- **Usuario primario: el veedor**, no "el ciudadano que no sabe qué es SECOP". Ese usuario no existe
+  como usuario activo. El veedor sabe qué quiere revisar; lo que no tiene son las ocho horas que
+  cuesta cruzar SECOP con el RUES contrato por contrato. Y suele ser una persona mayor, lo cual
+  cambia el diseño de la interfaz de verdad, no solo el copy.
+- **`docs/COPY-SENALES.md`, nuevo y fuente única.** Las nueve frases de señal en lenguaje ciudadano,
+  las reglas de copy y la tabla de "no digas / di". Lo comparten B1 (las produce), B2 (narra en ese
+  registro), Andrew (las pinta) y Cristian (las manda por WhatsApp). Se escriben una sola vez.
+- **El disclaimer cambió de texto** a *"Una señal no es prueba de irregularidad. Es un motivo para
+  preguntar."* Está en la constante `DISCLAIMER` de `contracts/modelos.py`, así que quien la use no
+  tiene que hacer nada.
+- **Los fixtures ya traen el copy nuevo**, incluidas las preguntas del lector, que ahora se formulan
+  como se las harías a una persona. Lo que Andrew maquete contra ellos ya es el texto bueno.
+- **Storyboard del video reemplazado:** sin leyes, sin cifras en dólares, con protagonista. Las
+  leyes no se borran, se mudan al README, al cuerpo de la carta y a las respuestas al jurado.
+- **Los cuatro handoffs actualizados** con lo que le cambia a cada quien, y `docs/PLAN.md` tiene una
+  tabla nueva de validación cruzada: quién produce cada pieza del v3.1 y quién la consume.
+
+### Las dos decisiones que el parche abrió, ya cerradas (19:30)
+
+**1. Twilio sube a prioridad 1 de Cristian.** El parche convierte WhatsApp en la tesis del producto y
+el storyboard le da 11 de los 60 segundos, así que el hard-cut #3 dejó de ser un recorte barato.
+Cristian crea la cuenta esta noche y a las 20:45 Twilio es lo primero que toca, con **timebox de 60
+minutos y corte a las 21:45**. Si se corta, se lo dice a Jonatin de inmediato, porque hay que
+reescribir el bloque 0:15–0:26 del storyboard antes de grabar. Lo que no se hace nunca: mockear un
+WhatsApp falso.
+
+**2. El hito de las 23:00 tiene dueño: Jonatin.** Encaja porque a esa hora su bloque es validar los 6
+casos curados, y recorrer el flujo y elegir el caso del video son la misma tarea. Con tres reglas
+escritas en `docs/PLAN.md`: no toca el teclado del backend, dice en voz alta si el flujo existe, y si
+no existe aplica los hard-cuts sin abrir debate. **A las 23:20 vuelve al video pase lo que pase.**
+
+**3.** Se retiró la sección de agradecimientos del README, por decisión del equipo.
+
+---
+
+## Bloque anterior
+
 **Sábado 15.ago.2026, 17:30 · por el agente de Jonatin**
 
 ### Qué se hizo en este bloque

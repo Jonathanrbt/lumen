@@ -1,6 +1,6 @@
 {
   "_nota": "Ejemplo de salida de POST /chat con el analisis ya hecho. El campo 'caso' trae exactamente la misma estructura que caso.json, para que el frontend reuse las MISMAS tarjetas de senal de la ficha. El chat no es una pantalla nueva: es otro envoltorio sobre los mismos componentes. Aqui va recortado para que se lea; la estructura completa esta en caso.json. Y siempre, siempre, se ofrece el siguiente paso.",
-  "narracion": "El 61 % del valor que contrató esta alcaldía desde la emergencia se concentra en 2 empresas. En la principal encontré 2 señales: la empresa se registró 41 días antes de ganar, y su representante legal aparece también al frente de otra firma que contrata con la misma alcaldía. Cada una tiene abajo el dato que la disparó y el enlace a la fuente oficial. Nada de esto prueba una irregularidad: son motivos para preguntar.",
+  "narracion": "Dos empresas se llevaron el 61 % de toda la plata que contrató esta alcaldía desde el terremoto. En la principal encontré dos cosas: se creó hace mes y medio y ya ganó, y su representante también está al frente de otra empresa que le contrata a la misma alcaldía. Debajo de cada una está el dato y el enlace a la fuente oficial. Nada de esto prueba una irregularidad: son motivos para preguntar.",
   "caso": {
     "id": "caso-ejemplo-0001",
     "modo": "vigilancia",
@@ -17,7 +17,7 @@
         "codigo": "S1",
         "nombre": "Empresa recién creada que gana",
         "nivel": "alto",
-        "regla_legible": "La empresa se registró 41 días antes de que le adjudicaran este contrato.",
+        "regla_legible": "Esta empresa se creó hace mes y medio y ya ganó un contrato de $4.200 millones.",
         "datos_usados": {
           "fecha_registro": "2026-07-04",
           "fecha_adjudicacion": "2026-08-14",
@@ -33,7 +33,7 @@
     "lectura": null,
     "grafo": null,
     "narracion": null,
-    "disclaimer": "Herramienta de priorización ciudadana. Una señal no es prueba de irregularidad.",
+    "disclaimer": "Una señal no es prueba de irregularidad. Es un motivo para preguntar.",
     "generado_en": "2026-08-15T17:20:00-05:00"
   },
   "candidatos": null,
