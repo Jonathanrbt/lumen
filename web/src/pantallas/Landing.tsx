@@ -362,7 +362,7 @@ export function PantallaLanding() {
           Las tres salidas del motor, con el mundo girando al lado: el monitor
           mira aunque no haya nadie preguntando.
         */}
-        <section id="canales" className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
+        <section id="canales" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
           <div className="grid items-center gap-14 sm:grid-cols-[1fr_minmax(0,15rem)] sm:gap-20">
             <div>
               <Rubrica>{t.canalesEtiqueta}</Rubrica>
@@ -417,7 +417,7 @@ export function PantallaLanding() {
           </div>
         </section>
 
-        <section id="etica" className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
+        <section id="etica" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
           <Rubrica>{t.eticaEtiqueta}</Rubrica>
           <h2 className="mt-6 font-serif text-[clamp(1.75rem,3.2vw,2.6rem)] font-normal leading-[1.15]">
             {t.eticaTitulo}
@@ -436,7 +436,7 @@ export function PantallaLanding() {
         </section>
 
         {/* La cita y la última llamada van juntas: dos cierres seguidos eran uno de más. */}
-        <section className="mx-auto max-w-3xl px-6 py-24 text-center sm:py-32">
+        <section className="mx-auto max-w-3xl px-6 py-16 text-center sm:py-20">
           <Greca className="mx-auto w-[168px] text-[var(--color-bronce)] opacity-80" />
           <blockquote className="mt-11 font-serif text-[clamp(1.9rem,4vw,3rem)] italic leading-[1.25]">
             «{t.cita}»
