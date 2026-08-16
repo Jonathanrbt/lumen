@@ -78,6 +78,29 @@ export const TEXTOS = {
       'La ley exige que toda contratación por urgencia manifiesta se relacione de forma directa y verificable con los hechos de la emergencia. Esa justificación es un PDF en texto libre. El modelo lo lee y evalúa si describe daños concretos o lenguaje de plantilla — y cita el fragmento que sustenta cada punto. Si no puede citar, no afirma.',
     iaNota: 'El motor de señales es determinista. La IA narra y contextualiza, no inventa reglas.',
 
+    canalesEtiqueta: 'Por dónde sale',
+    canalesTitulo: 'El motor no se queda en esta página',
+    canalesBajada:
+      'Un hallazgo que nadie ve no sirve de nada. Lo que Lumen encuentra sale por tres puertas, y las tres corren sobre las mismas ocho señales.',
+    canalesPie: 'El monitor no espera a que alguien pregunte.',
+    canales: [
+      {
+        titulo: 'El monitor, solo',
+        texto:
+          'Revisa cada pocos minutos lo que entra por el régimen de emergencia y arma el caso sin que nadie se lo pida.',
+      },
+      {
+        titulo: 'Bot de Telegram',
+        texto:
+          'El aviso llega al veedor o al periodista del municipio con el derecho de petición redactado y la fuente enlazada.',
+      },
+      {
+        titulo: 'Servidor MCP',
+        texto:
+          'Nueve herramientas abiertas para que un agente externo —Claude, Cursor— consulte el mismo motor desde donde ya trabaja.',
+      },
+    ],
+
     eticaEtiqueta: 'Guardarraíles',
     eticaTitulo: 'Lo que esta herramienta no hace',
     etica: [
@@ -89,28 +112,17 @@ export const TEXTOS = {
 
     fuentesEtiqueta: 'Trazabilidad',
     fuentesTitulo: 'Todo sale de fuentes oficiales',
-    fuentesLista: [
-      'SECOP I y II',
-      'RUES',
-      'Supersociedades',
-      'SICAAC',
-      'Procuraduría',
-      'Contraloría',
-      'Contaduría General',
-    ],
     fuentesTexto:
       'Cada señal muestra el dato que la disparó, la regla que aplicó y el enlace a la fuente con su fecha de consulta. No republicamos bases: publicamos hallazgos enlazados.',
     fuentesVia: 'Datos a través de Croma',
 
     cita: 'No acusamos. Ayudamos a preguntar.',
 
-    cierreTitulo: '¿Quieres saber qué está contratando tu municipio?',
-    cierreTexto:
-      'Escribe el nombre de tu alcaldía y mira qué se está firmando esta semana, con la fuente oficial al lado de cada dato.',
     cierreCta: 'Empezar a vigilar',
 
     piePitch: 'Vigilancia ciudadana sobre la plata de la reconstrucción.',
     pieProducto: 'Producto',
+    pieCanales: 'Canales de salida',
     pieMetodo: 'El método',
     pieProyecto: 'El proyecto',
     pieSenales: 'Las ocho señales',
@@ -189,6 +201,29 @@ export const TEXTOS = {
       'The law requires every emergency award to bear a direct, verifiable relationship to the events behind the emergency. That justification is a free-text PDF. The model reads it and judges whether it describes concrete damage or boilerplate language — quoting the passage behind each point. If it cannot quote, it does not assert.',
     iaNota: 'The signal engine is deterministic. The AI narrates and contextualizes; it does not invent rules.',
 
+    canalesEtiqueta: 'Where it comes out',
+    canalesTitulo: 'The engine does not stay on this page',
+    canalesBajada:
+      'A finding nobody sees is worth nothing. What Lumen finds comes out through three doors, and all three run on the same eight signals.',
+    canalesPie: 'The monitor does not wait to be asked.',
+    canales: [
+      {
+        titulo: 'The monitor, on its own',
+        texto:
+          'Every few minutes it checks what enters under the emergency regime and builds the case before anyone asks.',
+      },
+      {
+        titulo: 'Telegram bot',
+        texto:
+          'The alert reaches the local watchdog or reporter with the freedom-of-information request drafted and the source linked.',
+      },
+      {
+        titulo: 'MCP server',
+        texto:
+          'Nine tools open so an external agent — Claude, Cursor — can query the same engine from wherever it already works.',
+      },
+    ],
+
     eticaEtiqueta: 'Guardrails',
     eticaTitulo: 'What this tool does not do',
     etica: [
@@ -200,28 +235,17 @@ export const TEXTOS = {
 
     fuentesEtiqueta: 'Traceability',
     fuentesTitulo: 'Everything comes from official sources',
-    fuentesLista: [
-      'SECOP I & II',
-      'RUES',
-      'Supersociedades',
-      'SICAAC',
-      'Inspector General',
-      'Comptroller',
-      'Accountant General',
-    ],
     fuentesTexto:
       'Every signal shows the figure that triggered it, the rule it applied and the link to the source with its consultation date. We do not republish databases: we publish findings that link back.',
     fuentesVia: 'Data through Croma',
 
     cita: 'We do not accuse. We help you ask.',
 
-    cierreTitulo: 'Want to know what your municipality is contracting?',
-    cierreTexto:
-      'Type the name of your town hall and see what is being signed this week, with the official source next to every figure.',
     cierreCta: 'Start watching',
 
     piePitch: 'Citizen oversight of reconstruction money.',
     pieProducto: 'Product',
+    pieCanales: 'Where it comes out',
     pieMetodo: 'The method',
     pieProyecto: 'The project',
     pieSenales: 'The eight signals',

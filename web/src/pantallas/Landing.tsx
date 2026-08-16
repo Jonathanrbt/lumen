@@ -12,14 +12,27 @@ import { useEffect } from 'react'
 import { Link } from 'react-router'
 import { DISCLAIMER_LANDING, useIdioma } from '../lib/copy'
 import { Boton, Rubrica } from '../componentes/Basicos'
+import { Carrusel } from '../componentes/Carrusel'
 import { Greca } from '../componentes/Greca'
 import { Marca } from '../componentes/Marca'
 import fondoHero from '../assets/hero-fondo.jpg'
 import buhoAscii from '../assets/buho-ascii.png'
 import demoVigilancia from '../assets/demo-vigilancia.png'
+import pixelAgente from '../assets/pixel-agente.png'
+import pixelAve from '../assets/pixel-ave.png'
+import pixelBici from '../assets/pixel-bici.png'
+import pixelCerdo from '../assets/pixel-cerdo.png'
+import victoria from '../assets/victoria.png'
+import mundo from '../assets/mundo.mp4'
 
 const CROMA = 'https://usecroma.com'
 const NUMERAL = ['I', 'II', 'III', 'IV']
+
+/** En el mismo orden que `canales`: el monitor, el aviso y el agente externo. */
+const PIXELES = [pixelBici, pixelAve, pixelAgente]
+
+/** Con movimiento reducido el mundo se queda quieto en su primer fotograma. */
+const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const MARMOL = (porcentaje: number) =>
   `color-mix(in oklch, var(--color-fondo) ${porcentaje}%, transparent)`
@@ -83,15 +96,24 @@ export function PantallaLanding() {
               </p>
 
               {/*
-                Un halo del color del mármol, no una caja: despega la serifa del
-                punteado del cuadro sin taparlo.
+                Un halo del color del mármol, no una caja: el resplandor difuso
+                despega la serifa del punteado del cuadro sin taparlo.
               */}
-              <h1
-                className="mt-7 max-w-[19ch] font-serif text-[clamp(2.2rem,4.8vw,3.9rem)] font-normal leading-[1.06] tracking-[-0.015em]"
-                style={{ textShadow: `0 2px 28px ${MARMOL(85)}, 0 1px 6px ${MARMOL(70)}` }}
-              >
-                {t.heroTitulo}
-              </h1>
+              <div className="relative mt-7 w-fit">
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -inset-x-10 -inset-y-8 blur-2xl"
+                  style={{
+                    background: `radial-gradient(58% 62% at 34% 50%, ${MARMOL(78)}, transparent 72%)`,
+                  }}
+                />
+                <h1
+                  className="relative max-w-[19ch] font-serif text-[clamp(2.3rem,5vw,4.1rem)] font-normal leading-[1.05] tracking-[-0.018em]"
+                  style={{ textShadow: `0 2px 30px ${MARMOL(92)}, 0 1px 5px ${MARMOL(78)}` }}
+                >
+                  {t.heroTitulo}
+                </h1>
+              </div>
             </div>
           </div>
 
@@ -128,6 +150,41 @@ export function PantallaLanding() {
             <p className="mt-10 flex items-center gap-4 border-t border-[var(--color-borde)] pt-5 text-xs text-[var(--color-texto-tenue)]">
               <span className="h-px w-7 shrink-0 bg-[var(--color-bronce)]" />
               {DISCLAIMER_LANDING[idioma]}
+            </p>
+          </div>
+        </section>
+
+        {/*
+          Zócalo del hero: con qué trabaja el motor, dicho en marcas antes de
+          contar el problema. Llena el hueco que dejaba el titular.
+        */}
+        <section
+          id="fuentes"
+          className="border-y border-[var(--color-borde)] bg-[var(--color-superficie)] py-14 sm:py-16"
+        >
+          <div className="mx-auto max-w-6xl px-6">
+            <Rubrica>{t.fuentesEtiqueta}</Rubrica>
+            <h2 className="mt-5 font-serif text-[clamp(1.4rem,2.4vw,1.9rem)] font-normal leading-snug">
+              {t.fuentesTitulo}
+            </h2>
+          </div>
+
+          <div className="mt-10 sm:mt-12">
+            <Carrusel />
+          </div>
+
+          <div className="mx-auto mt-10 max-w-6xl px-6 sm:mt-12">
+            <p className="max-w-2xl text-sm leading-relaxed text-[var(--color-texto-tenue)]">
+              {t.fuentesTexto}{' '}
+              <a
+                href={CROMA}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="text-[var(--color-lumen)] underline decoration-dotted underline-offset-4"
+              >
+                {t.fuentesVia}
+              </a>
+              .
             </p>
           </div>
         </section>
@@ -230,13 +287,33 @@ export function PantallaLanding() {
           className="border-y border-[var(--color-borde)] bg-[var(--color-superficie)]"
         >
           <div className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
-            <Rubrica>{t.senalesEtiqueta}</Rubrica>
-            <h2 className="mt-6 max-w-3xl font-serif text-[clamp(1.75rem,3.2vw,2.6rem)] font-normal leading-[1.15]">
-              {t.senalesTitulo}
-            </h2>
-            <p className="mt-6 max-w-2xl leading-relaxed text-[var(--color-texto-tenue)]">
-              {t.senalesBajada}
-            </p>
+            <div className="grid items-end gap-12 sm:grid-cols-[1fr_minmax(0,17rem)] sm:gap-16">
+              <div>
+                <Rubrica>{t.senalesEtiqueta}</Rubrica>
+                <h2 className="mt-6 max-w-3xl font-serif text-[clamp(1.75rem,3.2vw,2.6rem)] font-normal leading-[1.15]">
+                  {t.senalesTitulo}
+                </h2>
+                <p className="mt-6 max-w-2xl leading-relaxed text-[var(--color-texto-tenue)]">
+                  {t.senalesBajada}
+                </p>
+              </div>
+
+              {/* La Victoria sobre la nube de datos: por abajo se disuelve en la piedra. */}
+              <div className="relative justify-self-center sm:justify-self-end">
+                <img
+                  src={victoria}
+                  alt=""
+                  aria-hidden
+                  className="w-52 mix-blend-multiply sm:w-full"
+                />
+                <div
+                  className="absolute inset-x-0 bottom-0 h-1/2"
+                  style={{
+                    background: `linear-gradient(to bottom, transparent, ${MARMOL(70)} 45%, var(--color-superficie) 100%)`,
+                  }}
+                />
+              </div>
+            </div>
 
             <ul className="mt-14 grid gap-px border border-[var(--color-borde)] bg-[var(--color-borde)] sm:grid-cols-2">
               {t.senales.map((senal) => (
@@ -282,13 +359,83 @@ export function PantallaLanding() {
           </div>
         </section>
 
-        <section id="etica" className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
-          <Rubrica>{t.eticaEtiqueta}</Rubrica>
-          <h2 className="mt-6 font-serif text-[clamp(1.75rem,3.2vw,2.6rem)] font-normal leading-[1.15]">
-            {t.eticaTitulo}
-          </h2>
+        {/*
+          Las tres salidas del motor, con el mundo girando al lado: el monitor
+          mira aunque no haya nadie preguntando.
+        */}
+        <section id="canales" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+          <div className="grid items-center gap-14 sm:grid-cols-[1fr_minmax(0,15rem)] sm:gap-20">
+            <div>
+              <Rubrica>{t.canalesEtiqueta}</Rubrica>
+              <h2 className="mt-6 max-w-2xl font-serif text-[clamp(1.75rem,3.2vw,2.6rem)] font-normal leading-[1.15]">
+                {t.canalesTitulo}
+              </h2>
+              <p className="mt-6 max-w-2xl leading-relaxed text-[var(--color-texto-tenue)]">
+                {t.canalesBajada}
+              </p>
 
-          <ol className="mt-14 grid gap-px border border-[var(--color-borde)] bg-[var(--color-borde)] sm:grid-cols-2">
+              <ul className="mt-11 grid gap-px border border-[var(--color-borde)] bg-[var(--color-borde)]">
+                {t.canales.map((canal, i) => (
+                  <li
+                    key={canal.titulo}
+                    className="flex items-start gap-5 bg-[var(--color-fondo)] p-6 sm:gap-6 sm:p-7"
+                  >
+                    {/* Los píxeles vienen con fondo blanco: multiply los funde en el mármol. */}
+                    <img
+                      src={PIXELES[i]}
+                      alt=""
+                      aria-hidden
+                      className="h-12 w-12 shrink-0 object-contain mix-blend-multiply sm:h-14 sm:w-14"
+                    />
+                    <div>
+                      <h3 className="font-serif text-lg">{canal.titulo}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-[var(--color-texto-tenue)]">
+                        {canal.texto}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="justify-self-center">
+              <div className="h-52 w-52 overflow-hidden rounded-full sm:h-60 sm:w-60">
+                <video
+                  src={mundo}
+                  autoPlay={!quieto}
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  aria-hidden
+                  className="h-full w-full scale-[1.3] object-cover"
+                />
+              </div>
+              <p className="mx-auto mt-7 max-w-[15rem] text-center text-xs leading-relaxed text-[var(--color-texto-tenue)]">
+                {t.canalesPie}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="etica" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+          <div className="flex flex-col-reverse items-start gap-8 sm:flex-row sm:items-end sm:justify-between sm:gap-16">
+            <div>
+              <Rubrica>{t.eticaEtiqueta}</Rubrica>
+              <h2 className="mt-6 font-serif text-[clamp(1.75rem,3.2vw,2.6rem)] font-normal leading-[1.15]">
+                {t.eticaTitulo}
+              </h2>
+            </div>
+            {/* El que husmea, no el que acusa: es lo que dicen las cuatro líneas de abajo. */}
+            <img
+              src={pixelCerdo}
+              alt=""
+              aria-hidden
+              className="w-24 shrink-0 mix-blend-multiply sm:w-32"
+            />
+          </div>
+
+          <ol className="mt-12 grid gap-px border border-[var(--color-borde)] bg-[var(--color-borde)] sm:grid-cols-2">
             {t.etica.map((linea, i) => (
               <li key={linea} className="flex gap-6 bg-[var(--color-fondo)] p-8">
                 <span className="w-7 shrink-0 font-serif text-xl leading-none text-[var(--color-bronce)]">
@@ -300,56 +447,13 @@ export function PantallaLanding() {
           </ol>
         </section>
 
-        <section
-          id="fuentes"
-          className="border-y border-[var(--color-borde)] bg-[var(--color-superficie)]"
-        >
-          <div className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
-            <Rubrica>{t.fuentesEtiqueta}</Rubrica>
-            <h2 className="mt-6 font-serif text-[clamp(1.6rem,2.8vw,2.25rem)] font-normal leading-[1.15]">
-              {t.fuentesTitulo}
-            </h2>
-
-            <ul className="mt-10 flex flex-wrap items-center gap-x-9 gap-y-4 font-serif text-lg text-[var(--color-texto-tenue)]">
-              {t.fuentesLista.map((fuente) => (
-                <li key={fuente}>{fuente}</li>
-              ))}
-            </ul>
-
-            <p className="mt-10 max-w-2xl text-sm leading-relaxed text-[var(--color-texto-tenue)]">
-              {t.fuentesTexto}{' '}
-              <a
-                href={CROMA}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="text-[var(--color-lumen)] underline decoration-dotted underline-offset-4"
-              >
-                {t.fuentesVia}
-              </a>
-              .
-            </p>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-3xl px-6 py-24 text-center sm:py-32">
+        {/* La cita y la última llamada van juntas: dos cierres seguidos eran uno de más. */}
+        <section className="mx-auto max-w-3xl px-6 py-16 text-center sm:py-20">
           <Greca className="mx-auto w-[168px] text-[var(--color-bronce)] opacity-80" />
           <blockquote className="mt-11 font-serif text-[clamp(1.9rem,4vw,3rem)] italic leading-[1.25]">
             «{t.cita}»
           </blockquote>
-          <p className="mt-8 text-sm text-[var(--color-texto-tenue)]">
-            {DISCLAIMER_LANDING[idioma]}
-          </p>
-          <Greca className="mx-auto mt-11 w-[168px] rotate-180 text-[var(--color-bronce)] opacity-80" />
-        </section>
-
-        <section className="mx-auto max-w-3xl px-6 pb-28 text-center sm:pb-36">
-          <h2 className="font-serif text-[clamp(2rem,4.2vw,3.1rem)] font-normal leading-[1.12]">
-            {t.cierreTitulo}
-          </h2>
-          <p className="mx-auto mt-6 max-w-xl leading-relaxed text-[var(--color-texto-tenue)]">
-            {t.cierreTexto}
-          </p>
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
+          <div className="mt-11 flex flex-wrap justify-center gap-3">
             <Boton a="/app/vigilancia" tamano="lg">
               {t.cierreCta}
             </Boton>
@@ -358,6 +462,7 @@ export function PantallaLanding() {
             </Boton>
           </div>
           <p className="mt-6 text-xs text-[var(--color-texto-tenue)]">{t.heroNota}</p>
+          <Greca className="mx-auto mt-14 w-[168px] rotate-180 text-[var(--color-bronce)] opacity-80" />
         </section>
       </main>
 
@@ -374,6 +479,7 @@ export function PantallaLanding() {
             <ColumnaPie titulo={t.pieProducto}>
               <EnlacePie a="/app/emergencia">{t.modoEmergenciaTitulo}</EnlacePie>
               <EnlacePie a="/app/vigilancia">{t.modoVigilanciaTitulo}</EnlacePie>
+              <EnlacePie ancla="#canales">{t.pieCanales}</EnlacePie>
             </ColumnaPie>
 
             <ColumnaPie titulo={t.pieMetodo}>

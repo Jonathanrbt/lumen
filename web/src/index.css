@@ -73,6 +73,13 @@ section[id] {
   scroll-margin-top: 5rem;
 }
 
+/* El desfile de fuentes: media tira, porque la otra media es la misma. */
+@keyframes desfile {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 /* Barrido de luz sobre los esqueletos de carga. */
 @keyframes esqueleto-barrido {
   to {
