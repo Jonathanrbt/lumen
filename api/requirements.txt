@@ -42,3 +42,12 @@ cursor-sdk==1.0.28
 
 # Extraccion de texto de PDF para el lector de justificaciones. Dueno: Freddy (B2).
 pypdf==6.16.1
+
+# SDK oficial de MCP: el servidor de herramientas en /mcp. Dueno: Cristian (B3).
+# Es `mcp` a secas, NO `mcp[cli]`: el extra solo trae typer/rich/shellingham
+# para el comando `mcp dev` local, que aqui no se usa. En Render eso seria
+# peso de build a cambio de nada.
+#
+# Ojo con el nombre: en mcp 2.x la clase del servidor es `MCPServer`. El
+# `FastMCP` de la 1.x ya no esta en `mcp.server.fastmcp`.
+mcp==2.0.0

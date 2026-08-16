@@ -107,6 +107,50 @@ agotar. Todo lo que se consulte se cachea desde la primera hora. Ver la regla de
 
 ---
 
+## 2.bis El MCP que publicamos nosotros
+
+No confundir con los de la sección 3: esos los consumimos, este lo **servimos**.
+
+`lumen-api` expone un servidor MCP en `/mcp` (transporte streamable HTTP) para que un agente
+externo —Claude, Cursor— busque empresas y contratos con las mismas herramientas que usa la web.
+Código en [`api/lumen/mcp/`](api/lumen/mcp/), dueño: Cristian (B3).
+
+**Cómo conectarse:**
+
+| | |
+|---|---|
+| URL | `https://<servicio>.onrender.com/mcp` |
+| Cabecera | `Authorization: Bearer $LUMEN_MCP_TOKEN` |
+| Apagarlo | `LUMEN_MCP_HABILITADO=false` en el dashboard de Render (sin redesplegar) |
+
+Sin token → `401`. Sin `LUMEN_MCP_TOKEN` configurado en el servidor → `503`, **no queda abierto**.
+
+**Las nueve herramientas:**
+
+| Herramienta | Qué hace | Coste |
+|---|---|---|
+| `resolver_entidad` | Nombre libre → candidatos con NIT | Barata |
+| `analizar_entidad` | Las 8 señales sobre un NIT, entidad o contrato | **80-100 s**, mucha cuota |
+| `ver_red_de_actores` | Subgrafo de quién está detrás de quién | Cuota |
+| `obtener_caso` | Un caso ya calculado, por id | Sin cuota |
+| `leer_justificacion_urgencia` | Veredicto sobre el PDF de urgencia manifiesta | LLM |
+| `generar_artefacto` | Derecho de petición, evidencia, veeduría, guía | LLM |
+| `contratos_nuevos_del_monitor` | Lo que encontró el monitor | Muy cara |
+| `enviar_alerta` | **Manda un mensaje real a una persona** | Efecto externo |
+| `estado_del_sistema` | Qué piezas están encendidas | Gratis |
+
+`/chat` **no** se expone como herramienta: el agente conectado es el conversador. Envolverlo sería
+un LLM dentro de otro, narrando dos veces y pagando el modelo dos veces.
+
+> **Las reglas del asistente viven en dos sitios y se cambian juntas.**
+> [`api/lumen/ia/chat.py`](api/lumen/ia/chat.py) las obedece para la web;
+> [`api/lumen/mcp/instrucciones.py`](api/lumen/mcp/instrucciones.py) se las entrega a los agentes
+> externos. No se importan entre sí —son dos registros: uno describe lo que hace ese módulo, el
+> otro le da órdenes a otro agente— así que si tocas las seis reglas en uno, tócalas en el otro.
+> `api/tests/test_mcp.py` comprueba que estén las seis, pero no puede comprobar que digan lo mismo.
+
+---
+
 ## 3. MCP disponibles en la máquina de Jonatin
 
 Solo los que pueden servir. El resto está conectado pero es de otros proyectos.

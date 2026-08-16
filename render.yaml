@@ -46,6 +46,24 @@ services:
       - key: LUMEN_MODELO_FUERTE
         sync: false
 
+      # Servidor MCP (/mcp). Credencial propia: no se reutiliza CROMA_API_KEY
+      # ni la de Supabase, porque compartir un secreto entre dos propositos
+      # significa que rotar uno rompe el otro.
+      #
+      # Generar con:
+      #   python -c "import secrets; print(secrets.token_urlsafe(32))"
+      #
+      # Si falta, /mcp responde 503 y NO se queda abierto. Es a proposito: un
+      # /mcp publico es la cuota de Croma de los cuatro expuesta a internet.
+      - key: LUMEN_MCP_TOKEN
+        sync: false
+
+      # Interruptor del MCP, aparte del de Croma. Visible aqui para poder
+      # apagarlo desde el dashboard sin redesplegar: es el rollback de este
+      # cambio. En false, /mcp da 503 y los nueve endpoints siguen intactos.
+      - key: LUMEN_MCP_HABILITADO
+        value: "true"
+
       # Supabase.
       - key: SUPABASE_URL
         sync: false

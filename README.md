@@ -216,6 +216,32 @@ producto siguen en pie.
 El contrato completo de la API está en [`docs/CONTRATO-API.md`](docs/CONTRATO-API.md), con un JSON de
 ejemplo por endpoint en [`fixtures/`](fixtures/).
 
+### Conectar un agente por MCP
+
+El mismo servicio expone un servidor MCP en `/mcp`, para que Claude o Cursor busquen empresas y
+contratos con las mismas herramientas que usa la web — y con las mismas reglas: desambiguar antes de
+analizar, citar la fuente de cada afirmación, nunca acusar. El servidor le entrega ese manual al
+agente al conectarse, así que no hay que pegarle un prompt a mano.
+
+```json
+{
+  "mcpServers": {
+    "lumen": {
+      "type": "http",
+      "url": "https://<servicio>.onrender.com/mcp",
+      "headers": { "Authorization": "Bearer <LUMEN_MCP_TOKEN>" }
+    }
+  }
+}
+```
+
+Nueve herramientas, una por capacidad del motor. `/chat` no es una de ellas: el agente conectado es
+quien conversa. El inventario y el detalle están en [`HERRAMIENTAS.md`](HERRAMIENTAS.md) §2.bis.
+
+> **La primera conexión puede tardar.** El plan gratuito de Render duerme el servicio tras 15 minutos
+> sin tráfico y arrancar en frío toma varios segundos. Si el primer intento se demora o expira,
+> reintenta antes de sospechar de la credencial: no es un fallo de autenticación.
+
 ---
 
 ## Guardarraíles

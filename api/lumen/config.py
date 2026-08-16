@@ -73,6 +73,23 @@ class Settings(BaseSettings):
     evolution_instance: str = ""
     evolution_whatsapp_to_demo: str = ""
 
+    # --- Servidor MCP (api/lumen/mcp/, dueno: Cristian B3) ---
+    # Credencial propia del servidor MCP. NO se reutiliza CROMA_API_KEY ni
+    # SUPABASE_SERVICE_ROLE_KEY: compartir un secreto entre dos propositos
+    # significa que rotar uno rompe el otro.
+    #
+    # Vacio por defecto y eso NO significa "abierto": el guardia responde 503
+    # cuando no hay token configurado. Un servidor que deja pasar todo porque
+    # falto una variable en Render es justo el fallo que esto evita.
+    #
+    #   python -c "import secrets; print(secrets.token_urlsafe(32))"
+    lumen_mcp_token: str = ""
+
+    # Interruptor del MCP, independiente del de Croma. Apagarlo desde el
+    # dashboard de Render deja /mcp en 503 y el resto del servicio intacto:
+    # es el rollback sin redesplegar.
+    lumen_mcp_habilitado: bool = True
+
     # --- Aplicacion ---
     lumen_env: str = "local"
     lumen_log_level: str = "info"

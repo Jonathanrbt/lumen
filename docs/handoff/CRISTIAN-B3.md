@@ -18,6 +18,36 @@ del contrato; lo que cambia es que el envío real lo implementa el cliente de Fr
 
 ---
 
+## Servidor MCP en `/mcp` — el motor abierto a agentes externos
+
+Ver [`openspec/changes/mcp-servidor-vigilancia/`](../../openspec/changes/mcp-servidor-vigilancia/)
+para el porqué de cada decisión. Resumen de lo que te afecta:
+
+**Toqué `main.py`, y su docstring dice que eso debería ser raro.** Fue necesario: la sub-app del MCP
+trae su propio `lifespan` (el gestor de sesiones del protocolo) y Starlette **no** corre el lifespan
+de una sub-app montada. Sin encadenarlo, la primera petición a `/mcp` muere con "task group is not
+initialized". `main.py` ahora declara un `lifespan`, que antes no tenía.
+
+**Y no va con `app.mount()`.** El `Mount` de Starlette compila su ruta como `/mcp/{path:path}`, así
+que `/mcp` a secas no casaba y el router devolvía un 307 hacia `/mcp/` en cada petición — con
+clientes que no siguen redirecciones o que sueltan la cabecera `Authorization` al hacerlo. Van dos
+rutas exactas (`/mcp` y `/mcp/`) sobre el ASGI crudo del transporte. Si alguien lo "simplifica" a un
+mount, `test_mcp.py` lo caza.
+
+**Dos variables nuevas**, ya declaradas en `render.yaml` y `.env.example`:
+
+- `LUMEN_MCP_TOKEN` (`sync: false`) — credencial propia, no reutiliza ninguna otra. Si falta, `/mcp`
+  responde `503` y **no queda abierto**.
+- `LUMEN_MCP_HABILITADO` (visible, `"true"`) — el rollback de este cambio: en `false`, `/mcp` da
+  `503` y los nueve endpoints siguen intactos, sin redesplegar.
+
+**Cuota:** `analizar_entidad` y `contratos_nuevos_del_monitor` gastan Croma igual que por HTTP. El
+bearer token es lo único que separa la cuota compartida de internet. No lo pegues en el Discord.
+
+**Ojo si tocas las seis reglas del asistente:** viven en dos sitios —`api/lumen/ia/chat.py` para la
+web y `api/lumen/mcp/instrucciones.py` para los agentes— y se cambian juntas. No se importan entre
+sí a propósito; los tests comprueban que estén, no que digan lo mismo.
+
 ## 22:14 — WhatsApp/Twilio se reasigna a Freddy
 
 Después del timebox de las 20:45–21:45, WhatsApp pasa a ser propiedad de Freddy (B2), con libertad
