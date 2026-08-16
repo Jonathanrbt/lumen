@@ -54,3 +54,24 @@ create table if not exists cache_croma (
 );
 
 create index if not exists cache_croma_herramienta_idx on cache_croma (herramienta);
+
+-- ---------------------------------------------------------------------------
+-- Row Level Security: se activa SIN politicas, a proposito.
+--
+-- La llave `anon` de Supabase esta pensada para ser publica (vive en el
+-- frontend). Sin RLS, cualquiera con esa llave lee estas tablas enteras — y
+-- `suscripciones_whatsapp` guarda TELEFONOS de veedoras. Eso choca de frente
+-- con el guardarrail 4 del brief: "no exponer datos sensibles de personas".
+--
+-- Activar RLS y no declarar ninguna politica = nadie entra por `anon` ni por
+-- `authenticated`. El backend no se entera: usa SUPABASE_SERVICE_ROLE_KEY, y
+-- el rol `service_role` se salta RLS por diseño.
+--
+-- Si algun dia el frontend de Andrew quiere leer casos directo de Supabase sin
+-- pasar por la API, entonces SI hay que escribir una politica de solo lectura
+-- para `casos` — y solo para `casos`, nunca para suscripciones.
+-- ---------------------------------------------------------------------------
+
+alter table casos enable row level security;
+alter table suscripciones_whatsapp enable row level security;
+alter table cache_croma enable row level security;
