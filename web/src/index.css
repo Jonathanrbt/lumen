@@ -1,0 +1,77 @@
+@import 'tailwindcss';
+
+/*
+ * Tono sobrio: hay 288 muertos y esto pasó hace cinco días. Base oscura y
+ * sin estética de thriller. El acento es luz cálida, no alarma roja.
+ */
+@theme {
+  --color-fondo: oklch(0.17 0.015 260);
+  --color-superficie: oklch(0.22 0.018 260);
+  --color-superficie-alta: oklch(0.27 0.02 260);
+  --color-borde: oklch(0.34 0.02 260);
+  --color-texto: oklch(0.95 0.008 260);
+  --color-texto-tenue: oklch(0.72 0.015 260);
+
+  --color-lumen: oklch(0.82 0.15 85);
+
+  /* Los tres estados de nivel de atención. Nunca un porcentaje. */
+  --color-bajo: oklch(0.75 0.13 165);
+  --color-medio: oklch(0.8 0.14 75);
+  --color-alto: oklch(0.68 0.17 25);
+
+  --font-sans: 'Inter var', ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* El orbe pensante: gira, respira y late mientras el agente trabaja. */
+@keyframes orbe-giro {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orbe-respira {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+/* Barrido de luz sobre los esqueletos de carga. */
+@keyframes esqueleto-barrido {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.esqueleto {
+  background: linear-gradient(
+    100deg,
+    var(--color-superficie) 40%,
+    var(--color-superficie-alta) 50%,
+    var(--color-superficie) 60%
+  );
+  background-size: 200% 100%;
+  animation: esqueleto-barrido 1.6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .esqueleto,
+  [class*='orbe-'] {
+    animation: none !important;
+  }
+}

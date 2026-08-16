@@ -70,3 +70,25 @@ vínculos antes que cualquier otra cosa de la interfaz.
 ### 17:30 — Punto de partida
 
 `web/` vacía. Contrato y fixtures disponibles. Sin decisiones de stack tomadas por nadie más que yo.
+
+### 20:15 — Stack elegido y las cuatro pantallas en pie contra fixtures
+
+**Stack: Vite + React 19 + TypeScript + Tailwind v4, SPA sin SSR, a Cloudflare Pages.**
+TanStack Query para datos, React Router para rutas, Vitest para pruebas.
+
+**Sin SSR y sin Next.js, a propósito.** No hay auth, no hay datos privados y el jurado ve
+un video, no tráfico de Google. Next en Cloudflare exige `next-on-pages` y runtime edge:
+superficie de fallo que no se paga sola a las 02:00.
+
+**Confirmado que no hay gestión de usuarios en el contrato.** Los nueve endpoints son de
+dominio; Supabase es caché del backend. No se inventó login.
+
+Las cuatro pantallas navegables contra `fixtures/`: alerta de WhatsApp, ficha del caso,
+chat de vigilancia y artefacto. Más una landing bilingüe (ES/EN) como puerta de entrada.
+El chat reutiliza `FichaCaso` y `TarjetaSenal` de la pantalla 2, no duplica componentes.
+
+**Lo que necesito de Cristian (B3):** el dominio de Cloudflare Pages entra en
+`LUMEN_CORS_ORIGINS` en cuanto despliegue. Se avisa en el chat el mismo minuto que exista.
+
+**Lo que necesito de nadie:** `web/` corre sola. Sin `VITE_API_URL` va contra fixtures;
+con ella, contra Render, y cae al fixture solo si la red falla.
