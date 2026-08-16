@@ -3,32 +3,63 @@
 Inventario de accesos verificados. **No es un menú para inventar stack.** Si algo no está aquí, no
 lo tenemos; si está aquí y no lo usamos, es porque no hace falta.
 
-Última verificación: sábado 15.ago.2026, 17:20.
+Última verificación: sábado 15.ago.2026, 22:20.
 
 ---
 
 ## 1. Croma — fuente única de datos ✅ VERIFICADO EN VIVO
 
-Lo más importante que hay que saber, y que el brief no decía:
+**Lumen consulta Croma por la API HTTP**, no por MCP.
 
-> **Croma no es una API REST. Es un servidor MCP remoto** en `https://api.croma.run/mcp`, que habla
-> JSON-RPC sobre HTTP y responde en formato SSE (`text/event-stream`), con autenticación por
-> `Authorization: Bearer <token>`.
+`POST https://api.croma.run/co/…/v1` con JSON y `Authorization: Bearer $CROMA_API_KEY`.
+Respuesta en `{ "data": … }`. `found: false` es una respuesta definitiva, no un error.
+Overview: https://docs.usecroma.com/api-reference/overview
+Índice: https://docs.usecroma.com/llms.txt
 
-Y la buena noticia, comprobada con una llamada real:
+El cliente está en [`api/lumen/croma/client.py`](api/lumen/croma/client.py):
+`croma.consultar("rues_entities_by_name", {"name": "Conalvias"})`. La URL no va en
+`.env` ni en Render: está fija en el código.
 
-> **El servidor es stateless.** No hace falta handshake ni `Mcp-Session-Id`. Un solo `POST` con
-> `method: "tools/call"` devuelve el resultado. El cliente son unas 60 líneas de `httpx` más el
-> parseo del SSE. **No necesitamos el SDK de MCP.**
+El MCP de Cursor (`user-croma` en la máquina de Jonatin) **no lo usa el producto**.
+Si lo usás para humear, es la misma key y la misma cuota. No hace falta para el motor.
 
-Consecuencias que desbloquean el plan:
+### Obligatorio: leer la guía antes de armar una consulta
 
-- El backend en Render **sí** puede llamar a Croma. No estamos atados a que corra dentro de Cursor.
-- El cliente ya está escrito en [`api/lumen/croma/client.py`](api/lumen/croma/client.py) y probado
-  contra el servidor real.
+**No inventar parámetros.** Antes de un `consultar`:
 
-Prueba que se corrió: `rues_entities_by_name` con `name="Conalvias"` devolvió registros reales de
-Cámara de Comercio con `registry_id`, `registration_status`, `registration_date` y demás.
+1. Abrir la **guía de esa fuente** (tabla de abajo).
+2. Copiar el contrato: sujeto (`document_number`, `contract_id`, `notice_uid`, `name`),
+   opcionales (`from_date`, `to_date`, `page`), listas capadas.
+3. Llamar `CromaClient.consultar(fuente, cuerpo)` con el alias de la tabla. El cliente
+   traduce al `POST /co/…/v1`.
+4. RUES por NIT: la API pide `document_number`. Si pasás `nit`, el cliente lo mapea.
+5. Cachear. Token compartido entre cuatro personas + monitor.
+
+Fuera del corte (no leer, no consultar): RUNT, SIMIT, cédula, policía, salud, México, Perú.
+
+### Guías y rutas HTTP del corte
+
+| Fuente | Guía | Alias `consultar` · ruta |
+|---|---|---|
+| RUES | https://docs.usecroma.com/guides/colombia/rues | `rues_entities_by_name` → `/co/rues/entities-by-name/v1` · `rues_entity_by_nit` → `/co/rues/entity-by-nit/v1` |
+| SECOP | https://docs.usecroma.com/guides/colombia/secop | `secop_process` → `/co/secop/process/v1` · `secop_contracts_by_provider` → `/co/secop/contracts-by-provider/v1` · `secop_processes_by_entity` → `/co/secop/processes-by-entity/v1` · `secop_contract` → `/co/secop/contract/v1` · `secop_sanctions_by_provider` → `/co/secop/sanctions-by-provider/v1` |
+| Supersociedades | https://docs.usecroma.com/guides/colombia/supersociedades | `supersociedades_financial_statements` → `/co/supersociedades/financial-statements/v1` |
+| SICAAC | https://docs.usecroma.com/guides/colombia/sicaac | `sicaac_insolvency_cases` → `/co/sicaac/insolvency-cases/v1` |
+| Contaduría | https://docs.usecroma.com/guides/colombia/contaduria | `contaduria_state_delinquent_debtors` → `/co/contaduria/state-delinquent-debtors/v1` |
+| Procuraduría | https://docs.usecroma.com/guides/colombia/procuraduria | `procuraduria_disciplinary_records` → `/co/procuraduria/disciplinary-records/v1` |
+| Contraloría | https://docs.usecroma.com/guides/colombia/contraloria | `contraloria_fiscal_records` → `/co/contraloria/fiscal-records/v1` |
+| Legalize | https://docs.usecroma.com/guides/colombia/legalize | `legalize_laws_search` → `/co/legalize/laws/v1` · `legalize_law` → `/co/legalize/law/v1` |
+| ANCP-CCE | https://docs.usecroma.com/guides/colombia/ancp-cce | `ancp_cce_conceptos_search` → `/co/ancp-cce/conceptos-search/v1` · `ancp_cce_concepto` → `/co/ancp-cce/concepto/v1` |
+
+SECOP — cuerpo típico:
+
+- process: `notice_uid`
+- contracts-by-provider: `document_number`; opcional `entity_nit`, `from_date`, `to_date`, `page`
+- processes-by-entity: `document_number`; opcional `from_date`, `to_date`, `page`
+- contract: `contract_id` (trae `additions[]`, garantías, plan)
+- sanctions-by-provider: `document_number`
+
+No usar `web_search` / `research` de Croma para leer docs. Fetch a docs.usecroma.com.
 
 ### Herramientas de Croma que usan nuestras 8 señales
 
@@ -82,7 +113,7 @@ Solo los que pueden servir. El resto está conectado pero es de otros proyectos.
 
 | Servidor | Para qué serviría aquí |
 |---|---|
-| **croma** | La fuente de datos. El backend lo llama por HTTP, no por MCP de Cursor |
+| **croma** | No entra al producto. Solo humear en el editor de Jonatin (misma cuota) |
 | **renderGambito / renderMigratory** | Crear el servicio, ver logs, disparar deploys y setear variables de entorno sin salir del editor. Con esto el deploy del backend no tiene fricción |
 | **apify** | Scraping y `rag-web-browser`. Útil solo si hay que bajar un PDF de urgencia manifiesta que Croma no expone |
 | **upstash** | Redis y QStash. QStash podría programar el cron del monitor si Render se queda corto. **No se usa salvo que Cristian lo pida** |

@@ -1,29 +1,16 @@
-"""Cliente de Croma, la fuente unica de datos de Lumen.
+"""Cliente HTTP de Croma, la fuente unica de datos de Lumen.
 
-## Lo que hay que saber antes de tocar esto
+Croma se consulta por **API HTTP**: `POST https://api.croma.run/co/.../v1` con
+JSON y `Authorization: Bearer <CROMA_API_KEY>`. La respuesta util viene en
+`{ "data": ... }`. `found: false` es dato, no error.
 
-Croma **no es una API REST**. Es un servidor MCP remoto: habla JSON-RPC sobre HTTP
-y responde en formato SSE (`text/event-stream`), autenticado con
-`Authorization: Bearer <token>`.
-
-La buena noticia, verificada contra el servidor real el 15.ago.2026 a las 17:20:
-
-> **El servidor es stateless.** No hace falta handshake ni cabecera
-> `Mcp-Session-Id`. Un solo POST con `method: "tools/call"` devuelve el resultado.
-
-Por eso este cliente no depende del SDK de MCP: son `httpx` y un parseo de SSE.
-Menos dependencias, menos cosas que fallen a las tres de la manana.
-
-## Como se usa
+El MCP de Cursor no entra aqui. Las rutas del corte estan en `HERRAMIENTAS.md`.
+Leer la guia de la fuente antes de armar el cuerpo.
 
 ```python
 async with CromaClient() as croma:
-    datos = await croma.call_tool("rues_entities_by_name", {"name": "Conalvias"})
+    datos = await croma.consultar("rues_entities_by_name", {"name": "Conalvias"})
 ```
-
-`call_tool` sirve para **cualquiera** de las herramientas que expone Croma. No hay
-que anadir un metodo por herramienta ni modificar este archivo para usar una nueva.
-El inventario de las que necesitan nuestras 8 senales esta en `HERRAMIENTAS.md`.
 """
 
 from __future__ import annotations
@@ -43,102 +30,67 @@ log = logging.getLogger(__name__)
 TIMEOUT_SEGUNDOS = 90.0
 MAX_INTENTOS_POLL = 30
 ESPERA_ENTRE_POLLS = 2.0
+BASE_URL = "https://api.croma.run"
+
+# Alias del corte -> ruta HTTP. Nombres iguales a las senales de HERRAMIENTAS.md.
+RUTAS: dict[str, str] = {
+    "rues_entities_by_name": "/co/rues/entities-by-name/v1",
+    "rues_entity_by_nit": "/co/rues/entity-by-nit/v1",
+    "secop_process": "/co/secop/process/v1",
+    "secop_contracts_by_provider": "/co/secop/contracts-by-provider/v1",
+    "secop_processes_by_entity": "/co/secop/processes-by-entity/v1",
+    "secop_contract": "/co/secop/contract/v1",
+    "secop_sanctions_by_provider": "/co/secop/sanctions-by-provider/v1",
+    "supersociedades_financial_statements": "/co/supersociedades/financial-statements/v1",
+    "sicaac_insolvency_cases": "/co/sicaac/insolvency-cases/v1",
+    "contaduria_state_delinquent_debtors": "/co/contaduria/state-delinquent-debtors/v1",
+    "procuraduria_disciplinary_records": "/co/procuraduria/disciplinary-records/v1",
+    "contraloria_fiscal_records": "/co/contraloria/fiscal-records/v1",
+    "legalize_laws_search": "/co/legalize/laws/v1",
+    "legalize_law": "/co/legalize/law/v1",
+    "ancp_cce_conceptos_search": "/co/ancp-cce/conceptos-search/v1",
+    "ancp_cce_concepto": "/co/ancp-cce/concepto/v1",
+}
 
 
 class CromaError(RuntimeError):
-    """Croma respondio, pero con un error.
-
-    Distinto de un fallo de red o de autenticacion: aqui la llamada llego y el
-    servidor dijo que no. Suele ser un argumento mal formado.
-    """
+    """Croma respondio, pero con un error de negocio o de validacion."""
 
 
 class CromaSinRespuesta(RuntimeError):
-    """No se pudo extraer un resultado del stream SSE.
-
-    Casi siempre significa token invalido o URL equivocada. Revisa `CROMA_API_KEY`
-    en tu `.env` antes de buscar por otro lado.
-    """
+    """La respuesta no era JSON utilizable. Suele ser token invalido."""
 
 
-def _parsear_sse(cuerpo: str) -> dict[str, Any]:
-    """Extrae el objeto JSON-RPC del stream SSE.
-
-    La respuesta llega como lineas `event: message` y `data: {...}`. Solo nos
-    interesan las de datos, y el ultimo mensaje es el que trae el resultado.
-    """
-    ultimo: dict[str, Any] | None = None
-
-    for linea in cuerpo.splitlines():
-        linea = linea.strip()
-        if not linea.startswith("data:"):
-            continue
-        carga = linea[len("data:") :].strip()
-        if not carga or carga == "[DONE]":
-            continue
-        try:
-            ultimo = json.loads(carga)
-        except json.JSONDecodeError:
-            log.warning("Croma devolvió una línea de datos que no es JSON: %s", carga[:200])
-
-    if ultimo is None:
-        raise CromaSinRespuesta(
-            "El stream de Croma no traía ningún mensaje utilizable. "
-            "Lo más probable es que CROMA_API_KEY esté vacía o sea inválida."
-        )
-    return ultimo
+def _cuerpo_rues_por_nit(argumentos: dict[str, Any]) -> dict[str, Any]:
+    """La guia REST pide `document_number`, no `nit`."""
+    cuerpo = dict(argumentos)
+    if "document_number" not in cuerpo and "nit" in cuerpo:
+        cuerpo["document_number"] = cuerpo.pop("nit")
+    return cuerpo
 
 
-def _desempaquetar_contenido(resultado: dict[str, Any]) -> Any:
-    """Saca el dato util de la envoltura MCP.
-
-    MCP devuelve `{"content": [{"type": "text", "text": "<json como string>"}]}`.
-    Lo que a nosotros nos importa es ese JSON ya parseado.
-    """
-    if resultado.get("isError"):
-        raise CromaError(f"Croma reportó un error en la herramienta: {resultado}")
-
-    bloques = resultado.get("content") or []
-    textos = [b.get("text", "") for b in bloques if b.get("type") == "text"]
-
-    if not textos:
-        # Algunas herramientas devuelven contenido estructurado directamente.
-        return resultado.get("structuredContent", resultado)
-
-    crudo = "\n".join(textos)
-    try:
-        return json.loads(crudo)
-    except json.JSONDecodeError:
-        # Herramientas como las de busqueda web pueden devolver texto plano.
-        return crudo
+NORMALIZAR: dict[str, Any] = {
+    "rues_entity_by_nit": _cuerpo_rues_por_nit,
+}
 
 
 class CromaClient:
-    """Cliente asincrono de Croma.
-
-    Usalo como context manager para que la conexion se cierre sola:
-
-    ```python
-    async with CromaClient() as croma:
-        ...
-    ```
-    """
+    """Cliente asincrono de la API HTTP de Croma."""
 
     def __init__(
         self,
-        url: str | None = None,
         api_key: str | None = None,
         timeout: float = TIMEOUT_SEGUNDOS,
     ) -> None:
         ajustes = get_settings()
-        self.url = url or ajustes.croma_mcp_url
+        self.base_url = BASE_URL
         self.api_key = api_key if api_key is not None else ajustes.croma_api_key
-        self._id = 0
         self._http = httpx.AsyncClient(
+            base_url=self.base_url,
             timeout=timeout,
             headers={
                 "Authorization": f"Bearer {self.api_key}",
-                "Accept": "application/json, text/event-stream",
+                "Accept": "application/json",
                 "Content-Type": "application/json",
             },
         )
@@ -157,119 +109,106 @@ class CromaClient:
     async def aclose(self) -> None:
         await self._http.aclose()
 
-    def _siguiente_id(self) -> int:
-        self._id += 1
-        return self._id
-
-    async def _rpc(self, metodo: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
-        cuerpo = {
-            "jsonrpc": "2.0",
-            "id": self._siguiente_id(),
-            "method": metodo,
-            "params": params or {},
-        }
-        respuesta = await self._http.post(self.url, json=cuerpo)
-        respuesta.raise_for_status()
-
-        mensaje = _parsear_sse(respuesta.text)
-
-        if "error" in mensaje:
-            raise CromaError(f"Croma respondió con error en '{metodo}': {mensaje['error']}")
-
-        return mensaje.get("result", {})
-
-    async def initialize(self) -> dict[str, Any]:
-        """Handshake MCP.
-
-        No hace falta para llamar herramientas (el servidor es stateless), pero es
-        la forma mas barata de comprobar que el token sirve. Es lo que usa
-        `/health/croma`.
-        """
-        return await self._rpc(
-            "initialize",
-            {
-                "protocolVersion": "2025-06-18",
-                "capabilities": {},
-                "clientInfo": {"name": "lumen", "version": "0.1.0"},
-            },
-        )
-
-    async def list_tools(self) -> list[dict[str, Any]]:
-        """Inventario de herramientas con su esquema de entrada.
-
-        Util cuando no recuerdas como se llama un parametro y no quieres abrir la
-        documentacion.
-        """
-        resultado = await self._rpc("tools/list")
-        return resultado.get("tools", [])
-
-    async def call_tool(
+    async def consultar(
         self,
-        nombre: str,
+        fuente: str,
         argumentos: dict[str, Any] | None = None,
         esperar_pendientes: bool = True,
     ) -> Any:
-        """Llama una herramienta de Croma y devuelve su dato ya parseado.
+        """POST a la ruta de `fuente` y devuelve el `data` ya desempaquetado."""
+        if fuente not in RUTAS:
+            raise CromaError(
+                f"Fuente '{fuente}' no esta en el corte. "
+                "Revisa HERRAMIENTAS.md o agrega la ruta en RUTAS."
+            )
+        cuerpo = dict(argumentos or {})
+        if fuente in NORMALIZAR:
+            cuerpo = NORMALIZAR[fuente](cuerpo)
 
-        Args:
-            nombre: la herramienta, ej. `"rues_entity_by_nit"`.
-            argumentos: sus parametros. El esquema de cada una sale de `list_tools()`.
-            esperar_pendientes: las consultas lentas devuelven un trabajo pendiente
-                con un `status_url`. Si es True, se hace polling hasta que termine.
+        respuesta = await self._http.post(RUTAS[fuente], json=cuerpo)
 
-        Devuelve `found: false` cuando el sujeto no tiene registro. **Eso es una
-        respuesta definitiva, no un error**: significa que la fuente oficial no
-        tiene nada sobre esa empresa o persona, y para una senal eso puede ser
-        justo el dato relevante.
-        """
-        resultado = await self._rpc(
-            "tools/call", {"name": nombre, "arguments": argumentos or {}}
-        )
-        datos = _desempaquetar_contenido(resultado)
+        if respuesta.status_code == 202:
+            datos = _leer_json(respuesta)
+            if esperar_pendientes:
+                return await self._esperar_trabajo(respuesta, datos)
+            return datos.get("data", datos)
 
-        if esperar_pendientes and isinstance(datos, dict) and datos.get("status_url"):
-            datos = await self._esperar_trabajo(datos)
+        if respuesta.status_code >= 400:
+            raise CromaError(_mensaje_error(respuesta))
 
+        datos = _leer_json(respuesta)
+        if isinstance(datos, dict) and "error" in datos:
+            raise CromaError(f"Croma reportó un error en '{fuente}': {datos['error']}")
+
+        if isinstance(datos, dict) and "data" in datos:
+            return datos["data"]
         return datos
 
-    async def _esperar_trabajo(self, pendiente: dict[str, Any]) -> Any:
-        """Hace polling de un trabajo lento hasta que Croma lo termina.
+    call_tool = consultar
 
-        Croma avisa en sus instrucciones que las consultas lentas devuelven un
-        trabajo pendiente con un `status_url`. Esto lo resuelve de forma
-        defensiva: si la forma de la respuesta no es la esperada, devuelve lo que
-        haya en vez de romper.
-        """
-        status_url = pendiente["status_url"]
-        log.info("Croma devolvió un trabajo pendiente, esperando: %s", status_url)
+    async def _esperar_trabajo(self, respuesta: httpx.Response, pendiente: dict[str, Any]) -> Any:
+        """Polling de jobs async (SICAAC, Contaduria, etc.)."""
+        job_url = (
+            respuesta.headers.get("Location")
+            or pendiente.get("status_url")
+            or _url_job(pendiente)
+        )
+        if not job_url:
+            return pendiente.get("data", pendiente)
 
-        for intento in range(MAX_INTENTOS_POLL):
+        log.info("Croma devolvió un trabajo pendiente, esperando: %s", job_url)
+
+        for _intento in range(MAX_INTENTOS_POLL):
             await asyncio.sleep(ESPERA_ENTRE_POLLS)
             try:
-                respuesta = await self._http.get(status_url)
-                respuesta.raise_for_status()
-                actual = respuesta.json()
+                poll = await self._http.get(job_url)
+                poll.raise_for_status()
+                actual = poll.json()
             except (httpx.HTTPError, json.JSONDecodeError) as err:
                 log.warning("Falló el polling del trabajo de Croma: %s", err)
-                return pendiente
+                return pendiente.get("data", pendiente)
 
             estado = str(actual.get("status", "")).lower()
-            if estado not in {"pending", "running", "queued", "in_progress"}:
-                return actual
+            if estado in {"pending", "running", "queued", "in_progress"}:
+                continue
+            if isinstance(actual, dict) and "data" in actual:
+                return actual["data"]
+            return actual
 
         log.warning(
-            "El trabajo de Croma seguía pendiente tras %s intentos. Devuelvo el pendiente.",
+            "El trabajo de Croma seguía pendiente tras %s intentos.",
             MAX_INTENTOS_POLL,
         )
-        return pendiente
+        return pendiente.get("data", pendiente)
+
+
+def _url_job(pendiente: dict[str, Any]) -> str | None:
+    job_id = pendiente.get("id") or pendiente.get("job_id")
+    if job_id:
+        return f"/jobs/{job_id}"
+    return None
+
+
+def _leer_json(respuesta: httpx.Response) -> dict[str, Any]:
+    try:
+        return respuesta.json()
+    except json.JSONDecodeError as err:
+        raise CromaSinRespuesta(
+            "Croma no devolvió JSON. Revisa CROMA_API_KEY."
+        ) from err
+
+
+def _mensaje_error(respuesta: httpx.Response) -> str:
+    try:
+        carga = respuesta.json()
+        error = carga.get("error", carga)
+        return f"HTTP {respuesta.status_code}: {error}"
+    except json.JSONDecodeError:
+        return f"HTTP {respuesta.status_code}: {respuesta.text[:300]}"
 
 
 async def probar_conexion() -> dict[str, Any]:
-    """Comprueba que el token de Croma de esta máquina funciona de verdad.
-
-    Hace una llamada real al servidor, no un ping. Es lo que respalda
-    `/health/croma`, el primer verde que tienen que ver los cuatro al arrancar.
-    """
+    """Comprueba que el token funciona con una llamada real a RUES."""
     ajustes = get_settings()
     if not ajustes.croma_configurado:
         return {
@@ -279,14 +218,17 @@ async def probar_conexion() -> dict[str, Any]:
 
     try:
         async with CromaClient() as croma:
-            info = await croma.initialize()
-            herramientas = await croma.list_tools()
-    except Exception as err:  # noqa: BLE001 - en el health queremos el motivo, no el stacktrace
+            datos = await croma.consultar("rues_entities_by_name", {"name": "exito", "page": 1})
+    except Exception as err:  # noqa: BLE001
         return {"estado": "error", "detalle": f"{type(err).__name__}: {err}"}
 
-    servidor = info.get("serverInfo", {})
+    entidades = 0
+    if isinstance(datos, dict):
+        entidades = len(datos.get("entities") or [])
+
     return {
         "estado": "ok",
-        "servidor": f"{servidor.get('name', '?')} {servidor.get('version', '')}".strip(),
-        "herramientas_disponibles": len(herramientas),
+        "servidor": "api.croma.run",
+        "herramientas_disponibles": len(RUTAS),
+        "detalle": f"RUES respondió ({entidades} entidades en la página).",
     }

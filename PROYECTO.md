@@ -147,7 +147,7 @@ puntos. Impacto, IA y demo solo se ven ahí. Si algo no cabe en 60 segundos, no 
 |---|---|---|
 | 1 | **El equipo son 4 personas y Jonatin es B1.** El brief §10 listaba 5 filas para 4 personas | §10 del brief |
 | 2 | **Todo el stack del frontend lo decide Andrew.** React, Vite, Tailwind, Cloudflare Pages: nada de eso está impuesto. `web/` se entrega vacía y él elige | §5 del brief (fila Frontend) |
-| 3 | **Croma es un servidor MCP remoto**, no una API REST. Verificado en vivo: stateless, un POST JSON-RPC basta. El backend en Render puede llamarlo | §5 del brief (no lo especificaba) |
+| 3 | **Croma se consulta por API HTTP** (`POST https://api.croma.run/co/…/v1`). El MCP de Cursor no es el cliente del backend | §5 del brief (hablaba de MCP remoto) |
 | 4 | **El despliegue se monta hoy temprano**, no a las 03:30 | §11 del brief |
 | 5 | **Twilio sube a prioridad 1 de B3** a las 20:45, con timebox de 60 min y corte a las 21:45. Ya no es un hard-cut barato: es la tesis del producto | §5 del brief y hard-cut #3 |
 | 6 | **HeyGen descartado.** Bonus menor, no compensa el tiempo | §8 del brief |

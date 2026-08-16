@@ -28,9 +28,7 @@ services:
       - key: LUMEN_LOG_LEVEL
         value: info
 
-      # Croma: fuente unica de datos.
-      - key: CROMA_MCP_URL
-        value: https://api.croma.run/mcp
+      # Croma: API HTTP. La URL esta fija en el cliente.
       - key: CROMA_API_KEY
         sync: false
 

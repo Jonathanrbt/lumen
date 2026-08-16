@@ -126,8 +126,8 @@ nunca como escándalo, y jamás como "probabilidad de corrupción".
 
 ## Fuentes y APIs declaradas
 
-Todos los datos vienen de fuentes oficiales, a través de **[Croma](https://usecroma.com)**, que
-expone datos del sector público colombiano, peruano y mexicano como un servidor MCP.
+Todos los datos vienen de fuentes oficiales, a través de **[Croma](https://usecroma.com)**
+(API HTTP de consulta).
 
 | Fuente oficial | Para qué la usamos |
 |---|---|
@@ -173,7 +173,7 @@ el disparador (una persona en vez de un cron) y la salida (chat en vez de WhatsA
 
 | Capa | Tecnología |
 |---|---|
-| Datos | Croma (servidor MCP remoto, JSON-RPC sobre HTTP) |
+| Datos | Croma (API HTTP `POST /co/…/v1`) |
 | Backend | Python 3.13 · FastAPI · Pydantic |
 | IA | Cursor SDK |
 | Base de datos y caché | Supabase, con migraciones versionadas |

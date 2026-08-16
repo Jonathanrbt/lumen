@@ -82,16 +82,15 @@ tipografía, un color de acento, subtítulos quemados, y respaldo grabado apenas
 Monté el repositorio entero: git, protección de secretos, los documentos que `AGENTS.md` exige, el
 contrato de la API con sus fixtures, el esqueleto de FastAPI y el cliente de Croma.
 
-**El hallazgo importante:** Croma es un servidor MCP remoto, no una API REST. Lo probé en vivo, es
-stateless, un `POST` JSON-RPC basta, y devuelve datos reales. El transporte ya está resuelto en
-`api/lumen/croma/client.py`, así que arranco directo en las reglas de señales.
+**El hallazgo importante (17:20):** Croma se podía hablar por MCP; el transporte viejo era JSON-RPC.
 
-**Cómo se prueba lo mío en 30 segundos:** `GET /health/croma` hace una llamada real y devuelve el
-nombre del servidor y cuántas herramientas expone.
+**Decisión (22:20, Jonatin):** el producto consulta **solo la API HTTP**. Cliente reescrito en
+`api/lumen/croma/client.py` (`consultar`). Guías en [`HERRAMIENTAS.md`](../../HERRAMIENTAS.md) §1.
 
-**Qué no hay que tocar:** el cliente de Croma mientras yo esté dentro. Si necesitas una herramienta
-nueva, `client.call_tool(nombre, argumentos)` ya sirve para cualquiera de las 76 que expone el
-servidor: no hace falta modificar el cliente.
+**Cómo se prueba lo mío en 30 segundos:** `GET /health/croma` hace una llamada real a RUES.
+
+**Qué no hay que tocar:** el cliente de Croma mientras yo esté dentro. Fuente nueva del corte:
+agregar la ruta en `RUTAS` de `client.py` y la guía en `HERRAMIENTAS.md`.
 
 ---
 

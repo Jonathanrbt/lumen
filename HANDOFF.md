@@ -9,9 +9,12 @@
 
 Brief vivo: [`docs/brief-final-claude.md`](docs/brief-final-claude.md). Reloj y carpetas: [`docs/PLAN.md`](docs/PLAN.md). Contrato: [`docs/CONTRATO-API.md`](docs/CONTRATO-API.md). Copy de señales: [`docs/COPY-SENALES.md`](docs/COPY-SENALES.md).
 
-## Ahora (sábado 15.ago ~20:50)
+## Ahora (sábado 15.ago ~22:15)
 
 Andamio listo. Empieza el build. Croma verificado. Endpoints en 501 por dueño.
+
+**Croma:** el motor consulta la **API HTTP** (`POST /co/…/v1`). Sin `CROMA_MCP_URL`.
+Guías y aliases en `HERRAMIENTAS.md` §1. Leer la guía **antes** de cada `consultar`.
 
 Pendiente de producto: Twilio (prioridad 1 de Cristian, corte 21:45). Link del repo oficial de entrega. Supabase cloud. Motor de señales (Jonatin). `llm_client` (Freddy). Frontend (Andrew).
 

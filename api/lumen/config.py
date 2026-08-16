@@ -21,8 +21,7 @@ class Settings(BaseSettings):
         case_sensitive=False,
     )
 
-    # --- Croma: fuente unica de datos ---
-    croma_mcp_url: str = "https://api.croma.run/mcp"
+    # --- Croma: fuente unica de datos (API HTTP; URL fija en el cliente) ---
     croma_api_key: str = ""
 
     # --- IA ---
