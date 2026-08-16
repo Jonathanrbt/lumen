@@ -95,7 +95,7 @@ export function PantallaLanding() {
             </div>
           </div>
 
-          <div className="mx-auto w-full max-w-6xl px-6 pb-16 pt-20 sm:pb-24 sm:pt-28">
+          <div className="mx-auto w-full max-w-6xl px-6 pb-16 pt-14 sm:pb-24 sm:pt-20">
             <div className="flex items-center gap-4 sm:pl-[5%]">
               <span className="h-px w-10 bg-[var(--color-bronce)] opacity-70 sm:w-16" />
               <span className="text-[0.66rem] uppercase tracking-[0.3em] text-[var(--color-lumen)]">
