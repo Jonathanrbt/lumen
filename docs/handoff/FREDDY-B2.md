@@ -20,6 +20,36 @@ a las 23:00 y lo anoto aquí abajo.
 
 ---
 
+## 04:55 — El mismo mensaje, con formato visual — enviado a los dos suscriptores
+
+**`api/lumen/telegram/cliente.py::enviar` gana `parse_mode` opcional** (default `None`, cero
+cambio de comportamiento para `/alerta` y el monitor). Con `parse_mode="HTML"`, Telegram
+renderiza `<b>`, `<i>`, `<code>` — quien lo use escapa el texto dinámico con `html.escape` antes
+de interpolar, para no romper el parseo si un nombre de entidad trae `&`, `<` o `>`.
+
+Reescribí el mensaje del sismo (bitácora de las 04:40) con jerarquía visual, sin saturar de
+emojis (2, uno de apertura y uno de cierre):
+
+```html
+🚨 <b>Alerta: contratación en zona del sismo del 10 de agosto</b>
+
+<b>Gobernación del Chocó</b> — <b>$14.492.100.000</b>
+
+Se firmaron 97 contratos parecidos, casi el mismo día, cada uno justo por debajo del monto que obliga a hacer concurso.
+
+<i>Una señal no es prueba de irregularidad. Es un motivo para preguntar.</i>
+
+🔎 Ver evidencia: caso <code>caso-0d6968f81dad</code>
+```
+
+**Mandado a los dos suscriptores de prueba** (Freddy `5833175479`, Jonatin `6746822281`) — los
+dos con `estado=enviado`, y Freddy confirmó que se ve bien. Este es el que queda para el video,
+no el de texto plano de la bitácora anterior.
+
+**Test nuevo:** `test_telegram.py` confirma que sin `parse_mode` no se manda el campo (compatible
+con todo lo que ya corría) y que con `parse_mode="HTML"` sí se manda tal cual. Suite completa
+(con el servidor MCP nuevo de Cristian ya integrado): **124 passed**.
+
 ## 04:40 — Mensaje de demo para el video, con datos reales del sismo (no mock)
 
 **Se pidió simular la catástrofe del 10 de agosto para el video.** No se inventaron señales: en
