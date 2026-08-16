@@ -9,8 +9,9 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router'
 import { api } from '../lib/api'
 import { pesosCortos } from '../lib/formato'
-import { Disclaimer, Nivel } from '../componentes/Basicos'
+import { Disclaimer, Nivel, Rubrica } from '../componentes/Basicos'
 import { Barra, EsqueletoSenal } from '../componentes/Esqueleto'
+import marca from '../assets/lumen-marca.png'
 import type { Caso } from '../lib/tipos'
 
 /** Cinco líneas: qué pasó, cuánto, qué se vio, qué hacer. */
@@ -41,15 +42,13 @@ export function PantallaAlerta() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-2xl space-y-6">
       <header>
-        <p className="text-xs uppercase tracking-wide text-[var(--color-texto-tenue)]">
-          Modo Emergencia
-        </p>
-        <h1 className="mt-1 text-2xl font-semibold leading-tight">
+        <Rubrica>Modo Emergencia</Rubrica>
+        <h1 className="mt-4 font-serif text-2xl font-normal leading-tight">
           {id ? 'Así llegó la alerta' : 'Lo que encontró el monitor'}
         </h1>
-        <p className="mt-2 text-sm text-[var(--color-texto-tenue)]">
+        <p className="mt-2 text-sm leading-relaxed text-[var(--color-texto-tenue)]">
           El monitor revisa lo que entra por el régimen de emergencia y avisa al veedor, al
           periodista o al líder comunal del municipio.
         </p>
@@ -77,8 +76,11 @@ function BurbujaWhatsApp({ caso }: { caso: Caso }) {
       </div>
 
       {/* Pinta el mensaje tal como se recibe: es lo que se graba en el video. */}
-      <div className="rounded-2xl rounded-tl-sm border border-[var(--color-borde)] bg-[oklch(0.28_0.03_150)] p-4 shadow-lg">
-        <p className="mb-2 text-xs font-semibold text-[var(--color-lumen)]">Lumen</p>
+      <div className="rounded-2xl rounded-tl-sm border border-[var(--color-borde)] bg-[var(--color-burbuja)] p-4 shadow-lg">
+        <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-[var(--color-lumen)]">
+          <img src={marca} alt="" aria-hidden className="h-4 w-4 object-contain" />
+          Lumen
+        </p>
         <div className="space-y-2 text-sm leading-relaxed">
           {lineas.map((linea, i) => (
             <p key={i}>{linea}</p>
@@ -86,7 +88,7 @@ function BurbujaWhatsApp({ caso }: { caso: Caso }) {
         </div>
         <Link
           to={`/app/caso/${caso.id}`}
-          className="mt-3 block rounded-lg bg-[var(--color-superficie)] px-3 py-2 text-center text-sm font-medium text-[var(--color-lumen)] hover:opacity-90"
+          className="mt-3 block bg-[var(--color-fondo)] px-3 py-2 text-center text-[0.7rem] font-medium uppercase tracking-[0.14em] text-[var(--color-lumen)] hover:opacity-90"
         >
           Ver el caso completo
         </Link>
