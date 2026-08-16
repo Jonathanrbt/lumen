@@ -265,3 +265,7 @@ reportes fiduciarios como servicio pagado.
 - Widgets embebibles para medios locales.
 - Cruce con financiación de campañas.
 - Expansión a Perú y México.
+
+## License
+
+Este proyecto usa la [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0). El código es público: se puede ver, clonar y evaluar (jurado, participantes, revisión). **Cualquier uso comercial requiere autorización previa del autor.** Ver `LICENSE.txt`.
