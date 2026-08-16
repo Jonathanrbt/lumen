@@ -38,11 +38,21 @@ class Settings(BaseSettings):
     supabase_service_role_key: str = ""
     supabase_db_url: str = ""
 
-    # --- Twilio (sin resolver: hard-cut #3) ---
+    # --- WhatsApp (api/lumen/whatsapp/, dueno: Freddy B2 desde las 22:14) ---
+    # "twilio" o "evolution". Se prueban los dos y se deja el que responda mejor.
+    lumen_whatsapp_provider: str = "twilio"
+
+    # Twilio (sandbox)
     twilio_account_sid: str = ""
     twilio_auth_token: str = ""
     twilio_whatsapp_from: str = ""
     twilio_whatsapp_to_demo: str = ""
+
+    # Evolution API (alternativa a Twilio, si resuelve mejor)
+    evolution_api_url: str = ""
+    evolution_api_key: str = ""
+    evolution_instance: str = ""
+    evolution_whatsapp_to_demo: str = ""
 
     # --- Aplicacion ---
     lumen_env: str = "local"

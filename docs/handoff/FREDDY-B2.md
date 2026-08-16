@@ -122,6 +122,39 @@ Si termino usando Evolution API en su lugar, este detalle no aplica y lo anoto a
 
 ## Bitácora
 
+### 22:35 — Esqueleto de WhatsApp listo, Twilio funcionando
+
+**Qué cambié.** Paquete nuevo `api/lumen/whatsapp/`: `base.py` (interfaz `WhatsAppClient`,
+un método `enviar(destinatario, mensaje)`), `copy.py` (arma el mensaje desde `Senal.regla_legible`
+y `Caso.disclaimer`, portado 1:1 del fallback de Cristian), `twilio_client.py` (proveedor real, SDK
+síncrono detrás de `asyncio.to_thread` para no bloquear el event loop), `evolution_client.py`
+(esqueleto sin probar contra un servidor real todavía) y `cliente.py` (el factory: lee
+`LUMEN_WHATSAPP_PROVIDER` y elige el proveedor). Añadí el campo a `config.py` y las variables de
+Evolution a `.env.example` — aditivo, nada renombrado. Apliqué el swap de una línea que Cristian dejó
+listo en `api/lumen/routers/plataforma.py` y encontré que `api/lumen/plataforma/monitor.py` también
+importaba el fallback: mismo swap ahí. Borré `api/lumen/plataforma/whatsapp.py`, como el propio
+comentario de Cristian autorizaba una vez mi cliente existiera. Agregué `api/tests/test_whatsapp.py`
+con el guardarraíl explícito: nunca se fabrica `'enviado'`, ni con Twilio ni con Evolution sin
+configurar, y `nivel_atencion=bajo` no llega a ningún proveedor.
+
+**Qué quedó a medias y dónde.** Evolution API es un esqueleto sin verificar contra un servidor real
+(`api/lumen/whatsapp/evolution_client.py`, endpoint asumido `POST {url}/message/sendText/{instancia}`
+según su documentación pública, no probado). Twilio sigue necesitando cuenta/sandbox real y el
+`join <código>` del teléfono de demo — eso no cambió, sigue siendo lo que anotó Cristian.
+
+**Qué no hay que tocar y por qué.** `api/lumen/whatsapp/` es mío. `api/lumen/routers/plataforma.py`
+y `api/lumen/plataforma/monitor.py` los tocué solo en la línea de import que ya estaba acordada como
+punto de enganche — el resto sigue siendo de Cristian.
+
+**Cómo se prueba en 30 segundos.**
+`.venv/bin/python -m pytest -q api/tests/test_whatsapp.py` — 4 pruebas, sin red ni credenciales.
+Para probar contra un teléfono real: poner `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`,
+`TWILIO_WHATSAPP_FROM` en `.env` y llamar `POST /alerta` con un `caso_id` de nivel `alto` o `medio`.
+
+*(Nota aparte, no de producto: en mi máquina solo hay Python 3.9, no el 3.13 que pide
+`requirements.txt` — tuve que instalar `eval_type_backport` solo en mi venv local para poder correr
+pytest. No toqué `requirements.txt` por esto; en Render corre 3.13 y no aplica.)*
+
 ### 17:30 — Todavía no arranco
 
 El esqueleto de mis cuatro endpoints ya está en `api/lumen/routers/ia.py`, devolviendo `501` con un

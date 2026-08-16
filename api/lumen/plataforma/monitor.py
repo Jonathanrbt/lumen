@@ -27,7 +27,7 @@ from .cache_croma import llamar_con_cache
 from .casos import contrato_ya_conocido, guardar_caso
 from .suscripciones import listar_suscriptores
 from .tiempo import inicio_de_dia_bogota_en_utc
-from .whatsapp import enviar_alerta
+from ..whatsapp import enviar_alerta  # cliente real: api/lumen/whatsapp/, dueno Freddy (B2)
 
 log = logging.getLogger(__name__)
 
