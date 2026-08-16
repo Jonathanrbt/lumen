@@ -19,10 +19,10 @@ from ..plataforma.casos import obtener_caso
 from ..plataforma.monitor import monitor_nuevos
 from ..plataforma.supabase_client import SupabaseNoConfigurado
 
-# WhatsApp se reasignó a Freddy (B2) a las 22:14, ver docs/PLAN.md y
-# docs/handoff/FREDDY-B2.md. Cliente real en `api/lumen/whatsapp/`, misma
-# firma que el respaldo que reemplaza.
-from ..whatsapp import enviar_alerta
+# Canal de alerta: Freddy (B2), ver docs/PLAN.md y docs/handoff/FREDDY-B2.md.
+# `..alertas` decide Telegram o WhatsApp según LUMEN_CANAL_ALERTA; misma firma
+# que el respaldo original que reemplazó.
+from ..alertas import enviar_alerta
 
 router = APIRouter(tags=["plataforma · B3 Cristian"])
 

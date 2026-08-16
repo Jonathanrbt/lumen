@@ -38,6 +38,17 @@ class Settings(BaseSettings):
     supabase_service_role_key: str = ""
     supabase_db_url: str = ""
 
+    # --- Canal de alerta (api/lumen/telegram/, api/lumen/whatsapp/) ---
+    # Dueno: Freddy (B2). "telegram" o "whatsapp". Telegram es el canal de la
+    # demo desde las ~02:00 (sin trial, sin plantillas, bot en minutos);
+    # WhatsApp queda funcional en el repo para quien lo revise, pero no se
+    # muestra en video. Ver docs/handoff/FREDDY-B2.md.
+    lumen_canal_alerta: str = "telegram"
+
+    # Telegram Bot API
+    telegram_bot_token: str = ""
+    telegram_chat_id_demo: str = ""
+
     # --- WhatsApp (api/lumen/whatsapp/, dueno: Freddy B2 desde las 22:14) ---
     # "twilio" o "evolution". Se prueban los dos y se deja el que responda mejor.
     lumen_whatsapp_provider: str = "twilio"

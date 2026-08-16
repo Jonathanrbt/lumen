@@ -42,7 +42,7 @@ from ..contracts import AnalizarRequest, Caso, NivelAtencion
 from ..croma.client import CromaClient, CromaSinRespuesta
 from ..routers.analisis import analizar
 from ..senales.entidades_emergencia import ENTIDADES_EMERGENCIA, FECHA_APERTURA
-from ..whatsapp import enviar_alerta  # cliente real: api/lumen/whatsapp/, dueno Freddy (B2)
+from ..alertas import enviar_alerta  # despachador Telegram/WhatsApp, dueno Freddy (B2)
 from .cache_croma import llamar_con_cache
 from .casos import contrato_ya_conocido, guardar_caso
 from .suscripciones import listar_suscriptores

@@ -1,7 +1,7 @@
 # Handoff — Freddy · B2 IA
 
 **Soy dueño de:** `api/lumen/ia/`, `api/lumen/routers/ia.py`, y desde las 22:14 también
-`api/lumen/whatsapp/`.
+`api/lumen/whatsapp/`, `api/lumen/telegram/` y `api/lumen/alertas.py` (el despachador de canal).
 **Mis endpoints:** `POST /resolver`, `POST /justificacion`, `POST /accion`, `POST /chat`.
 **Mi hito:** 21:30 — el lector clasifica correctamente 3 documentos reales de urgencia manifiesta,
 y cada punto del veredicto trae su cita textual.
@@ -121,6 +121,46 @@ Si termino usando Evolution API en su lugar, este detalle no aplica y lo anoto a
 ---
 
 ## Bitácora
+
+### 02:10 — Telegram reemplaza a WhatsApp como canal de la demo
+
+**Por qué.** El trial de Twilio en 2026 exige `ContentSid` (plantilla aprobada) para mandar
+cualquier WhatsApp fuera del sandbox clásico, que ya no existe para cuentas nuevas — confirmado
+llamando a la API real, no adivinado (ver bitácora de las 22:35 y 23:xx de este mismo archivo).
+Esa función de plantillas está bloqueada para Trial. Decisión del equipo: en vez de seguir
+peleando con Twilio o pagar el upgrade, Telegram es el canal de la demo. Sin trial, sin
+plantillas, bot en un minuto con `@BotFather` → `/newbot`.
+
+**Qué cambié.**
+- `api/lumen/telegram/`: paquete nuevo, un solo proveedor (no hace falta la abstracción de
+  "elegir proveedor" que tiene WhatsApp). `cliente.py` habla HTTP directo con la Telegram Bot
+  API (`POST /bot<token>/sendMessage`), formato de respuesta confirmado contra la doc oficial.
+- `api/lumen/alertas.py`: despachador nuevo. Centraliza la regla de `nivel_atencion` y el
+  armado del mensaje (antes vivían dentro de `whatsapp/cliente.py`) y elige Telegram o WhatsApp
+  según `LUMEN_CANAL_ALERTA` (default `telegram`). `api/lumen/whatsapp/` y `api/lumen/telegram/`
+  siguen siendo paquetes completos y usables por separado — este módulo solo los conecta.
+- `api/lumen/routers/plataforma.py` y `api/lumen/plataforma/monitor.py`: el único cambio es la
+  línea de import, de `..whatsapp` a `..alertas` — mismo patrón de "punto de enganche de una
+  línea" que ya estaba.
+- `config.py` + `.env.example`: `LUMEN_CANAL_ALERTA`, `TELEGRAM_BOT_TOKEN`,
+  `TELEGRAM_CHAT_ID_DEMO`.
+- `LUMEN_MODELO_FUERTE` bajó de `claude-opus-5` a `claude-sonnet-5`: Opus quemaba cuota muy
+  rápido para el presupuesto de US$50; Sonnet 5 sigue siendo el modelo de razonamiento fuerte
+  de la familia, solo que no el más caro.
+
+**Qué queda igual:** el contrato de `POST /alerta` no cambió ni un campo — Cristian no tiene que
+tocar nada de su lado. WhatsApp (Twilio + Evolution) sigue completo en el repo por si el jurado
+lo revisa o si alcanza tiempo para retomarlo; solo no se muestra en el video.
+
+**Aviso para el video (Jonatin):** si el storyboard ya asumía captura de WhatsApp en el bloque
+del teléfono, hay que cambiarla por Telegram. Puesto también en `HANDOFF.md`.
+
+**Tests:** `api/tests/test_telegram.py` (3) y `api/tests/test_alertas.py` (3), mockeados. Suite
+completa: 55 passed.
+
+**Pendiente para que funcione en vivo:** crear el bot real (`@BotFather`) y conseguir el
+`chat_id` de demo (mandarle un mensaje al bot y leer `getUpdates`) — ninguno de los dos lo he
+hecho todavía, necesito que alguien cree el bot y me pase el token.
 
 ### 01:35 — /resolver vivo, probado contra RUES real
 
