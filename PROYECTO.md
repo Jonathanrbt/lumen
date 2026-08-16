@@ -3,9 +3,7 @@
 **Hackathon CTW 2026 · Track 01: Tecnología para la Transparencia**
 Sede: Universidad del Rosario, Claustro, Bogotá · Deadline: **domingo 16.ago 09:00**, sin prórroga.
 
-> **Documento fuente:** [`docs/brief-final-claude.md`](docs/brief-final-claude.md) — une el v3, el
-> parche v3.1 y las decisiones del equipo. Los archivos `brief_v3_lumen_ctw2026.md` y
-> `patch_v3.1_lumen_usuario_y_pitch.md` quedan como histórico.
+> **Documento fuente:** [`docs/brief-final-claude.md`](docs/brief-final-claude.md).
 >
 > Este archivo es el resumen operativo: qué construimos, qué está congelado y qué está fuera. Si hay
 > contradicción, **manda este**, porque recoge el corte vivo. Si este contradice al brief final, hay

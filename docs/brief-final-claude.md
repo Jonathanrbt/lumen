@@ -5,7 +5,7 @@
 **Versión:** brief final — 15 de agosto de 2026 · une el v3 con el parche v3.1 y las decisiones del equipo de esa noche
 **Nombre:** Lumen
 
-Este archivo **reemplaza** `brief_v3_lumen_ctw2026.md` y `patch_v3.1_lumen_usuario_y_pitch.md`. No hay que leer los dos.
+Este archivo es el brief vivo. Une el v3, el parche v3.1 y las decisiones del equipo de esa noche.
 
 ---
 
