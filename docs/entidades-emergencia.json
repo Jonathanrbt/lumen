@@ -1,0 +1,35 @@
+{
+  "_para": "Cristian (B3) — monitor de Modo Emergencia",
+  "_de": "Jonatin (B1)",
+  "_consultado_en_croma": "2026-08-15T23:50:00-05:00",
+  "fuente_croma": "secop_processes_by_entity",
+  "from_date": "2026-08-11",
+  "nota": "Croma no barre por departamento ni por 'desastre'. Recorre estos NITs de entidad. No uses secop_contracts_by_urgency: esa ruta no existe. Luego POST /analizar con contrato_id (CO1.PCCNTR.*) o nit del proveedor. No todos los procesos desde el 11 ago son del sismo: muchos son prestación de servicios rutinaria.",
+  "despues_de_encontrar_proceso": {
+    "1": "Descartar si contrato_id ya está en Supabase",
+    "2": "POST /analizar { contrato_id } o { nit, entidad_id }",
+    "3": "Si nivel_atencion es medio o alto, WhatsApp"
+  },
+  "entidades": [
+    {
+      "nombre": "Santiago de Cali Distrito Especial (incluye Secretaría de Gestión del Riesgo)",
+      "nit": "890399011",
+      "procesos_desde_11_ago": 213
+    },
+    {
+      "nombre": "Alcaldía Distrital de Buenaventura-Valle",
+      "nit": "890399045",
+      "procesos_desde_11_ago": 95
+    },
+    {
+      "nombre": "Gobernación del Valle del Cauca (NIT de secretarías)",
+      "nit": "890399029",
+      "procesos_desde_11_ago": 83
+    },
+    {
+      "nombre": "Gobernación del Chocó",
+      "nit": "891680010",
+      "procesos_desde_11_ago": 36
+    }
+  ]
+}

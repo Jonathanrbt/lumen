@@ -11,7 +11,9 @@ Brief vivo: [`docs/brief-final-claude.md`](docs/brief-final-claude.md). Reloj y 
 
 ## Ahora (sábado 15.ago ~23:40)
 
-**B1 motor vivo:** `POST /analizar` y `GET /red/{nit}` contra Croma HTTP real. NITs y catálogo en
+**B1 motor vivo + lista de emergencia para el monitor:** Cali, Buenaventura, Valle y Chocó
+están en [`docs/entidades-emergencia.json`](docs/entidades-emergencia.json). Cristian recorre
+esos NITs; no hay barrido por ciudad. Detalle en
 [`docs/handoff/JONATIN-B1.md`](docs/handoff/JONATIN-B1.md).
 
 Andamio listo. Croma verificado. IA de Freddy sigue en 501.

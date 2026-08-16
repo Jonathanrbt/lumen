@@ -146,10 +146,22 @@ agregar la ruta en `RUTAS` de `client.py` y la guía en `HERRAMIENTAS.md`.
 
 **4. Monitor (Cristian: no toqué `monitor.py`)**
 
-No existe barrido por departamento. Recorre entidades con `secop_processes_by_entity`:
+Lista viva del sismo (Cali, Buenaventura, Valle, Chocó), verificada en Croma el 15.ago ~23:50:
 
-- `899999061` (Bogotá), `from_date=2026-08-11`.
-- Luego `POST /analizar` con `contrato_id` (`CO1.PCCNTR.*`) o `nit` del proveedor.
+- JSON: [`docs/entidades-emergencia.json`](../entidades-emergencia.json)
+- Importable: `from lumen.senales.entidades_emergencia import nits, FECHA_APERTURA, HERRAMIENTA_CROMA`
+
+Sustituye el placeholder `secop_contracts_by_urgency`. Recorre cada NIT con
+`secop_processes_by_entity` + `from_date=2026-08-11`. Luego `POST /analizar`.
+
+| NIT | Entidad | Procesos desde el 11 ago |
+|---|---|---|
+| `890399011` | Cali distrito (incluye Gestión del Riesgo) | 213 |
+| `890399045` | Buenaventura | 95 |
+| `890399029` | Gobernación del Valle | 83 |
+| `891680010` | Gobernación del Chocó | 36 |
+
+Bogotá `899999061` sigue siendo smoke técnico, no es el corte del Pacífico.
 
 **5. Cómo se prueba en 30 segundos**
 
