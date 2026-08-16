@@ -20,6 +20,34 @@ a las 23:00 y lo anoto aquí abajo.
 
 ---
 
+## 04:00 — Me voy a dormir. Estado: todo lo mío está en verde
+
+**Los cuatro endpoints, el canal de alerta y el despachador funcionan, probados en vivo, no solo
+con mocks.** Suite completa: 77 passed. Resumen para no tener que leer toda la bitácora:
+
+| Qué | Estado |
+|---|---|
+| `llm_client` | Vivo. `claude-haiku-4-5` (bajado de Opus→Sonnet→Haiku por cuota) |
+| `POST /resolver` | Vivo, probado con RUES real |
+| `POST /justificacion` | Vivo, probado en los dos extremos (`solida`/`sin_relacion`) con PDFs reales |
+| `POST /accion` | Vivo, carta real generada contra un caso real del dump |
+| `POST /chat` | Vivo, encadena resolver+analizar, **ahora persiste el caso** (bug encontrado y arreglado) |
+| Telegram | Vivo, verificado con mensajes reales al bot y `/alerta` completo |
+| WhatsApp (Twilio/Evolution) | Completo en el repo, no se usa en la demo |
+
+**Lo único que dejo sin terminar:** el arreglo de persistencia de `/chat` (ver bitácora 03:30) no
+se ha probado contra Supabase real — las credenciales que circularon eran del tipo equivocado.
+Cristian tiene los pasos exactos en `HANDOFF.md`. En cuanto haya keys reales, alguien puede
+repetir la prueba que hice yo: `/chat` con un NIT nunca visto → `/accion` sobre el `caso_id` que
+devuelve → si da 200 en vez de 404, quedó cerrado.
+
+**Si alguien necesita tocar `api/lumen/ia/`, `api/lumen/whatsapp/`, `api/lumen/telegram/` o
+`api/lumen/alertas.py` mientras no estoy:** todo tiene tests, `pytest -q` corre en menos de un
+segundo sin red ni presupuesto. Los `_falso`/mocks de cada archivo de test muestran el contrato
+esperado de cada función si hace falta extenderla.
+
+---
+
 ## 19:20 — Qué me cambió el v3.1
 
 El parche no toca mis endpoints ni mi cronograma. Me cambia **el registro de todo lo que sale de un
