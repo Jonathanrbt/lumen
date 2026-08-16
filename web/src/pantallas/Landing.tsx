@@ -54,22 +54,27 @@ export function PantallaLanding() {
       <main>
         <section className="bg-[var(--color-fondo)]">
           {/*
-            La pintura va entera y sin velo. En escritorio se pone detrás del
-            titular, que se posa sobre el cielo y el templo —lo claro— y ahí la
-            tinta se lee sin tapar nada. En móvil la franja es muy estrecha para
-            escribir encima, así que el cuadro va arriba y el texto debajo.
+            El cuadro va entero: el cajón es 16:9 igual que el archivo, así que
+            `object-cover` no recorta ni un píxel. Lo único que se le pone es un
+            velo suave en su propio borde de abajo, para que la terraza se
+            disuelva en el mármol en vez de cortarse a filo.
+
+            En escritorio el titular se posa encima, sobre el cielo y el templo,
+            que es lo claro. En móvil la franja es muy estrecha para escribir
+            encima, así que el cuadro va arriba y el texto debajo.
           */}
-          <div className="relative">
-            <div className="relative aspect-[16/9] max-h-[54svh] w-full sm:absolute sm:inset-0 sm:h-full sm:max-h-none">
-              <img
-                src={fondoHero}
-                alt=""
-                aria-hidden
-                className="h-full w-full object-cover object-[50%_46%]"
+          <div className="relative sm:aspect-[16/9]">
+            <div className="relative aspect-[16/9] w-full sm:absolute sm:inset-0 sm:aspect-auto sm:h-full">
+              <img src={fondoHero} alt="" aria-hidden className="h-full w-full object-cover" />
+              <div
+                className="absolute inset-x-0 bottom-0 h-[24%]"
+                style={{
+                  background: `linear-gradient(to bottom, transparent, ${MARMOL(62)} 62%, var(--color-fondo) 100%)`,
+                }}
               />
             </div>
 
-            <div className="relative mx-auto w-full max-w-6xl px-6 pt-8 sm:flex sm:min-h-[54svh] sm:flex-col sm:justify-start sm:pt-[7%]">
+            <div className="relative mx-auto flex w-full max-w-6xl flex-col px-6 pt-8 sm:h-full sm:pt-[7%]">
               <p className="inline-flex flex-wrap items-center gap-2.5 self-start border border-[var(--color-borde)] bg-[color-mix(in_oklch,var(--color-fondo)_78%,transparent)] py-1 pl-1 pr-4 text-xs backdrop-blur-sm">
                 <span className="bg-[var(--color-lumen)] px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-lumen-texto)]">
                   {t.heroSello}
@@ -77,13 +82,20 @@ export function PantallaLanding() {
                 <span className="text-[var(--color-texto-tenue)]">{t.heroEtiqueta}</span>
               </p>
 
-              <h1 className="mt-6 max-w-[19ch] font-serif text-[clamp(2.1rem,4.4vw,3.5rem)] font-normal leading-[1.08] tracking-[-0.01em]">
+              {/*
+                Un halo del color del mármol, no una caja: despega la serifa del
+                punteado del cuadro sin taparlo.
+              */}
+              <h1
+                className="mt-7 max-w-[19ch] font-serif text-[clamp(2.2rem,4.8vw,3.9rem)] font-normal leading-[1.06] tracking-[-0.015em]"
+                style={{ textShadow: `0 2px 28px ${MARMOL(85)}, 0 1px 6px ${MARMOL(70)}` }}
+              >
                 {t.heroTitulo}
               </h1>
             </div>
           </div>
 
-          <div className="mx-auto w-full max-w-6xl px-6 pb-16 pt-12 sm:pb-24 sm:pt-16">
+          <div className="mx-auto w-full max-w-6xl px-6 pb-16 pt-20 sm:pb-24 sm:pt-28">
             <div className="flex items-center gap-4 sm:pl-[5%]">
               <span className="h-px w-10 bg-[var(--color-bronce)] opacity-70 sm:w-16" />
               <span className="text-[0.66rem] uppercase tracking-[0.3em] text-[var(--color-lumen)]">
