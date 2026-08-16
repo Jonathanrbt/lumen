@@ -1,0 +1,4 @@
+# Cloudflare Pages: la app es un SPA, así que /app/caso/xxx tiene que servir
+# index.html en vez de un 404. Un enlace de caso compartido por WhatsApp entra
+# directo por esa ruta.
+/*  /index.html  200
