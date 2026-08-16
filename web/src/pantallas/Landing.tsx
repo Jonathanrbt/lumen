@@ -52,50 +52,51 @@ export function PantallaLanding() {
       <Barra t={t} idioma={idioma} cambiar={cambiar} />
 
       <main>
-        <section className="relative isolate bg-[var(--color-fondo)]">
+        <section className="bg-[var(--color-fondo)]">
           {/*
-            El cuadro es 16:9 y a lo ancho de la pantalla se comía el alto
-            entero, dejando el titular y los botones bajo la línea de flote. Se
-            le pone techo: en pantallas anchas recorta cielo y suelo, que es lo
-            prescindible, y deja el templo, la montaña y las figuras.
+            La pintura va entera y sin velo. En escritorio se pone detrás del
+            titular, que se posa sobre el cielo y el templo —lo claro— y ahí la
+            tinta se lee sin tapar nada. En móvil la franja es muy estrecha para
+            escribir encima, así que el cuadro va arriba y el texto debajo.
           */}
-          <div className="relative aspect-[16/9] max-h-[54svh] w-full overflow-hidden" aria-hidden>
-            <img src={fondoHero} alt="" className="h-full w-full object-cover object-[50%_46%]" />
-            {/* Un velo corto y pegado al borde: más arriba lavaba media pintura. */}
-            <div
-              className="absolute inset-x-0 bottom-0 h-[26%]"
-              style={{
-                background: `linear-gradient(to bottom, transparent, ${MARMOL(55)} 60%, var(--color-fondo) 100%)`,
-              }}
-            />
+          <div className="relative">
+            <div className="relative aspect-[16/9] max-h-[54svh] w-full sm:absolute sm:inset-0 sm:h-full sm:max-h-none">
+              <img
+                src={fondoHero}
+                alt=""
+                aria-hidden
+                className="h-full w-full object-cover object-[50%_46%]"
+              />
+            </div>
+
+            <div className="relative mx-auto w-full max-w-6xl px-6 pt-8 sm:flex sm:min-h-[54svh] sm:flex-col sm:justify-start sm:pt-[7%]">
+              <p className="inline-flex flex-wrap items-center gap-2.5 self-start border border-[var(--color-borde)] bg-[color-mix(in_oklch,var(--color-fondo)_78%,transparent)] py-1 pl-1 pr-4 text-xs backdrop-blur-sm">
+                <span className="bg-[var(--color-lumen)] px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-lumen-texto)]">
+                  {t.heroSello}
+                </span>
+                <span className="text-[var(--color-texto-tenue)]">{t.heroEtiqueta}</span>
+              </p>
+
+              <h1 className="mt-6 max-w-[19ch] font-serif text-[clamp(2.1rem,4.4vw,3.5rem)] font-normal leading-[1.08] tracking-[-0.01em]">
+                {t.heroTitulo}
+              </h1>
+            </div>
           </div>
 
-          {/*
-            El texto se posa sobre el borde inferior ya velado del cuadro —
-            nunca sobre las columnas, el árbol o el lago — y de ahí en
-            adelante corre en mármol liso.
-          */}
-          <div className="relative z-10 mx-auto -mt-24 w-full max-w-6xl px-6 pb-16 sm:-mt-36 sm:pb-24 md:-mt-48">
-            <p className="inline-flex flex-wrap items-center gap-2.5 border border-[var(--color-borde)] bg-[color-mix(in_oklch,var(--color-fondo)_75%,transparent)] py-1 pl-1 pr-4 text-xs backdrop-blur-sm">
-              <span className="bg-[var(--color-lumen)] px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-lumen-texto)]">
-                {t.heroSello}
+          <div className="mx-auto w-full max-w-6xl px-6 pb-16 pt-12 sm:pb-24 sm:pt-16">
+            <div className="flex items-center gap-4 sm:pl-[5%]">
+              <span className="h-px w-10 bg-[var(--color-bronce)] opacity-70 sm:w-16" />
+              <span className="text-[0.66rem] uppercase tracking-[0.3em] text-[var(--color-lumen)]">
+                {t.heroFilete}
               </span>
-              <span className="text-[var(--color-texto-tenue)]">{t.heroEtiqueta}</span>
+              <span className="h-px flex-1 bg-[var(--color-borde)]" />
+            </div>
+
+            <p className="mt-6 font-serif text-[clamp(2.1rem,4.4vw,3.5rem)] leading-[1.08] tracking-[-0.01em] sm:pl-[5%]">
+              {t.heroTituloAcento}
             </p>
 
-            <h1 className="mt-7 font-serif text-[clamp(2.1rem,4.4vw,3.5rem)] font-normal leading-[1.08] tracking-[-0.01em]">
-              <span className="block max-w-[20ch]">{t.heroTitulo}</span>
-              <span className="mb-5 mt-9 flex items-center gap-4 text-base sm:mb-6 sm:mt-12 sm:pl-[5%]">
-                <span className="h-px w-10 bg-[var(--color-bronce)] opacity-70 sm:w-16" />
-                <span className="font-sans text-[0.66rem] uppercase tracking-[0.3em] text-[var(--color-lumen)]">
-                  {t.heroFilete}
-                </span>
-                <span className="h-px flex-1 bg-[var(--color-borde)]" />
-              </span>
-              <span className="block sm:pl-[5%]">{t.heroTituloAcento}</span>
-            </h1>
-
-            <div className="mt-9 flex flex-col gap-8 sm:mt-11 sm:flex-row sm:items-end sm:justify-between">
+            <div className="mt-11 flex flex-col gap-8 sm:mt-14 sm:flex-row sm:items-end sm:justify-between">
               <div className="max-w-md">
                 <p className="text-sm leading-relaxed text-[var(--color-texto-tenue)]">
                   {t.heroBajada}
