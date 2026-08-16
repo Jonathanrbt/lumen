@@ -33,12 +33,18 @@ log = logging.getLogger(__name__)
 
 FECHA_APERTURA_VENTANA = date(2026, 8, 11)
 
-# TODO(Jonatin/B1): confirmar el nombre real de la herramienta de Croma que
-# lista contratos nuevos por causal de urgencia/emergencia y departamento —
-# HERRAMIENTAS.md solo documenta herramientas por proveedor/entidad puntual,
-# no un barrido amplio. Verificar con `croma.list_tools()` (§6 del brief, "las
-# 3 capas de datos", que es la verificacion que le toca a B1).
-HERRAMIENTA_CONTRATOS_URGENCIA = "secop_contracts_by_urgency"
+# TODO(Jonatin/B1): esto NO es una ruta real. Confirmado tras el cliente HTTP
+# de Croma (api/lumen/croma/client.py, 22:30): su diccionario RUTAS solo
+# expone consultas puntuales por entidad/proveedor/NIT (rues_entity_by_nit,
+# secop_processes_by_entity, secop_contracts_by_provider, secop_process,
+# secop_contract...), ninguna que liste "todos los contratos nuevos por
+# departamento y causal de urgencia desde una fecha". Ese barrido amplio
+# puede no existir en Croma en absoluto — es la verificacion de las 3 capas
+# de datos de §6 del brief, que le toca a B1. Si no existe, el monitor
+# probablemente tiene que recorrer una lista de entidades conocidas con
+# `secop_processes_by_entity` en vez de un barrido global; eso lo decide
+# quien tenga el mapa de entidades afectadas.
+HERRAMIENTA_CONTRATOS_URGENCIA = "secop_contracts_by_urgency"  # placeholder, ver arriba
 
 # TODO(Jonatin/B1): completar con los departamentos afectados que B1 valida en
 # su bloque de las 17:30-18:15 (§6 del brief). Vacio a proposito: no
