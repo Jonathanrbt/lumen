@@ -1,4 +1,5 @@
-/** Piezas compartidas por la ficha, el chat y la alerta. */
+/** Piezas compartidas por la landing, la ficha, el chat y la alerta. */
+import { Link } from 'react-router'
 import { fechaHora } from '../lib/formato'
 import { DISCLAIMER, type Fuente as TipoFuente, type NivelAtencion } from '../lib/tipos'
 
@@ -17,7 +18,7 @@ export function Nivel({ nivel, compacto = false }: { nivel: NivelAtencion; compa
   const { texto, color } = NIVEL[nivel]
   return (
     <span
-      className={`inline-flex items-center gap-2 rounded-full border font-medium ${
+      className={`inline-flex items-center gap-2 border font-medium ${
         compacto ? 'px-2 py-0.5 text-xs' : 'px-3 py-1 text-sm'
       }`}
       style={{ color, borderColor: color, backgroundColor: `color-mix(in oklch, ${color} 12%, transparent)` }}
@@ -54,36 +55,82 @@ export function Fuente({ fuente }: { fuente: TipoFuente }) {
 /** Visible en cada resultado, no en el pie de página. */
 export function Disclaimer({ texto = DISCLAIMER }: { texto?: string }) {
   return (
-    <p className="rounded-lg border border-[var(--color-borde)] bg-[var(--color-superficie)] px-3 py-2 text-xs leading-relaxed text-[var(--color-texto-tenue)]">
+    <p className="border border-[var(--color-borde)] bg-[var(--color-superficie)] px-3 py-2 text-xs leading-relaxed text-[var(--color-texto-tenue)]">
       {texto}
     </p>
   )
 }
 
+/** Antetítulo en versalitas con su filete, delante de un titular. */
+export function Rubrica({
+  children,
+  centrada = false,
+}: {
+  children: React.ReactNode
+  centrada?: boolean
+}) {
+  return (
+    <p
+      className={`flex items-center gap-3 text-[0.66rem] font-medium uppercase tracking-[0.28em] text-[var(--color-lumen)] ${
+        centrada ? 'justify-center' : ''
+      }`}
+    >
+      <span className="h-px w-7 bg-current opacity-50" />
+      {children}
+    </p>
+  )
+}
+
+const VARIANTE = {
+  principal: 'bg-[var(--color-lumen)] text-[var(--color-lumen-texto)] hover:opacity-90',
+  secundario:
+    'border border-[var(--color-borde)] text-[var(--color-texto)] hover:bg-[var(--color-superficie-alta)]',
+  // Para posarse encima de una imagen sin taparla.
+  velado:
+    'border border-[var(--color-borde)] bg-[color-mix(in_oklch,var(--color-fondo)_72%,transparent)] text-[var(--color-texto)] backdrop-blur-sm hover:bg-[var(--color-fondo)]',
+}
+
+/* Versalitas espaciadas: la misma voz que las rúbricas de sección. */
+const TAMANO = {
+  md: 'px-5 py-2.5 text-[0.7rem] uppercase tracking-[0.14em]',
+  lg: 'px-7 py-3.5 text-[0.78rem] uppercase tracking-[0.14em]',
+}
+
+/**
+ * Con `a` se pinta como enlace de navegación; sin él, como botón.
+ * Esquina viva: el rectángulo va con la arquitectura del resto.
+ */
 export function Boton({
   children,
+  a,
   onClick,
   variante = 'principal',
+  tamano = 'md',
   type = 'button',
   disabled,
 }: {
   children: React.ReactNode
+  a?: string
   onClick?: () => void
-  variante?: 'principal' | 'secundario'
+  variante?: keyof typeof VARIANTE
+  tamano?: keyof typeof TAMANO
   type?: 'button' | 'submit'
   disabled?: boolean
 }) {
-  const estilos =
-    variante === 'principal'
-      ? 'bg-[var(--color-lumen)] text-[oklch(0.2_0.02_260)] hover:opacity-90'
-      : 'border border-[var(--color-borde)] text-[var(--color-texto)] hover:bg-[var(--color-superficie-alta)]'
+  const estilos = `inline-flex items-center justify-center gap-2 rounded-none font-medium transition disabled:opacity-40 ${
+    TAMANO[tamano]
+  } ${VARIANTE[variante]}`
+
+  if (a) {
+    return (
+      <Link to={a} className={estilos}>
+        {children}
+      </Link>
+    )
+  }
+
   return (
-    <button
-      type={type}
-      onClick={onClick}
-      disabled={disabled}
-      className={`rounded-lg px-4 py-2 text-sm font-medium transition disabled:opacity-40 ${estilos}`}
-    >
+    <button type={type} onClick={onClick} disabled={disabled} className={estilos}>
       {children}
     </button>
   )
