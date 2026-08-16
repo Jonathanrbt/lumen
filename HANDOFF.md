@@ -48,25 +48,23 @@ que Jonatin y Cristian puedan seguir sin esperarlo.
 
 ### Para Cristian, cuando esté disponible
 
-1. **Las credenciales de Supabase que circularon están mal.** `SUPABASE_ANON_KEY` y
-   `SUPABASE_SERVICE_ROLE_KEY` que pegaron son un Personal Access Token de cuenta (`sbp_...`),
-   no las API keys del proyecto — confirmado con un 401 real. Las reales (JWT largos, empiezan
-   con `eyJ...`) están en el dashboard: `Project Settings → API` para las keys,
-   `Project Settings → Database` para la connection string. El proyecto es
-   `hsjosillhpejxwlsucpl`.
+1. ✅ **Supabase real, resuelto.** Freddy consiguió las keys correctas (JWT reales) y probó de
+   punta a punta: `/chat` con un NIT nunca visto → guarda el caso (`POST .../casos → 201
+   Created`) → `/accion` sobre ese mismo `caso_id` → `200` → `/caso/{id}` también lo lee. El
+   ciclo completo Modo Vigilancia → persistencia → acción queda cerrado contra Supabase real, no
+   solo mocks. `.env` local de Freddy ya tiene las keys si hace falta comparar.
 2. **`obtener_caso` no distingue "Supabase no configurado" de "Supabase configurado pero con
    credenciales inválidas"** — lo segundo revienta con un `postgrest.exceptions.APIError` crudo
    (500) en vez de un 503 limpio, en `/caso/{id}`, `/accion` y `/alerta` (los tres usan la misma
    función). Vale la pena que `SupabaseNoConfigurado` también capture ese caso, o que
-   `get_supabase()` valide antes de cachear el cliente.
+   `get_supabase()` valide antes de cachear el cliente. Sigue sin arreglar, no bloquea nada.
 3. **`GET /monitor/nuevos` no tiene ningún cron real que lo dispare** — solo existe el
    keep-alive de `/health` cada 10 min. El monitor "corre solo" del brief hoy es manual. No
    bloquea el video (se dispara a mano al grabar), pero es la pieza que falta para que el
    Modo Emergencia sea automático de verdad.
 4. **`chat.py` ahora llama a tu `guardar_caso`** cuando el Modo Vigilancia descubre un caso
-   nuevo (antes no se guardaba nada, y `/accion` daba 404 siempre después del primer turno —
-   bug real, ya arreglado). Es best-effort: si Supabase falla, se registra y sigue sin romper el
-   chat. En cuanto tengas las keys reales puestas, esto empieza a persistir solo.
+   nuevo — verificado que ya persiste de verdad (punto 1). Sigue siendo best-effort: si Supabase
+   falla, se registra y el chat no se cae.
 
 ### El resto, como estaba
 

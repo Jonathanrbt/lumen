@@ -20,26 +20,34 @@ a las 23:00 y lo anoto aquí abajo.
 
 ---
 
+## 04:10 — Supabase real conectado. El ciclo completo cierra de punta a punta
+
+**Freddy consiguió las keys correctas y repitió la prueba pendiente:** `/chat` con un NIT nunca
+visto (900558536) → guarda el caso de verdad (`POST .../casos → 201 Created`, log real) →
+`/accion` sobre ese `caso_id` → `200` (antes daba `404`) → `/caso/{id}` (endpoint de Cristian)
+también lo lee → `200`. El bug de persistencia de la bitácora de las 03:30 queda cerrado contra
+Supabase real, no solo con mocks. `SUPABASE_ANON_KEY` sigue siendo el token equivocado
+(`sbp_...`), pero no importa: el backend nunca la usa, solo `service_role`.
+
 ## 04:00 — Me voy a dormir. Estado: todo lo mío está en verde
 
 **Los cuatro endpoints, el canal de alerta y el despachador funcionan, probados en vivo, no solo
-con mocks.** Suite completa: 77 passed. Resumen para no tener que leer toda la bitácora:
+con mocks.** Suite completa: 85 passed (con los cambios de Cristian ya integrados: interruptor
+de Croma y sus pruebas de persistencia). Resumen para no tener que leer toda la bitácora:
 
 | Qué | Estado |
 |---|---|
 | `llm_client` | Vivo. `claude-haiku-4-5` (bajado de Opus→Sonnet→Haiku por cuota) |
 | `POST /resolver` | Vivo, probado con RUES real |
 | `POST /justificacion` | Vivo, probado en los dos extremos (`solida`/`sin_relacion`) con PDFs reales |
-| `POST /accion` | Vivo, carta real generada contra un caso real del dump |
-| `POST /chat` | Vivo, encadena resolver+analizar, **ahora persiste el caso** (bug encontrado y arreglado) |
+| `POST /accion` | Vivo, carta real generada contra un caso real del dump y contra Supabase real |
+| `POST /chat` | Vivo, encadena resolver+analizar, **persiste el caso en Supabase real, confirmado** |
 | Telegram | Vivo, verificado con mensajes reales al bot y `/alerta` completo |
 | WhatsApp (Twilio/Evolution) | Completo en el repo, no se usa en la demo |
 
-**Lo único que dejo sin terminar:** el arreglo de persistencia de `/chat` (ver bitácora 03:30) no
-se ha probado contra Supabase real — las credenciales que circularon eran del tipo equivocado.
-Cristian tiene los pasos exactos en `HANDOFF.md`. En cuanto haya keys reales, alguien puede
-repetir la prueba que hice yo: `/chat` con un NIT nunca visto → `/accion` sobre el `caso_id` que
-devuelve → si da 200 en vez de 404, quedó cerrado.
+**No queda nada abierto de mi lado.** Lo único pendiente en el radar es lo que ya está anotado
+en `HANDOFF.md` para Cristian (robustez de `obtener_caso` ante credenciales inválidas, y el cron
+del monitor) — ninguno de los dos bloquea nada para grabar.
 
 **Si alguien necesita tocar `api/lumen/ia/`, `api/lumen/whatsapp/`, `api/lumen/telegram/` o
 `api/lumen/alertas.py` mientras no estoy:** todo tiene tests, `pytest -q` corre en menos de un
