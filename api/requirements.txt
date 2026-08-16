@@ -39,3 +39,6 @@ tzdata==2025.2
 # Freddy (B2). Nombre confirmado instalandolo, no a ciegas: `cursor-sdk`.
 # Requiere Python >=3.10.
 cursor-sdk==1.0.28
+
+# Extraccion de texto de PDF para el lector de justificaciones. Dueno: Freddy (B2).
+pypdf==6.16.1

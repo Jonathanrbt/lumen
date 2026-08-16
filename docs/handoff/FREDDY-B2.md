@@ -122,6 +122,37 @@ Si termino usando Evolution API en su lugar, este detalle no aplica y lo anoto a
 
 ## Bitácora
 
+### 02:45 — /justificacion vivo: el núcleo del producto, probado en los dos extremos
+
+**Qué cambié.** `api/lumen/ia/lector.py` + wireado en `api/lumen/routers/ia.py`. No le pido al
+modelo que invente preguntas: siempre las mismas tres, formuladas como se las harías a una
+persona (idénticas a `fixtures/lectura.json`, que es la fuente de verdad del registro):
+relación causal, contemporaneidad, diagnóstico técnico previo — los tres elementos que la Ley
+1523/Decreto 1082 exigen para la urgencia manifiesta. Extracción de texto con `pypdf`
+(`pypdf==6.16.1`, agregado a `requirements.txt`), por URL o por archivo subido.
+
+**El guardarraíl va dos veces, y la segunda es la que importa de verdad:**
+1. El prompt le pide al modelo que no invente citas.
+2. **El código verifica cada `cita_textual` contra el texto real del documento** (normalizado,
+   sin distinguir mayúsculas/espacios). Si el modelo alucina una cita que no está en el
+   documento, se descarta y el punto pasa a `no_concluye_por` — no importa lo segura que sonara
+   la respuesta.
+3. `veredicto=solida` es **imposible en código** si algún punto quedó sin cita. No depende de
+   que el modelo lo recuerde: es una regla que se aplica después, siempre.
+
+**Probado en los dos extremos, con Cursor real (`claude-sonnet-5`) y PDFs reales (construidos a
+mano, sin librería nueva — ver `_pdf_con_texto` en los tests):**
+- Documento de "mobiliario de oficina" sin ninguna mención a una emergencia →
+  `veredicto=sin_relacion`, con cita real y verificada para el punto de contemporaneidad, y
+  `no_concluye_por` honesto en los otros dos.
+- Documento con sismo, informe técnico de gestión del riesgo y objeto de retiro de escombros →
+  `veredicto=solida`, con las tres citas reales y verificadas contra el texto.
+
+**Tests:** `test_lector.py` (6, mockeados) + `test_lector_pdf_real.py` (3, con PDFs reales sin
+mockear la extracción — incluye un PDF corrupto y uno en blanco). Suite completa: 63 passed.
+
+**Qué sigue:** `/accion` (generador de artefactos), luego `/chat`.
+
 ### 02:10 — Telegram reemplaza a WhatsApp como canal de la demo
 
 **Por qué.** El trial de Twilio en 2026 exige `ContentSid` (plantilla aprobada) para mandar

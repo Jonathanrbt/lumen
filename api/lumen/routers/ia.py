@@ -10,6 +10,7 @@ que lo haga.
 
 from __future__ import annotations
 
+import httpx
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
 from ..contracts import (
@@ -21,6 +22,12 @@ from ..contracts import (
     Lectura,
     ResolverRequest,
 )
+from ..ia.lector import (
+    DocumentoIlegible,
+    leer_justificacion,
+    leer_justificacion_desde_url,
+)
+from ..ia.llm_client import CursorAgentError, LLMEjecucionError
 from ..ia.resolver import resolver_candidatos
 
 router = APIRouter(tags=["IA · B2 Freddy"])
@@ -51,9 +58,22 @@ async def justificacion(
     Cada punto del veredicto va con su cita textual. **Si no puede citar, no
     afirma:** llena `no_concluye_por` y deja la cita vacía.
     """
-    raise HTTPException(
-        status_code=501, detail="Pendiente: B2 (Freddy). Lector de justificaciones."
-    )
+    if archivo is None and not url:
+        raise HTTPException(status_code=422, detail="Manda 'archivo' (PDF) o 'url'.")
+
+    try:
+        if archivo is not None:
+            contenido = await archivo.read()
+            return await leer_justificacion(contenido, documento_url=None)
+        return await leer_justificacion_desde_url(url)  # type: ignore[arg-type]
+    except DocumentoIlegible as err:
+        raise HTTPException(status_code=422, detail=str(err)) from err
+    except httpx.HTTPError as err:
+        raise HTTPException(status_code=502, detail=f"No se pudo descargar el PDF: {err}") from err
+    except (CursorAgentError, LLMEjecucionError) as err:
+        raise HTTPException(
+            status_code=503, detail=f"El lector no pudo completarse: {err}"
+        ) from err
 
 
 @router.post("/accion", response_model=Artefacto)
