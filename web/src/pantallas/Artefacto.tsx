@@ -11,7 +11,7 @@ import Markdown from 'react-markdown'
 import { api } from '../lib/api'
 import { Boton, Disclaimer } from '../componentes/Basicos'
 import { EsqueletoArtefacto } from '../componentes/Esqueleto'
-import { Orbe } from '../componentes/Orbe'
+import { Pensando } from '../componentes/Pensando'
 
 /** Clases del markdown del documento: es una carta legal, no un blog. */
 const PROSA = [
@@ -53,7 +53,7 @@ export function PantallaArtefacto() {
   if (isPending) {
     return (
       <div className="space-y-6">
-        <Orbe etiqueta="Redactando el derecho de petición con los hechos del caso…" />
+        <Pensando estado="composing" etiqueta="Redactando el derecho de petición con los hechos del caso…" />
         <EsqueletoArtefacto />
       </div>
     )
@@ -85,7 +85,7 @@ export function PantallaArtefacto() {
         </Boton>
       </div>
 
-      <div className="rounded-xl border border-[var(--color-borde)] bg-[var(--color-superficie)] p-4">
+      <div className="border border-[var(--color-borde)] bg-[var(--color-superficie)] p-4">
         <div className={PROSA}>
           <Markdown>{artefacto.cuerpo_markdown}</Markdown>
         </div>
