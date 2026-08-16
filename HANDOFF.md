@@ -9,9 +9,12 @@
 
 Brief vivo: [`docs/brief-final-claude.md`](docs/brief-final-claude.md). Reloj y carpetas: [`docs/PLAN.md`](docs/PLAN.md). Contrato: [`docs/CONTRATO-API.md`](docs/CONTRATO-API.md). Copy de señales: [`docs/COPY-SENALES.md`](docs/COPY-SENALES.md).
 
-## Ahora (sábado 15.ago ~22:20)
+## Ahora (sábado 15.ago ~23:40)
 
-Andamio listo. Empieza el build. Croma verificado. Endpoints en 501 por dueño.
+**B1 motor vivo:** `POST /analizar` y `GET /red/{nit}` contra Croma HTTP real. NITs y catálogo en
+[`docs/handoff/JONATIN-B1.md`](docs/handoff/JONATIN-B1.md).
+
+Andamio listo. Croma verificado. IA de Freddy sigue en 501.
 
 **Croma:** el motor consulta la **API HTTP** (`POST /co/…/v1`). Sin `CROMA_MCP_URL`.
 Guías y aliases en `HERRAMIENTAS.md` §1. Leer la guía **antes** de cada `consultar`.
@@ -22,6 +25,6 @@ Cristian conserva `/alerta` como puerta del contrato. Detalle en
 [`docs/handoff/FREDDY-B2.md`](docs/handoff/FREDDY-B2.md) y
 [`docs/handoff/CRISTIAN-B3.md`](docs/handoff/CRISTIAN-B3.md).
 
-Pendiente de producto: WhatsApp real (ahora prioridad de Freddy). Link del repo oficial de entrega. Supabase cloud. Motor de señales (Jonatin). `llm_client` (Freddy). Frontend (Andrew).
+Pendiente de producto: WhatsApp real (Freddy). Link del repo oficial. Supabase cloud. `llm_client` (Freddy). Frontend (Andrew). NITs del catálogo curado que Croma aún no resolvió (handoff B1).
 
 No tocar: `.githooks/pre-commit`, `api/lumen/contracts/` sin anunciarlo, `supabase/migrations/` si no eres Cristian, `web/` si no eres Andrew.

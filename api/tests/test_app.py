@@ -41,11 +41,11 @@ def test_estan_los_nueve_endpoints_del_contrato():
     assert not faltan, f"faltan rutas del contrato §5.5: {sorted(faltan)}"
 
 
-def test_los_endpoints_sin_implementar_dicen_de_quien_son():
+def test_los_endpoints_de_ia_sin_implementar_dicen_de_quien_son():
     """Un 501 con el nombre del dueño ahorra una pregunta en el chat."""
-    r = cliente.post("/analizar", json={"nit": "901000000"})
+    r = cliente.post("/resolver", json={"texto": "Conalvias"})
     assert r.status_code == 501
-    assert "Jonatin" in r.json()["detail"]
+    assert "Freddy" in r.json()["detail"]
 
 
 def test_analizar_exige_al_menos_una_llave():

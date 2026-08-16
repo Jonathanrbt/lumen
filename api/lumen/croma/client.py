@@ -125,7 +125,21 @@ class CromaClient:
         if fuente in NORMALIZAR:
             cuerpo = NORMALIZAR[fuente](cuerpo)
 
-        respuesta = await self._http.post(RUTAS[fuente], json=cuerpo)
+        ruta = RUTAS[fuente]
+        log.info(
+            "Croma HTTP POST %s%s cuerpo=%s",
+            self.base_url,
+            ruta,
+            json.dumps(cuerpo, ensure_ascii=False, default=str),
+        )
+        respuesta = await self._http.post(ruta, json=cuerpo)
+        log.info(
+            "Croma HTTP %s %s%s (%s bytes)",
+            respuesta.status_code,
+            self.base_url,
+            ruta,
+            len(respuesta.content),
+        )
 
         if respuesta.status_code == 202:
             datos = _leer_json(respuesta)

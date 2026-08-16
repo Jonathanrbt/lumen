@@ -34,3 +34,7 @@ pytest==9.1.1
 
 # Twilio: envio de alertas por WhatsApp sandbox. Dueno: Cristian (B3).
 twilio==9.11.0
+
+# Zonas IANA en Windows. Sin esto ZoneInfo("America/Bogota") de Cristian
+# tumba cualquier import de la app (incluido POST /analizar).
+tzdata==2025.2

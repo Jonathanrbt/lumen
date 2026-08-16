@@ -13,19 +13,20 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 
 from ..contracts import AnalizarRequest, Caso, Grafo
+from ..croma.client import CromaError, CromaSinRespuesta
+from ..senales.motor import analizar as correr_analizar
+from ..senales.motor import red as correr_red
 
 router = APIRouter(tags=["motor · B1 Jonatin"])
 
 
 @router.post("/analizar", response_model=Caso)
 async def analizar(peticion: AnalizarRequest) -> Caso:
-    """Corre las 8 señales sobre una entidad, un proveedor o un contrato.
-
-    Pasos 3 a 7 del flujo: enriquecer con Croma, evaluar las reglas, calcular el
-    nivel de atención y armar el Caso. Cada señal disparada guarda su regla
-    legible, el dato que la disparó y la fuente oficial con fecha de consulta.
-    """
-    raise HTTPException(status_code=501, detail="Pendiente: B1 (Jonatin). Motor de las 8 señales.")
+    """Corre las 8 señales sobre una entidad, un proveedor o un contrato."""
+    try:
+        return await correr_analizar(peticion)
+    except (CromaError, CromaSinRespuesta) as err:
+        raise HTTPException(status_code=503, detail=f"Croma no respondió: {err}") from err
 
 
 @router.get("/red/{nit}", response_model=Grafo)
@@ -34,4 +35,7 @@ async def red(nit: str) -> Grafo:
 
     Curado y pequeño: entre 5 y 12 nodos. Un hairball es peor que no mostrar grafo.
     """
-    raise HTTPException(status_code=501, detail="Pendiente: B1 (Jonatin). Grafo de actores.")
+    try:
+        return await correr_red(nit)
+    except (CromaError, CromaSinRespuesta) as err:
+        raise HTTPException(status_code=503, detail=f"Croma no respondió: {err}") from err

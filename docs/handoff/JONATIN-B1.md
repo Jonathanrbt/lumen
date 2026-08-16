@@ -96,13 +96,74 @@ agregar la ruta en `RUTAS` de `client.py` y la guía en `HERRAMIENTAS.md`.
 
 ## Pendientes míos, en orden
 
-1. **Verificar las tres capas de datos de §6 antes de las 20:00.** Es el riesgo número uno del
-   proyecto. Si el análogo histórico no da señales, hay que saberlo esta noche.
-2. Las 8 señales corriendo en CLI, cada una con su frase de `COPY-SENALES.md`, su dato y su fuente
-   con fecha.
-3. Grafo de actores, curado, entre 5 y 12 nodos.
-4. Validar a mano los 6 casos del catálogo. Ninguno puede tener un falso positivo vergonzoso:
-   aparecen en el video.
+1. Completar NITs del catálogo curado que **aún no aparecen en Croma** (Metro SAS, UNGRD, Mocoa,
+   Providencia, Centros Poblados). No inventar: si RUES/SECOP no lo trae, queda vacío.
+2. Video (guion / grabación). El motor ya no está en 501.
+
+---
+
+## 23:30 — Motor B1 vivo contra Croma HTTP
+
+**1. Qué cambié**
+
+- `POST /analizar` y `GET /red/{nit}` dejan de ser 501. Paquete `api/lumen/senales/` (motor, copy
+  de COPY-SENALES, S1–S8 y S10, grafo, nivel stub).
+- Croma se llama **directo** (`CromaClient.consultar`). No usamos `cache_croma` de Cristian hasta
+  que exista Supabase.
+- `nivel_atencion` por conteo de señales (0 bajo, 1 medio, ≥2 alto). Sin lectura de Freddy.
+- CLI: `python -m lumen.senales --nit 79372917`.
+- `tzdata` al final de `api/requirements.txt`: en Windows, sin eso no arranca la app.
+
+**2. Forma real de Croma (iteración 0)**
+
+- Contratos: `contracts[]` con `contract_id`, `provider_document`, `entity_nit`, `value`,
+  `sign_date`, `modality`, `object`, `legal_rep_name`.
+- Procesos de entidad: `processes[]` con `notice_uid`, `base_price`, `modality`, `published_date`.
+- RUES por NIT: `{ found, entity.registration_date, related_parties[], financials[] }`.
+
+**3. Sujetos verificados en vivo (no mocks)**
+
+| Quién | NIT / doc | Qué salió |
+|---|---|---|
+| Proveedor de prueba (persona) | `79372917` | 6 contratos SECOP reales. `/analizar` y `/red` 200. |
+| Entidades de Bogotá (NIT compartido) | `899999061` | 500 procesos; **333 desde 2026-08-11** (capa 1: no está vacío). |
+| Odinsa S.A. | `800169499` | RUES sí; **0 contratos** SECOP. |
+| Conalvías liquidación | `890318278` | RUES sí; **0 contratos**. |
+| Odinsa Aeropuertos | `901645491` | RUES sí; **0 contratos**. |
+| NIT que se creía UNGRD | `900144920` | **0 procesos**. No usar. |
+
+**Catálogo curado — para Cristian (`CATALOGO_CURADO`). No edité su script.**
+
+| Caso | nit / entidad_id | Estado |
+|---|---|---|
+| Metro de Bogotá | *(pendiente)* | No aparece como Empresa Metro en RUES. No inventar. |
+| Ruta del Sol / Odinsa | `800169499` | RUES ok; SECOP 0. |
+| Centros Poblados | *(pendiente)* | El nombre no da la empresa del escándalo. |
+| UNGRD 2024 | *(pendiente)* | `900144920` no sirve. |
+| Mocoa 2017 | *(pendiente)* | Sin NIT verificado. |
+| Providencia post-Iota | *(pendiente)* | Sin NIT verificado. |
+| Smoke técnico | `79372917` o entidad `899999061` | Para el hito, no son el catálogo reputacional. |
+
+**4. Monitor (Cristian: no toqué `monitor.py`)**
+
+No existe barrido por departamento. Recorre entidades con `secop_processes_by_entity`:
+
+- `899999061` (Bogotá), `from_date=2026-08-11`.
+- Luego `POST /analizar` con `contrato_id` (`CO1.PCCNTR.*`) o `nit` del proveedor.
+
+**5. Cómo se prueba en 30 segundos**
+
+```
+GET /health/croma
+POST /analizar  {"nit":"79372917"}
+GET /red/79372917
+python -m pytest api/tests/test_senales.py -q
+python -m pytest api/tests/test_senales_croma.py -q
+```
+
+**6. Qué no hay que tocar**
+
+Plataforma de Cristian, `ia/` de Freddy, `web/` de Andrew, `contracts/` (no cambió).
 
 ---
 
