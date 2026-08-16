@@ -117,6 +117,27 @@ def traducir_error(err: Exception) -> ToolError:
     return ToolError(f"Falló la herramienta por un error no previsto: {type(err).__name__}: {err}")
 
 
+def _exigir_fuente_de_datos() -> None:
+    """Corta antes de salir a la red si la fuente no va a poder responder.
+
+    Existe porque "no hay nada" y "no se pudo mirar" son cosas distintas y el
+    agente tiene que poder decirlas distinto. Sin esto, una búsqueda con Croma
+    apagado vuelve vacía y el agente le dice a la persona que la empresa no
+    aparece en el registro — afirmando algo que nadie comprobó.
+    """
+    ajustes = get_settings()
+    if not ajustes.lumen_croma_habilitado:
+        raise traducir_error(
+            CromaDeshabilitado("LUMEN_CROMA_HABILITADO=false")
+        )
+    if not ajustes.croma_configurado:
+        raise ToolError(
+            "La fuente de datos no tiene credencial configurada (falta CROMA_API_KEY), así que "
+            "no se consultó nada. NO le digas a la persona que no se encontró: dile que la "
+            "fuente no está disponible. Llama `estado_del_sistema` para confirmarlo."
+        )
+
+
 def _caso_o_error(caso_id: str):  # noqa: ANN202 - Caso, evitando el import circular de tipos
     """Busca el caso y distingue los dos fallos que se confunden solos.
 
@@ -157,6 +178,26 @@ def registrar_herramientas(servidor) -> None:  # noqa: ANN001 - MCPServer, sin i
     )
     async def resolver_entidad(texto: str) -> dict[str, Any]:
         """El texto que escribió la persona, tal cual."""
+        # Texto vacio se responde sin mirar nada: no hace falta la fuente para
+        # saber que no hay nada que buscar, asi que se comprueba ANTES que el
+        # estado de Croma.
+        if not texto.strip():
+            return {
+                "candidatos": [],
+                "nota": (
+                    "No me diste nada que buscar. Pregúntale a la persona el nombre de la "
+                    "empresa o entidad, o su NIT."
+                ),
+            }
+
+        # `resolver_candidatos` se traga los fallos de Croma y devuelve lista
+        # vacia (es de cara al ciudadano: degrada en vez de reventar). Bien
+        # para la web, veneno aqui: el agente recibiria "no encontré ningún
+        # registro" cuando en realidad la fuente NUNCA se consulto, y se lo
+        # diria a la persona como si el dato no existiera. Eso es justo lo que
+        # la regla 6 prohibe. Se comprueba antes, no despues.
+        _exigir_fuente_de_datos()
+
         try:
             candidatos = await resolver_candidatos(texto)
         except Exception as err:  # noqa: BLE001
@@ -210,6 +251,13 @@ def registrar_herramientas(servidor) -> None:  # noqa: ANN001 - MCPServer, sin i
                 "Si no tienes ninguno, resuélvelo antes con `resolver_entidad`."
             ) from err
 
+        # Sin esto, con la fuente apagada el motor devuelve un Caso con CERO
+        # señales y nivel `bajo`, porque `Consultas.get` convierte el fallo en
+        # `{"found": false}`. El agente lo narraria como "no encontre nada
+        # preocupante": un visto bueno afirmado sobre cero datos. Es el peor
+        # fallo posible en este producto.
+        _exigir_fuente_de_datos()
+
         try:
             caso = await _analizar(peticion)
         except Exception as err:  # noqa: BLE001
@@ -230,6 +278,9 @@ def registrar_herramientas(servidor) -> None:  # noqa: ANN001 - MCPServer, sin i
     )
     async def ver_red_de_actores(nit: str) -> dict[str, Any]:
         """NIT alrededor del cual construir la red."""
+        # Mismo motivo que en `analizar_entidad`: un grafo vacío por fuente
+        # apagada es indistinguible de "no tiene vínculos".
+        _exigir_fuente_de_datos()
         try:
             grafo = await _red(nit)
         except Exception as err:  # noqa: BLE001
@@ -302,6 +353,9 @@ def registrar_herramientas(servidor) -> None:  # noqa: ANN001 - MCPServer, sin i
     )
     async def contratos_nuevos_del_monitor(desde: date | None = None) -> list[dict[str, Any]]:
         """Fecha mínima de publicación (AAAA-MM-DD). Sin ella, la del monitor por defecto."""
+        # Con la fuente apagada devolveria lista vacia, que el agente leeria
+        # como "no hay contratos nuevos". No los hay porque no se miro.
+        _exigir_fuente_de_datos()
         try:
             casos = await monitor_nuevos(desde)
         except Exception as err:  # noqa: BLE001

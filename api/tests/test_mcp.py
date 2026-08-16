@@ -412,7 +412,9 @@ def test_una_fecha_invalida_en_el_monitor_falla_en_validacion(cliente_mcp):
     assert _datos_del_evento(r)["result"]["isError"] is True
 
 
-def test_resolver_con_texto_vacio_devuelve_vacio_y_una_alternativa(cliente_mcp):
+def test_resolver_con_texto_vacio_no_consulta_nada(cliente_mcp):
+    """Sin texto no hace falta la fuente para saber que no hay nada que buscar:
+    se responde antes de mirar su estado."""
     cliente, sesion, _ = cliente_mcp
     r = cliente.post(
         "/mcp",
@@ -455,6 +457,46 @@ def test_el_estado_del_sistema_no_gasta_cuota(cliente_mcp, monkeypatch: pytest.M
     estado = _datos_del_evento(r)["result"]["structuredContent"]
     assert estado["fuente_de_datos"]["encendida"] is False
     assert "no gastar créditos" in estado["fuente_de_datos"]["nota"]
+
+
+@pytest.mark.parametrize(
+    ("herramienta", "argumentos"),
+    [
+        ("resolver_entidad", {"texto": "Conalvías"}),
+        ("analizar_entidad", {"nit": "900123456"}),
+        ("ver_red_de_actores", {"nit": "900123456"}),
+        ("contratos_nuevos_del_monitor", {}),
+    ],
+)
+def test_con_la_fuente_apagada_las_herramientas_lo_dicen_en_vez_de_fingir_vacio(
+    cliente_mcp, herramienta: str, argumentos: dict
+):
+    """El fallo más peligroso de este producto, encontrado en el Render real.
+
+    Con Croma apagado, `resolver_candidatos` y `Consultas.get` degradan a vacío
+    a propósito (son de cara al ciudadano). Para la web está bien; para un
+    agente es veneno: `analizar_entidad` devolvería un caso con CERO señales y
+    nivel `bajo`, y el agente lo narraría como "no encontré nada preocupante".
+    Un visto bueno afirmado sobre cero datos.
+
+    Apagado tiene que ser un error explícito, nunca un resultado vacío.
+    """
+    cliente, sesion, _ = cliente_mcp
+    r = cliente.post(
+        "/mcp",
+        headers=sesion,
+        json={
+            "jsonrpc": "2.0",
+            "id": 20,
+            "method": "tools/call",
+            "params": {"name": herramienta, "arguments": argumentos},
+        },
+    )
+    resultado = _datos_del_evento(r)["result"]
+    assert resultado["isError"] is True, f"{herramienta} devolvió vacío en vez de decir que está apagada"
+    texto = resultado["content"][0]["text"]
+    assert "apagada a propósito" in texto
+    assert "estado_del_sistema" in texto
 
 
 def test_el_prompt_de_apertura_lleva_la_regla_de_desambiguar(cliente_mcp):
