@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Ping /health en Render
         env:
-          HEALTH_URL: ${{ vars.LUMEN_RENDER_HEALTH_URL || 'https://lumen-api.onrender.com/health' }}
+          HEALTH_URL: ${{ vars.LUMEN_RENDER_HEALTH_URL || 'https://lumen-api-cwt3.onrender.com/health' }}
         run: |
           echo "Pinging $HEALTH_URL"
           curl --fail --silent --show-error --max-time 20 "$HEALTH_URL"
