@@ -64,6 +64,11 @@ class Settings(BaseSettings):
     # reemplaza a LUMEN_CORS_ORIGINS, que es quien controla seguridad.
     lumen_frontend_url: str = ""
 
+    # Tope de casos que arma el monitor por corrida. Las 4 entidades del sismo
+    # suman ~427 procesos desde el 11.ago; analizarlos todos son varias llamadas
+    # a Croma cada uno y el token es compartido. Ninguna demo necesita 427 casos.
+    lumen_monitor_max_casos: int = 4
+
     # Respaldo de grabacion: la API responde desde el dump JSON versionado en vez
     # de tocar Supabase o Croma. Existe para que un corte de red a las 07:00 no
     # cueste el hackathon. No es la arquitectura.

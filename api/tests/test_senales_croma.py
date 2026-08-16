@@ -19,7 +19,15 @@ def _hay_croma() -> bool:
     return get_settings().croma_configurado
 
 
-pytestmark = pytest.mark.skipif(not _hay_croma(), reason="CROMA_API_KEY vacía")
+# Dos marcadores, no uno:
+#   - `croma` hace que `pytest` por defecto (addopts = -m "not croma") NO las
+#     corra. Antes solo estaba el skipif, asi que con la llave puesta la suite
+#     salia a la red en cada corrida: 123s y cuota del token compartido.
+#   - el skipif sigue igual, para quien corra `pytest -m croma` sin llave.
+pytestmark = [
+    pytest.mark.croma,
+    pytest.mark.skipif(not _hay_croma(), reason="CROMA_API_KEY vacía"),
+]
 
 
 def test_analizar_proveedor_real_devuelve_caso():
