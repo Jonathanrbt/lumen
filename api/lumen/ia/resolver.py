@@ -1,9 +1,14 @@
 """Resolucion de entidades: `POST /resolver`. Dueno: Freddy (B2).
 
 Traduce lenguaje natural a `Candidato[]` sin asumir cual es (§CONTRATO-API.md:
-"nunca se asume cual es"). Dos caminos, en ese orden, para gastar el LLM solo
+"nunca se asume cual es"). Tres caminos, en ese orden, para gastar el LLM solo
 cuando hace falta:
 
+0. **Catalogo curado** (`catalogo.py`, brief §4.5.1). Lo que el equipo ya
+   verifico a mano contra Croma se resuelve sin tocar la red: es instantaneo y
+   no puede devolver un homonimo absurdo. Es el camino que hacia falta para que
+   "la Gobernación del Chocó" no compitiera con una ferreteria del mismo nombre
+   en el registro mercantil.
 1. **Camino barato.** El texto puede que YA sea un nombre (el caso mas comun:
    "Conalvías", "Odinsa"). Se manda tal cual a RUES (`rues_entities_by_name`).
    Cero llamadas al LLM.
@@ -13,6 +18,13 @@ cuando hace falta:
    ("¿la alcaldía de mi pueblo tiene algo raro?" no tiene nombre que buscar;
    "el metro de Bogotá" sí). Si el modelo tampoco encuentra un nombre
    concreto, se devuelve lista vacía: no se inventa.
+
+**Solo se devuelven candidatos con NIT.** RUES entrega registros de camara de
+comercio que no lo traen (2 de los 5 de "Conalvias", verificado en vivo el
+16.ago). Un candidato sin NIT no se puede analizar: `/analizar` no tiene por
+donde agarrarlo, asi que al elegirlo el chat volvia a resolver el mismo texto y
+mostraba las mismas tarjetas — un bucle sin salida. Se descartan aqui, en el
+origen, y no en cada consumidor.
 
 **Hallazgo en vivo (16.ago, llamando a la API real, no asumido):** RUES
 rechaza con HTTP 400 cualquier caracter fuera de letras, numeros, espacios y
@@ -33,6 +45,7 @@ from typing import Any
 
 from ..contracts import Candidato, TipoActor
 from ..croma.client import CromaClient, CromaError
+from . import catalogo
 from .llm_client import CursorAgentError, LLMEjecucionError, Modelo, preguntar
 
 log = logging.getLogger(__name__)
@@ -120,14 +133,12 @@ def _candidatos_desde_respuesta(datos: Any) -> list[Candidato]:
     if not entidades:
         return []
 
-    # Los que ya traen NIT sirven para seguir directo a /analizar: van primero.
-    ordenados = sorted(entidades, key=lambda e: e.get("nit") is None)
-
     candidatos: list[Candidato] = []
     vistos: set[str] = set()
-    for entidad in ordenados:
+    for entidad in entidades:
         candidato = _candidato_desde_rues(entidad)
-        if candidato is None or candidato.nombre in vistos:
+        # Sin NIT no hay nada que analizar despues: ver la cabecera del modulo.
+        if candidato is None or not candidato.nit or candidato.nombre in vistos:
             continue
         vistos.add(candidato.nombre)
         candidatos.append(candidato)
@@ -151,6 +162,10 @@ async def resolver_candidatos(texto: str) -> list[Candidato]:
     texto = texto.strip()
     if not texto:
         return []
+
+    curados = catalogo.buscar(texto)
+    if curados:
+        return curados
 
     if _texto_valido_para_rues(texto):
         candidatos = await _buscar_en_rues(texto)

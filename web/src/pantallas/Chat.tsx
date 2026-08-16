@@ -16,11 +16,12 @@ import { useHistorial } from '../lib/historial'
 import { Boton } from '../componentes/Basicos'
 import { Anfora, Busto, Clepsidra, Rollo, Templo } from '../componentes/Iconos'
 import { EsqueletoSenal } from '../componentes/Esqueleto'
+import { Lectura } from '../componentes/Lectura'
 import { Pensando } from '../componentes/Pensando'
 import { FichaCaso } from './Caso'
 import buhoVuelo from '../assets/buho-vuelo.png'
 import marca from '../assets/lumen-marca.png'
-import type { Candidato, Caso, ChatResponse } from '../lib/tipos'
+import type { Candidato, Caso, ChatResponse, Lectura as LecturaTipo } from '../lib/tipos'
 
 /**
  * La lechuza se posa en el borde de la caja: en el PNG ya recortado sus garras
@@ -30,11 +31,26 @@ import type { Candidato, Caso, ChatResponse } from '../lib/tipos'
  */
 const BUHO_GARRAS = (730 / 720) * (1 - 0.583)
 
+/**
+ * Por dónde empezar. Las cuatro tienen que **resolver de verdad**: hasta el
+ * 16.ago tres de ellas ("mi pueblo", "los escombros en Quimbaya", "Mocoa 2017")
+ * morían en "no encontré nada", porque nombran cosas que nadie verificó contra
+ * Croma. Ahora apuntan a entradas del catálogo curado (`api/lumen/ia/catalogo.py`),
+ * que son las que el equipo sí validó a mano.
+ */
 const ARRANQUE = [
-  { Icono: Templo, titulo: 'Mi municipio', texto: '¿La alcaldía de mi pueblo tiene algo raro?' },
-  { Icono: Anfora, titulo: 'Una empresa', texto: '¿Quién está detrás de este contratista?' },
-  { Icono: Rollo, titulo: 'Un contrato', texto: 'El contrato de los escombros en Quimbaya' },
-  { Icono: Clepsidra, titulo: 'Una emergencia pasada', texto: 'La reconstrucción de Mocoa, 2017' },
+  {
+    Icono: Templo,
+    titulo: 'Mi municipio',
+    texto: '¿Cómo está contratando la Gobernación del Chocó?',
+  },
+  { Icono: Anfora, titulo: 'Una empresa', texto: '¿Quién es Conalvías?' },
+  {
+    Icono: Rollo,
+    titulo: 'Zona del sismo',
+    texto: 'Los contratos de la Alcaldía de Buenaventura',
+  },
+  { Icono: Clepsidra, titulo: 'Un caso conocido', texto: 'Odinsa y la Ruta del Sol' },
 ]
 
 /** La lechuza dice quién habla, sin repetir su nombre en cada turno. */
@@ -52,9 +68,13 @@ export function PantallaChat() {
       api.chat(mensaje, ctx),
   })
 
+  const leer = useMutation({ mutationFn: (archivo: File) => api.justificacion(archivo) })
+
+  const ocupado = enviar.isPending || leer.isPending
+
   useEffect(() => {
     finRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [mensajes.length, enviar.isPending])
+  }, [mensajes.length, ocupado])
 
   function preguntar(mensaje: string, ctx = activa?.contexto) {
     if (!mensaje.trim()) return
@@ -81,17 +101,52 @@ export function PantallaChat() {
     )
   }
 
+  /**
+   * Una entidad pública se analiza por `entidad_id` y un proveedor por `nit`:
+   * son dos caminos distintos dentro del motor (uno mira los procesos de la
+   * entidad, el otro los contratos del proveedor). Mandar el NIT de una
+   * alcaldía en el campo del proveedor devolvía un caso vacío.
+   */
   function elegirCandidato(candidato: Candidato) {
-    preguntar(candidato.nombre, { nit: candidato.nit, nombre: candidato.nombre })
+    if (!candidato.nit) return
+    const llave =
+      candidato.tipo === 'entidad' ? { entidad_id: candidato.nit } : { nit: candidato.nit }
+    preguntar(candidato.nombre, { ...llave, nombre: candidato.nombre })
   }
 
-  if (mensajes.length === 0 && !enviar.isPending) {
+  /** Ruta alterna del Flujo B (§4.6, paso 7): el PDF entra directo al lector. */
+  function subirJustificacion(archivo: File) {
+    const previos = activa?.mensajes ?? []
+    const conArchivo = [...previos, { rol: 'usuario' as const, texto: `📄 ${archivo.name}` }]
+
+    guardar({
+      titulo: previos.length ? activa?.titulo : archivo.name,
+      mensajes: conArchivo,
+      contexto: activa?.contexto,
+    })
+
+    leer.mutate(archivo, {
+      onSuccess: (lectura) =>
+        guardar({
+          mensajes: [...conArchivo, { rol: 'lector', archivo: archivo.name, lectura }],
+        }),
+      // El lector no cae al fixture: enseñar la lectura de otro documento como
+      // si fuera la del que la persona acaba de subir sería mentir.
+      onError: (error: Error) =>
+        guardar({
+          mensajes: [...conArchivo, { rol: 'lector', archivo: archivo.name, error: error.message }],
+        }),
+    })
+  }
+
+  if (mensajes.length === 0 && !ocupado) {
     return (
       <Bienvenida
         texto={texto}
         setTexto={setTexto}
         onPreguntar={preguntar}
-        ocupado={enviar.isPending}
+        onArchivo={subirJustificacion}
+        ocupado={ocupado}
       />
     )
   }
@@ -99,27 +154,32 @@ export function PantallaChat() {
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-9rem)] max-w-2xl flex-col">
       <div className="flex-1 space-y-6">
-        {mensajes.map((mensaje, i) =>
-          mensaje.rol === 'usuario' ? (
-            <p
-              key={i}
-              className="ml-auto max-w-[85%] bg-[var(--color-superficie-alta)] px-4 py-2 text-sm"
-            >
-              {mensaje.texto}
-            </p>
-          ) : (
-            <RespuestaLumen
-              key={i}
-              respuesta={mensaje.respuesta}
-              onCandidato={elegirCandidato}
-              onPaso={(paso) => preguntar(paso)}
-            />
-          ),
-        )}
+        {mensajes.map((mensaje, i) => {
+          if (mensaje.rol === 'usuario') {
+            return (
+              <p
+                key={i}
+                className="ml-auto max-w-[85%] bg-[var(--color-superficie-alta)] px-4 py-2 text-sm"
+              >
+                {mensaje.texto}
+              </p>
+            )
+          }
+          if (mensaje.rol === 'lector') {
+            return <RespuestaLector key={i} mensaje={mensaje} />
+          }
+          return <RespuestaLumen key={i} respuesta={mensaje.respuesta} onCandidato={elegirCandidato} />
+        })}
 
-        {enviar.isPending && (
+        {ocupado && (
           <ConAvatar>
-            <Pensando etiqueta="Resolviendo la entidad y corriendo las señales…" />
+            <Pensando
+              etiqueta={
+                leer.isPending
+                  ? 'Leyendo la justificación y buscando cada cita en el documento…'
+                  : 'Resolviendo la entidad y corriendo las señales…'
+              }
+            />
             <EsqueletoSenal />
           </ConAvatar>
         )}
@@ -131,7 +191,8 @@ export function PantallaChat() {
           texto={texto}
           setTexto={setTexto}
           onPreguntar={preguntar}
-          ocupado={enviar.isPending}
+          onArchivo={subirJustificacion}
+          ocupado={ocupado}
         />
       </div>
     </div>
@@ -153,11 +214,13 @@ function Bienvenida({
   texto,
   setTexto,
   onPreguntar,
+  onArchivo,
   ocupado,
 }: {
   texto: string
   setTexto: (t: string) => void
   onPreguntar: (t: string) => void
+  onArchivo: (a: File) => void
   ocupado: boolean
 }) {
   return (
@@ -179,6 +242,7 @@ function Bienvenida({
           texto={texto}
           setTexto={setTexto}
           onPreguntar={onPreguntar}
+          onArchivo={onArchivo}
           ocupado={ocupado}
         />
       </div>
@@ -219,15 +283,19 @@ function CajaEntrada({
   texto,
   setTexto,
   onPreguntar,
+  onArchivo,
   ocupado,
   grande = false,
 }: {
   texto: string
   setTexto: (t: string) => void
   onPreguntar: (t: string) => void
+  onArchivo: (a: File) => void
   ocupado: boolean
   grande?: boolean
 }) {
+  const archivoRef = useRef<HTMLInputElement>(null)
+
   return (
     <form
       onSubmit={(e) => {
@@ -251,6 +319,20 @@ function CajaEntrada({
         }`}
       />
 
+      {/* El PDF de la justificación de urgencia: se salta la resolución y va
+          directo al lector (§4.6, Flujo B paso 7). */}
+      <input
+        ref={archivoRef}
+        type="file"
+        accept="application/pdf,.pdf"
+        className="hidden"
+        onChange={(e) => {
+          const archivo = e.target.files?.[0]
+          if (archivo) onArchivo(archivo)
+          e.target.value = ''
+        }}
+      />
+
       {grande ? (
         <div className="flex items-center justify-between gap-3 px-3 pb-3">
           <span className="text-[0.6rem] uppercase tracking-[0.16em] text-[var(--color-texto-tenue)]">
@@ -259,12 +341,45 @@ function CajaEntrada({
             </span>
             Ocho señales · fuente oficial
           </span>
-          <BotonEnviar ocupado={ocupado} vacio={!texto.trim()} />
+          <div className="flex items-center gap-2">
+            <BotonAdjuntar ocupado={ocupado} onClick={() => archivoRef.current?.click()} />
+            <BotonEnviar ocupado={ocupado} vacio={!texto.trim()} />
+          </div>
         </div>
       ) : (
-        <BotonEnviar ocupado={ocupado} vacio={!texto.trim()} />
+        <>
+          <BotonAdjuntar ocupado={ocupado} onClick={() => archivoRef.current?.click()} />
+          <BotonEnviar ocupado={ocupado} vacio={!texto.trim()} />
+        </>
       )}
     </form>
+  )
+}
+
+/** Subir el documento que explica por qué era urgente. */
+function BotonAdjuntar({ ocupado, onClick }: { ocupado: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={ocupado}
+      title="Subir el documento que explica por qué era urgente (PDF)"
+      aria-label="Subir el documento que explica por qué era urgente"
+      className="grid h-8 w-8 shrink-0 place-items-center border border-[var(--color-borde)] text-[var(--color-texto-tenue)] transition hover:border-[var(--color-lumen)] hover:text-[var(--color-texto)] disabled:opacity-25"
+    >
+      <svg
+        aria-hidden
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-4 w-4"
+      >
+        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+      </svg>
+    </button>
   )
 }
 
@@ -281,14 +396,38 @@ function BotonEnviar({ ocupado, vacio }: { ocupado: boolean; vacio: boolean }) {
   )
 }
 
+/** El veredicto del lector sobre el PDF que subió la persona. */
+function RespuestaLector({
+  mensaje,
+}: {
+  mensaje: { archivo: string; lectura?: LecturaTipo; error?: string }
+}) {
+  return (
+    <ConAvatar>
+      {mensaje.lectura ? (
+        <>
+          <p className="leading-relaxed">
+            Leí <span className="italic">{mensaje.archivo}</span> y busqué en el texto cada cosa
+            que la ley exige. Esto es lo que dice el documento:
+          </p>
+          <Lectura lectura={mensaje.lectura} />
+        </>
+      ) : (
+        <p className="leading-relaxed">
+          No pude leer <span className="italic">{mensaje.archivo}</span>. {mensaje.error} — prefiero
+          decírtelo a enseñarte la lectura de otro documento.
+        </p>
+      )}
+    </ConAvatar>
+  )
+}
+
 function RespuestaLumen({
   respuesta,
   onCandidato,
-  onPaso,
 }: {
   respuesta: ChatResponse
   onCandidato: (c: Candidato) => void
-  onPaso: (paso: string) => void
 }) {
   return (
     <ConAvatar>
@@ -325,34 +464,48 @@ function RespuestaLumen({
 
       {respuesta.caso && <CasoEnChat caso={respuesta.caso} />}
 
-      {respuesta.siguientes_pasos.length > 0 && (
-        <div className="flex flex-wrap gap-2">
+      {/*
+        Con un caso en la mano, los siguientes pasos son botones que llevan a
+        algún lado (los pinta `CasoEnChat`). Sin caso, son indicaciones — y
+        tienen que leerse como tales.
+
+        Hasta el 16.ago eran botones siempre, y al pulsarlos se reenviaba su
+        propio texto como pregunta: "Ver la red de actores detrás de este
+        contrato" viajaba a `/chat`, que lo trataba como el nombre de una
+        empresa y respondía "no encontré ningún registro". El brief pide
+        ofrecer el siguiente paso (§4.5.2 #4), no ofrecer un callejón.
+      */}
+      {!respuesta.caso && respuesta.siguientes_pasos.length > 0 && (
+        <ul className="space-y-1 text-sm text-[var(--color-texto-tenue)]">
           {respuesta.siguientes_pasos.map((paso) => (
-            <button
-              key={paso}
-              onClick={() => onPaso(paso)}
-              className="border border-[var(--color-borde)] px-3 py-1.5 text-xs text-[var(--color-texto-tenue)] transition hover:border-[var(--color-lumen)] hover:text-[var(--color-texto)]"
-            >
-              {paso}
-            </button>
+            <li key={paso}>· {paso}</li>
           ))}
-        </div>
+        </ul>
       )}
     </ConAvatar>
   )
 }
 
 function CasoEnChat({ caso }: { caso: Caso }) {
+  const tieneRed = (caso.grafo?.nodos.length ?? 0) > 0
+
   return (
     <div className="border border-[var(--color-borde)] p-4">
       <FichaCaso caso={caso} compacta />
       <div className="mt-4 flex flex-wrap gap-2 border-t border-[var(--color-borde)] pt-4">
         <Link to={`/app/caso/${caso.id}`}>
-          <Boton variante="secundario">Abrir la ficha completa</Boton>
+          <Boton variante="secundario">
+            {tieneRed ? 'Ver la ficha y la red de actores' : 'Abrir la ficha completa'}
+          </Boton>
         </Link>
-        <Link to={`/app/caso/${caso.id}/artefacto`}>
-          <Boton>Redactar derecho de petición</Boton>
+        <Link to={`/app/caso/${caso.id}/artefacto?tipo=paquete_evidencia`}>
+          <Boton variante="secundario">Generar el paquete de evidencia</Boton>
         </Link>
+        {caso.nivel_atencion !== 'bajo' && (
+          <Link to={`/app/caso/${caso.id}/artefacto`}>
+            <Boton>Redactar la carta para la alcaldía</Boton>
+          </Link>
+        )}
       </div>
     </div>
   )

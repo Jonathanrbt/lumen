@@ -345,19 +345,25 @@ def registrar_herramientas(servidor) -> None:  # noqa: ANN001 - MCPServer, sin i
         title="Contratos nuevos que encontró el monitor",
         description=(
             "Devuelve los contratos con causal de urgencia que el monitor encontró en los "
-            "departamentos afectados y convirtió en casos, descartando lo ya conocido. "
+            "departamentos afectados y convirtió en casos. Lo ya conocido no se re-analiza "
+            "pero sí se devuelve, así que el mismo contrato se puede consultar varias veces. "
             "MUY CARA: recorre varias entidades y analiza cada novedad. Cuesta mucha cuota "
             "compartida y tarda minutos. No la llames para explorar — es para revisar qué "
-            "hay nuevo."
+            "hay nuevo. "
+            "REGLA: `forzar` re-analiza desde cero TODO lo que encuentre, incluso lo ya "
+            "guardado — sale carísimo. Úsalo solo si te lo piden explícitamente porque un "
+            "caso está desactualizado."
         ),
     )
-    async def contratos_nuevos_del_monitor(desde: date | None = None) -> list[dict[str, Any]]:
-        """Fecha mínima de publicación (AAAA-MM-DD). Sin ella, la del monitor por defecto."""
+    async def contratos_nuevos_del_monitor(
+        desde: date | None = None, forzar: bool = False
+    ) -> list[dict[str, Any]]:
+        """Fecha mínima de publicación (AAAA-MM-DD) y si se re-analiza lo ya guardado."""
         # Con la fuente apagada devolveria lista vacia, que el agente leeria
         # como "no hay contratos nuevos". No los hay porque no se miro.
         _exigir_fuente_de_datos()
         try:
-            casos = await monitor_nuevos(desde)
+            casos = await monitor_nuevos(desde, forzar=forzar)
         except Exception as err:  # noqa: BLE001
             raise traducir_error(err) from err
         return [c.model_dump(mode="json") for c in casos]

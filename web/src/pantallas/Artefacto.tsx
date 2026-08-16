@@ -6,12 +6,13 @@
  */
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useParams, useSearchParams } from 'react-router'
 import Markdown from 'react-markdown'
 import { api } from '../lib/api'
 import { Boton, Disclaimer } from '../componentes/Basicos'
 import { EsqueletoArtefacto } from '../componentes/Esqueleto'
 import { Pensando } from '../componentes/Pensando'
+import type { TipoArtefacto } from '../lib/tipos'
 
 /** Clases del markdown del documento: es una carta legal, no un blog. */
 const PROSA = [
@@ -23,13 +24,44 @@ const PROSA = [
   '[&_em]:italic',
 ].join(' ')
 
+/**
+ * Los cuatro artefactos de la capa de acción (§7). La carta es el que sale en
+ * el video, así que es el que se sirve sin pedir nada; los otros llegan por
+ * `?tipo=`, que es lo que usan los botones del chat y de la ficha.
+ */
+const ARTEFACTOS: Record<string, { tipo: TipoArtefacto; etiqueta: string; nombre: string }> = {
+  derecho_peticion: {
+    tipo: 'derecho_peticion',
+    etiqueta: 'Redactando la carta para la alcaldía con los hechos del caso…',
+    nombre: 'carta-para-la-alcaldia',
+  },
+  paquete_evidencia: {
+    tipo: 'paquete_evidencia',
+    etiqueta: 'Armando el paquete de evidencia con su fuente oficial…',
+    nombre: 'paquete-de-evidencia',
+  },
+  informe_veeduria: {
+    tipo: 'informe_veeduria',
+    etiqueta: 'Redactando el informe de veeduría…',
+    nombre: 'informe-de-veeduria',
+  },
+  guia_denuncia: {
+    tipo: 'guia_denuncia',
+    etiqueta: 'Buscando el canal formal que corresponde…',
+    nombre: 'guia-de-denuncia',
+  },
+}
+
 export function PantallaArtefacto() {
   const { id = '' } = useParams()
+  const [parametros] = useSearchParams()
   const [copiado, setCopiado] = useState(false)
 
+  const cual = ARTEFACTOS[parametros.get('tipo') ?? ''] ?? ARTEFACTOS.derecho_peticion
+
   const { data: artefacto, isPending } = useQuery({
-    queryKey: ['artefacto', id],
-    queryFn: () => api.accion(id, 'derecho_peticion'),
+    queryKey: ['artefacto', id, cual.tipo],
+    queryFn: () => api.accion(id, cual.tipo),
   })
 
   async function copiar() {
@@ -45,7 +77,7 @@ export function PantallaArtefacto() {
     const url = URL.createObjectURL(blob)
     const enlace = document.createElement('a')
     enlace.href = url
-    enlace.download = `derecho-peticion-${id}.md`
+    enlace.download = `${cual.nombre}-${id}.md`
     enlace.click()
     URL.revokeObjectURL(url)
   }
@@ -53,7 +85,7 @@ export function PantallaArtefacto() {
   if (isPending) {
     return (
       <div className="space-y-6">
-        <Pensando estado="composing" etiqueta="Redactando el derecho de petición con los hechos del caso…" />
+        <Pensando estado="composing" etiqueta={cual.etiqueta} />
         <EsqueletoArtefacto />
       </div>
     )

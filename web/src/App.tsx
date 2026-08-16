@@ -1,9 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { BrowserRouter, Link, NavLink, Navigate, Outlet, Route, Routes } from 'react-router'
 import { IdiomaContext, useEstadoIdioma } from './lib/copy'
 import { HistorialContext, useEstadoHistorial, useHistorial } from './lib/historial'
-import { usandoFixtures } from './lib/api'
+import { respaldo, usandoFixtures } from './lib/api'
 import { Marca } from './componentes/Marca'
 import { PantallaLanding } from './pantallas/Landing'
 import { PantallaChat } from './pantallas/Chat'
@@ -64,6 +64,8 @@ function Marco() {
       {panelAbierto && <Panel onPlegar={() => setPanelAbierto(false)} />}
 
       <div className="flex min-w-0 flex-1 flex-col bg-[var(--color-fondo)] md:my-3 md:mr-3 md:border md:border-[var(--color-borde)]">
+        <AvisoRespaldo />
+
         <header className="flex items-center gap-4 border-b border-[var(--color-borde)] px-4 py-2.5">
           {panelAbierto ? (
             <Link to="/" aria-label="Lumen" className="md:hidden">
@@ -84,6 +86,32 @@ function Marco() {
         </main>
       </div>
     </div>
+  )
+}
+
+/**
+ * Cuando la API no responde, la app sigue viva contra los fixtures del repo —
+ * eso es el respaldo de grabación del brief (§5.3) y se queda. Lo que no puede
+ * quedarse es que no se note: un dato de ejemplo pintado igual que uno real es
+ * exactamente el "parece que funciona" que `AGENTS.md` prohíbe.
+ */
+function AvisoRespaldo() {
+  const estado = useSyncExternalStore(respaldo.suscribir, respaldo.leer)
+
+  if (!estado.activo) return null
+
+  return (
+    <p
+      role="status"
+      className="border-b border-[var(--color-medio)] bg-[var(--color-superficie-alta)] px-4 py-2 text-xs text-[var(--color-texto-tenue)]"
+    >
+      <span aria-hidden className="mr-1.5 text-[var(--color-medio)]">
+        ▲
+      </span>
+      {usandoFixtures
+        ? 'Datos de ejemplo: esta copia no está conectada a la API.'
+        : 'La API no respondió: lo que ves debajo son datos de ejemplo del repositorio, no una consulta real.'}
+    </p>
   )
 }
 

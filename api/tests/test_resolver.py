@@ -102,20 +102,64 @@ def llm_falso(monkeypatch: pytest.MonkeyPatch) -> _LLMFalso:
 
 
 def test_resolver_con_nombre_directo_no_llama_al_llm(llm_falso: _LLMFalso):
-    """Camino barato: el texto ya es un nombre, va directo a RUES."""
-    r = cliente.post("/resolver", json={"texto": "Conalvias"})
+    """Camino barato: el texto ya es un nombre, va directo a RUES.
+
+    El texto es "Constructora Ejemplo" y no "Conalvias" a propósito: desde el
+    16.ago "conalvias" es un alias del catálogo curado y ni siquiera llegaría a
+    RUES. Aquí se prueba el camino de RUES, así que el nombre tiene que ser uno
+    que el catálogo no conozca."""
+    r = cliente.post("/resolver", json={"texto": "Constructora Ejemplo"})
 
     assert llm_falso.llamadas == 0
     assert r.status_code == 200
     candidatos = r.json()
-    assert len(candidatos) == 2  # el duplicado de nombre se filtra
-    # El que trae NIT va primero: es el que sirve para seguir a /analizar.
+    # De los 3 que devuelve RUES: uno se cae por nombre duplicado y otro por no
+    # traer NIT (sin NIT no hay nada que analizar después).
+    assert len(candidatos) == 1
     assert candidatos[0]["nit"] == "890318278"
     assert candidatos[0]["nombre"] == "CONALVIAS CONSTRUCCIONES S.A.S. EN LIQUIDACION JUDICIAL"
     assert candidatos[0]["tipo"] == "empresa"
     assert candidatos[0]["actividad"].startswith("4210 - ")
-    assert candidatos[1]["nit"] is None
-    assert candidatos[1]["ciudad"] == "MEDELLIN PARA ANTIOQUIA"  # fallback a chamber_name
+
+
+def test_resolver_descarta_candidatos_sin_nit(llm_falso: _LLMFalso):
+    """El bug del bucle, fijado: RUES devuelve registros de cámara de comercio
+    sin NIT y el chat no puede hacer nada con ellos — al elegirlos volvía a
+    resolver el mismo texto y mostraba las mismas tarjetas, para siempre."""
+    r = cliente.post("/resolver", json={"texto": "Constructora Ejemplo"})
+
+    assert all(c["nit"] for c in r.json())
+
+
+def test_catalogo_curado_resuelve_sin_tocar_croma_ni_el_llm(
+    llm_falso: _LLMFalso, monkeypatch: pytest.MonkeyPatch
+):
+    """Brief §4.5.1: lo que el equipo ya verificó a mano no pasa por RUES.
+
+    Croma se rompe a propósito aquí: si el catálogo lo tocara, el test falla."""
+
+    async def _croma_prohibida(self, fuente: str, argumentos=None):
+        raise AssertionError("el catálogo curado no debe consultar Croma")
+
+    monkeypatch.setattr("lumen.croma.client.CromaClient.consultar", _croma_prohibida)
+
+    r = cliente.post("/resolver", json={"texto": "¿la Gobernación del Chocó tiene algo raro?"})
+
+    assert llm_falso.llamadas == 0
+    assert r.status_code == 200
+    candidatos = r.json()
+    assert len(candidatos) == 1
+    assert candidatos[0]["nit"] == "891680010"
+    assert candidatos[0]["tipo"] == "entidad"
+
+
+def test_catalogo_no_se_dispara_por_una_palabra_dentro_de_otra(llm_falso: _LLMFalso):
+    """"cali" es alias, pero "calidad" no puede despertarlo: el emparejamiento
+    es por palabra completa, no por subcadena."""
+    from lumen.ia import catalogo
+
+    assert catalogo.buscar("un contrato de calidad") == []
+    assert catalogo.buscar("la alcaldía de Cali") != []
 
 
 def test_resolver_sin_resultados_devuelve_lista_vacia(llm_falso: _LLMFalso):

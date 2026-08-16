@@ -9,6 +9,101 @@
 
 Brief vivo: [`docs/brief-final-claude.md`](docs/brief-final-claude.md). Reloj y carpetas: [`docs/PLAN.md`](docs/PLAN.md). Contrato: [`docs/CONTRATO-API.md`](docs/CONTRATO-API.md). Copy de señales: [`docs/COPY-SENALES.md`](docs/COPY-SENALES.md).
 
+## Verificación front↔back desplegados (domingo 16.ago ~05:30) — conectados, con 3 bugs de chat
+
+Se probó el Modo Vigilancia de punta a punta contra **los servicios desplegados**, sin mocks:
+Cloudflare Pages (`https://lumen-a1y.pages.dev`) contra Render (`https://lumen-api-cwt3.onrender.com`).
+
+**Conectados, confirmado.** `VITE_API_URL` está horneada en el bundle de Pages; el preflight CORS
+de `/chat` desde el dominio del front devuelve 200; `/health` y `/health/croma` en verde (Croma
+real, 16 herramientas); `POST /chat` con texto libre responde en 8,5 s con candidatos reales de
+RUES; `POST /chat` con NIT devuelve un `Caso` en 87 s y lo guarda; `POST /accion` sobre ese mismo
+`caso_id` devuelve el derecho de petición en 29 s; `GET /caso/{id}` lo lee de Supabase. Los deep
+links de la SPA responden 200 (el `_redirects` está publicado). El cron de `/monitor/nuevos` está
+vivo en los logs de Render.
+
+Los 6 bugs que salieron de esa verificación **ya están arreglados**, en dos commits: el bucle con
+candidatos sin NIT, las 3 de 4 tarjetas de "Por dónde empezar" que morían, el catálogo curado que
+no existía y `caso.narracion` en `None` van en `fix(ia)`; los chips de "siguientes pasos" que no
+hacían nada y el respaldo a fixture que se pintaba igual que un dato real, en `feat(web)`.
+
+### 🚨 La feature estrella estaba caída, y no se veía en ninguna pantalla
+
+`POST /justificacion` respondía **503 en 0,3 s**: `LUMEN_MODELO_FUERTE` estaba vacía en Render (y
+en el `.env` de ejemplo). Eran tres fallos apilados y ninguno se notaba desde la app, porque no
+había forma de llegar al lector: `web/src/lib/api.ts` no tenía método para ese endpoint, y
+`senales/motor.py` deja `Caso.lectura` en `None` siempre, así que `Lectura.tsx` — el componente
+que dice "la feature estrella" — no se pintaba nunca. Los 25 pts de IA del brief §3.1 no existían
+en la demo.
+
+**Ya está vivo.** `LUMEN_MODELO_FUERTE=claude-haiku-4-5` puesta en Render **desde el MCP, no está
+en git**: si alguien recrea el servicio o hace `render.yaml` desde cero, esa variable hay que
+volver a ponerla o el lector vuelve a dar 503. El modelo es Haiku porque es a lo que Freddy
+terminó bajando por cuota (Opus→Sonnet→Haiku, su tabla de las 04:00). Verificado en producción con
+un PDF real: `200`, veredicto `solida`, tres puntos y **cada uno con su cita verificada contra el
+texto del documento**.
+
+### Verificado en producción, después de desplegar (~06:00)
+
+Todo lo de abajo contra `lumen-api-cwt3.onrender.com` y `lumen-a1y.pages.dev`, no en local:
+
+| Qué | Antes | Ahora |
+|---|---|---|
+| "¿Cómo está contratando la Gobernación del Chocó?" | "no encontré nada" | 1 candidato curado, NIT `891680010` |
+| Elegir esa entidad → caso con S6 | 87 s | **1 s** (caché de Supabase) |
+| `/justificacion` con un PDF | 503 | 200, veredicto `solida` con citas |
+| Candidatos de RUES | 2 de 5 sin NIT, en bucle | todos con NIT |
+| `/caso/{id}` | sin narración | con la narración persistida |
+
+**Las 7 entradas del catálogo quedaron precalentadas** (Chocó, Valle, Buenaventura, Cali, Bogotá,
+Conalvías, Odinsa): la primera consulta de cada una costó 18-85 s y ya están en Supabase, así que
+ahora responden en 0-1 s. **Si alguien vacía la tabla `casos`, la demo vuelve a tardar minuto y
+medio por caso** — vale la pena repasarlas antes de grabar.
+
+**El frontend se despliega solo:** Cloudflare Pages está conectado al repo y publicó el commit
+`4af3e8e` sin que nadie corriera `npm run deploy`. Confirmado por el hash del bundle en vivo.
+`wrangler` a mano no funciona sin `CLOUDFLARE_API_TOKEN`, así que el camino bueno es push a `main`.
+
+## Monitor: un contrato ya visto se puede volver a consultar (domingo 16.ago)
+
+**El síntoma en los logs de Render:** `Gobernación del Chocó (891680010): sin actividad nueva
+(CO1.NTC.10708619 ya visto)`, corrida tras corrida. La entidad tiene un caso guardado y
+perfectamente consultable, y el monitor lo escondía: `/monitor/nuevos` respondía `[]` como si no
+hubiera nada. Con el cron cada 2 minutos, eso es lo que se ve el 99% del tiempo.
+
+**La causa:** el filtro de novedad era un booleano (`contrato_ya_conocido`), así que la única
+salida que tenía el monitor era `continue`. Y la llave es el proceso **más reciente** de la
+entidad, no todos: en cuanto ese `notice_uid` quedaba en base, la entidad enmudecía hasta que
+Croma publicara uno nuevo.
+
+**Lo que cambió** (`plataforma/casos.py`, `plataforma/monitor.py`, `routers/plataforma.py`,
+`mcp/herramientas.py`):
+
+- `contrato_ya_conocido` → `caso_de_contrato`, que devuelve el `Caso` entero en vez de sí/no. El
+  booleano queda como envoltorio de una línea por si alguien solo quiere preguntar.
+- Un contrato ya visto **se devuelve** en vez de saltarse: sin re-analizar (cero cuota de Croma) y
+  sin repetir la alerta. El log dice qué caso devolvió y cómo forzar el re-análisis.
+- `?forzar=true` en `GET /monitor/nuevos` y en la herramienta MCP `contratos_nuevos_del_monitor`:
+  ignora el filtro y re-analiza. Caro (~80-100 s por entidad), por eso es opt-in y la descripción
+  MCP se lo advierte al agente para que no lo llame por iniciativa propia.
+
+**Lo que hay que saber antes de tocarlo:**
+
+- **Cambió la semántica de la respuesta.** `/monitor/nuevos` ya no es "solo lo nuevo de esta
+  corrida": mezcla casos frescos con casos ya guardados, y el `Caso` no trae bandera para
+  distinguirlos. Para el video juega a favor; si algún consumidor asume que todo lo que llega es
+  nuevo, ahí hay que mirarlo.
+- **El front no puede forzar todavía.** `api.monitor(desde)` en `web/src/lib/api.ts` no manda el
+  parámetro. Es de Andrew, no se tocó — es una línea.
+- Re-analizar con `forzar` no duplica: el `id` del caso es determinista por entidad (`id_caso` en
+  `senales/motor.py`), así que el upsert por `id` actualiza la misma fila y no choca con el índice
+  único de `contrato_id`.
+
+**Cómo probarlo:** `pytest api/tests/test_monitor.py`. El barrido completo no se ejercitaba nunca
+— solo funciones sueltas — que es exactamente por qué el bug vivió ahí. Ahora hay un fixture que
+lo corre sin red y tres pruebas: ya-visto devuelve el caso sin analizar ni avisar, `forzar`
+re-analiza y avisa, y el camino nuevo sigue igual. Suite completa: **137 passed**.
+
 ## Ahora (domingo 16.ago ~04:00) — Freddy se va a dormir, backend en verde
 
 **Freddy (B2) deja los cuatro endpoints de IA completos y probados en vivo** (`/resolver`,

@@ -37,6 +37,17 @@ que un corte no deje la demo en blanco.
 El chat no duplica la ficha: importa `FichaCaso` y `TarjetaSenal` y las pinta dentro de
 la conversación.
 
-## Al desplegar
+## Las dos puntas, conectadas
 
-Avisarle a Cristian (B3) el dominio para que entre en `LUMEN_CORS_ORIGINS` en Render.
+| Sentido | Dónde vive | Valor |
+|---|---|---|
+| Front → back | `VITE_API_URL` en `web/.env` | `https://lumen-api-cwt3.onrender.com` |
+| Back → front | `LUMEN_FRONTEND_URL` en Render | `https://lumen-a1y.pages.dev` |
+
+`VITE_API_URL` se congela **en el build**, no en tiempo de ejecución: si cambia la URL de la
+API hay que volver a construir y desplegar, no basta con editar una variable en un panel.
+
+`LUMEN_FRONTEND_URL` no controla CORS (`LUMEN_CORS_ORIGINS` está en `*`, seguro porque la API
+monta CORS con `allow_credentials=False`). Solo arma el enlace que viaja dentro del mensaje de
+WhatsApp, y ese enlace apunta a `/app/caso/{id}` — con el prefijo `/app`, porque el catch-all
+del router manda todo lo demás al landing sin ningún error visible.

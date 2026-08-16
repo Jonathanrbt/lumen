@@ -17,7 +17,16 @@ log = logging.getLogger(__name__)
 MAX_HERMANAS_RUES = 1
 
 
-def _id_caso(llave: str) -> str:
+def id_caso(llave: str) -> str:
+    """El id de un Caso a partir de su llave (contrato, NIT o entidad).
+
+    Es determinista a proposito: la misma llave da siempre el mismo id, asi que
+    re-analizar algo lo reemplaza en vez de duplicarlo. Publica desde el
+    16.ago porque `ia/chat.py` la necesita para preguntarle a Supabase si un
+    caso ya existe **antes** de gastar 80 segundos de Croma re-analizandolo
+    (brief §4.6, Flujo B paso 4: "si el caso ya esta cacheado, responde al
+    instante"). Era `_id_caso`; solo cambio el nombre.
+    """
     return "caso-" + hashlib.sha256(llave.encode("utf-8")).hexdigest()[:12]
 
 
@@ -210,7 +219,7 @@ async def _analizar(peticion: AnalizarRequest, q: Consultas) -> Caso:
     fecha = a_fecha(contrato_foco.get("sign_date") or contrato_foco.get("published_date"))
 
     return Caso(
-        id=_id_caso(llave),
+        id=id_caso(llave),
         modo=modo,
         entidad=entidad_nombre,
         proveedor=nombre_prov,

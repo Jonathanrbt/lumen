@@ -26,8 +26,9 @@ from __future__ import annotations
 import logging
 
 from ..contracts import AnalizarRequest, Caso, ChatResponse
-from ..plataforma.casos import guardar_caso
+from ..plataforma.casos import guardar_caso, obtener_caso
 from ..routers.analisis import analizar
+from ..senales.motor import id_caso
 from .llm_client import CursorAgentError, LLMEjecucionError, Modelo, preguntar
 from .resolver import resolver_candidatos
 
@@ -78,10 +79,39 @@ def _siguientes_pasos_para(caso: Caso) -> list[str]:
     return pasos
 
 
+def _caso_cacheado(llaves: dict) -> Caso | None:
+    """El caso ya calculado, si existe. Brief §4.6, Flujo B paso 4.
+
+    El id sale de la misma llave determinista que usa el motor, asi que se
+    puede preguntar por el **sin** llamar a Croma. Importa de verdad: un
+    analisis por NIT tarda 80-100 s (`sicaac_insolvency_cases` sola se lleva
+    ~57 s), y los casos del catalogo curado ya estan precomputados. Esto es lo
+    que hace que la demo responda al instante en vez de dejar a alguien mirando
+    un spinner minuto y medio.
+
+    Best-effort igual que `guardar_caso`: si Supabase no esta configurado o
+    responde mal, se sigue por el camino largo en vez de tumbar el chat.
+    """
+    llave = llaves.get("contrato_id") or llaves.get("nit") or llaves.get("entidad_id")
+    if not llave:
+        return None
+    try:
+        return obtener_caso(id_caso(llave))
+    except Exception:  # noqa: BLE001 - el cache es un atajo, nunca un requisito
+        log.warning("No se pudo consultar el caso cacheado de %r; se re-analiza.", llave)
+        return None
+
+
 async def _analizar_desde_contexto(contexto: dict) -> Caso | None:
     llaves = {k: contexto[k] for k in ("nit", "entidad_id", "contrato_id") if contexto.get(k)}
     if not llaves:
         return None
+
+    cacheado = _caso_cacheado(llaves)
+    if cacheado is not None:
+        log.info("Caso %s servido desde Supabase, sin re-analizar.", cacheado.id)
+        return cacheado
+
     return await analizar(AnalizarRequest(**llaves))
 
 
@@ -123,8 +153,18 @@ async def responder_chat(mensaje: str, contexto: dict | None = None) -> ChatResp
 
     caso = await _analizar_desde_contexto(contexto)
     if caso is not None:
+        # Un caso que vuelve del cache ya trae su narracion escrita: reusarla
+        # ahorra una llamada al modelo por cada vez que alguien reabre el mismo
+        # caso, y el presupuesto de Cursor es de US$50 para los cuatro.
+        narracion = caso.narracion or await _narrar_caso(caso)
+
+        # La narracion vive DENTRO del caso, no solo en la respuesta del chat.
+        # Si no, al reabrir la ficha por `/caso/{id}` el parrafo desaparecia:
+        # `FichaCaso` solo lo pinta cuando `caso.narracion` existe, y el motor
+        # siempre lo deja en None (`senales/motor.py`).
+        caso = caso.model_copy(update={"narracion": narracion})
         _guardar_caso_best_effort(caso)
-        narracion = await _narrar_caso(caso)
+
         return ChatResponse(
             narracion=narracion,
             caso=caso,
