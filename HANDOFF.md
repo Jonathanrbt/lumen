@@ -27,6 +27,43 @@ candidatos sin NIT, las 3 de 4 tarjetas de "Por dónde empezar" que morían, el 
 no existía y `caso.narracion` en `None` van en `fix(ia)`; los chips de "siguientes pasos" que no
 hacían nada y el respaldo a fixture que se pintaba igual que un dato real, en `feat(web)`.
 
+### 🚨 La feature estrella estaba caída, y no se veía en ninguna pantalla
+
+`POST /justificacion` respondía **503 en 0,3 s**: `LUMEN_MODELO_FUERTE` estaba vacía en Render (y
+en el `.env` de ejemplo). Eran tres fallos apilados y ninguno se notaba desde la app, porque no
+había forma de llegar al lector: `web/src/lib/api.ts` no tenía método para ese endpoint, y
+`senales/motor.py` deja `Caso.lectura` en `None` siempre, así que `Lectura.tsx` — el componente
+que dice "la feature estrella" — no se pintaba nunca. Los 25 pts de IA del brief §3.1 no existían
+en la demo.
+
+**Ya está vivo.** `LUMEN_MODELO_FUERTE=claude-haiku-4-5` puesta en Render **desde el MCP, no está
+en git**: si alguien recrea el servicio o hace `render.yaml` desde cero, esa variable hay que
+volver a ponerla o el lector vuelve a dar 503. El modelo es Haiku porque es a lo que Freddy
+terminó bajando por cuota (Opus→Sonnet→Haiku, su tabla de las 04:00). Verificado en producción con
+un PDF real: `200`, veredicto `solida`, tres puntos y **cada uno con su cita verificada contra el
+texto del documento**.
+
+### Verificado en producción, después de desplegar (~06:00)
+
+Todo lo de abajo contra `lumen-api-cwt3.onrender.com` y `lumen-a1y.pages.dev`, no en local:
+
+| Qué | Antes | Ahora |
+|---|---|---|
+| "¿Cómo está contratando la Gobernación del Chocó?" | "no encontré nada" | 1 candidato curado, NIT `891680010` |
+| Elegir esa entidad → caso con S6 | 87 s | **1 s** (caché de Supabase) |
+| `/justificacion` con un PDF | 503 | 200, veredicto `solida` con citas |
+| Candidatos de RUES | 2 de 5 sin NIT, en bucle | todos con NIT |
+| `/caso/{id}` | sin narración | con la narración persistida |
+
+**Las 7 entradas del catálogo quedaron precalentadas** (Chocó, Valle, Buenaventura, Cali, Bogotá,
+Conalvías, Odinsa): la primera consulta de cada una costó 18-85 s y ya están en Supabase, así que
+ahora responden en 0-1 s. **Si alguien vacía la tabla `casos`, la demo vuelve a tardar minuto y
+medio por caso** — vale la pena repasarlas antes de grabar.
+
+**El frontend se despliega solo:** Cloudflare Pages está conectado al repo y publicó el commit
+`4af3e8e` sin que nadie corriera `npm run deploy`. Confirmado por el hash del bundle en vivo.
+`wrangler` a mano no funciona sin `CLOUDFLARE_API_TOKEN`, así que el camino bueno es push a `main`.
+
 ## Monitor: un contrato ya visto se puede volver a consultar (domingo 16.ago)
 
 **El síntoma en los logs de Render:** `Gobernación del Chocó (891680010): sin actividad nueva
