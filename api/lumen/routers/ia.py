@@ -21,6 +21,7 @@ from ..contracts import (
     Lectura,
     ResolverRequest,
 )
+from ..ia.resolver import resolver_candidatos
 
 router = APIRouter(tags=["IA · B2 Freddy"])
 
@@ -30,9 +31,10 @@ async def resolver(peticion: ResolverRequest) -> list[Candidato]:
     """Traduce lenguaje natural a entidades concretas. Sin pedir un NIT.
 
     Devuelve candidatos para que la persona desambigüe. **Nunca se asume cuál es.**
-    Si el texto cae en el catálogo curado, resuelve directo.
+    Camino barato primero (el texto ya es un nombre, va directo a RUES); si no
+    encuentra nada, `Modelo.RAPIDO` extrae el nombre de la pregunta libre.
     """
-    raise HTTPException(status_code=501, detail="Pendiente: B2 (Freddy). Resolución de entidades.")
+    return await resolver_candidatos(peticion.texto)
 
 
 @router.post("/justificacion", response_model=Lectura)

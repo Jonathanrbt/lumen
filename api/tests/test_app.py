@@ -42,8 +42,12 @@ def test_estan_los_nueve_endpoints_del_contrato():
 
 
 def test_los_endpoints_de_ia_sin_implementar_dicen_de_quien_son():
-    """Un 501 con el nombre del dueño ahorra una pregunta en el chat."""
-    r = cliente.post("/resolver", json={"texto": "Conalvias"})
+    """Un 501 con el nombre del dueño ahorra una pregunta en el chat.
+
+    `/resolver` ya no está en 501 (16.ago ~01:30, ver
+    docs/handoff/FREDDY-B2.md) — tiene su propia prueba en test_resolver.py.
+    """
+    r = cliente.post("/justificacion")
     assert r.status_code == 501
     assert "Freddy" in r.json()["detail"]
 

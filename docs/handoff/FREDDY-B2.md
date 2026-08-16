@@ -122,6 +122,38 @@ Si termino usando Evolution API en su lugar, este detalle no aplica y lo anoto a
 
 ## Bitácora
 
+### 01:35 — /resolver vivo, probado contra RUES real
+
+**Qué cambié.** `api/lumen/ia/resolver.py` + wireado en `api/lumen/routers/ia.py`. Dos caminos:
+camino barato (el texto ya es un nombre, va directo a `rues_entities_by_name`, cero LLM) y camino
+con LLM (`Modelo.RAPIDO` extrae el nombre de una pregunta libre cuando el camino barato no
+encuentra nada). Mapea la respuesta real de RUES a `Candidato`: NIT primero cuando hay varios
+(sirve para seguir a `/analizar`), deduplicado por nombre, `ciudad` cae a `chamber_name` cuando
+`commercial_municipality` viene vacío (casi siempre), `tipo` es una heurística documentada sobre
+`legal_organization`/`category` porque RUES es sobre todo un registro mercantil.
+
+**Hallazgo en vivo, no asumido:** RUES devuelve HTTP 400 si el texto tiene caracteres fuera de
+letras/números/espacios/`.,'&-()/+` — una pregunta con "¿" o "?" nunca pasa el camino barato. Por
+eso hay una validación de charset antes de llamar a Croma, y por eso el camino con LLM existe.
+
+**Probado de punta a punta con Croma y Cursor reales** (no solo mocks):
+- `"Conalvias"` → 5 candidatos reales, el que trae NIT primero.
+- `"¿la alcaldía de mi pueblo tiene algo raro?"` → `[]` correctamente: el LLM no encontró un
+  nombre propio, y no se inventa uno.
+- `"el metro de Bogotá"` → candidatos reales relacionados, ninguno es literalmente "Metro de
+  Bogotá" — coincide con lo que Jonatin ya había verificado ("no aparece como Empresa Metro en
+  RUES"), no es un bug de mi lado.
+
+**Guardarraíl añadido:** si el LLM no arranca (`CursorAgentError`, config/red) o corre y falla
+(`LLMEjecucionError`), `/resolver` se degrada a lista vacía, nunca un 500 — es un endpoint de cara
+al ciudadano y el camino barato ya cubre el caso común sin depender del LLM.
+
+**Tests:** `api/tests/test_resolver.py`, 7 casos con Croma y LLM mockeados (sin red, sin
+presupuesto). Ajusté `test_app.py`: el test de "endpoints en 501" ahora prueba `/justificacion`
+(que sigue pendiente) en vez de `/resolver`. Suite completa: 49 passed.
+
+**Qué sigue:** `/justificacion` — el lector de justificaciones, el núcleo del producto.
+
 ### 01:15 — llm_client vivo, modelos fijados con Cursor.models.list() real
 
 **Qué cambié.** `Cursor.models.list()` corrido de verdad (no hardcodeado a ciegas): confirmé
