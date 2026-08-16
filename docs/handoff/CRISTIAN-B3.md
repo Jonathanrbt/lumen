@@ -9,10 +9,23 @@ Jonatin**, que es el dueño del hito: él lo recorre y decide si existe o si se 
 la pide por el chat.
 **Desde las 22:00 soy suplente de Jonatin** para la revisión final de señales y fuentes, porque él
 se va al video.
+**Desde las 22:14, WhatsApp/Twilio ya no es mío.** Se reasignó a Freddy por decisión del equipo —
+detalle abajo y en `docs/handoff/FREDDY-B2.md`. Sigo siendo dueño de `/alerta` como puerta pública
+del contrato; lo que cambia es que el envío real lo implementa el cliente de Freddy en
+`api/lumen/whatsapp/`, no yo.
 
 > Se actualiza al cerrar cada bloque: 20:45, 22:00, 23:00, 02:00.
 
 ---
+
+## 22:14 — WhatsApp/Twilio se reasigna a Freddy
+
+Después del timebox de las 20:45–21:45, WhatsApp pasa a ser propiedad de Freddy (B2), con libertad
+de usar Twilio o Evolution API, el que responda mejor. Vive en `api/lumen/whatsapp/`, carpeta nueva
+que no toca `api/lumen/plataforma/`. Yo mantengo `/alerta` como endpoint del contrato — la puerta
+pública no cambia — pero el envío real ya no lo escribo yo, lo consumo del cliente de Freddy. Todo
+lo demás de mi bloque (Supabase, monitor, cache, deploy) sigue igual. Detalle completo en
+[`docs/handoff/FREDDY-B2.md`](FREDDY-B2.md).
 
 ## 19:20 — Qué me cambió el v3.1, y te toca a ti más que a nadie
 

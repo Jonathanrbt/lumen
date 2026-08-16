@@ -14,8 +14,8 @@ y el dueño del hito de las 23:00.
 | Rol | Persona | De qué es dueño | Endpoints suyos |
 |---|---|---|---|
 | **B1 — Datos** | **Jonatin** | Cliente Croma, normalización, las 8 señales, el grafo de actores, validación a mano del catálogo curado y de los casos históricos | `/analizar`, `/red/{nit}` |
-| **B2 — IA** | **Freddy** | `llm_client` blindado, lector de justificaciones, resolución de entidades, prompts, narración ciudadana, generador de artefactos | `/resolver`, `/justificacion`, `/accion`, `/chat` |
-| **B3 — Plataforma** | **Cristian** | FastAPI y ensamblado, monitor programado, Supabase y sus migraciones, despliegue en Render, Twilio si sobrevive | `/caso/{id}`, `/monitor/nuevos`, `/alerta` |
+| **B2 — IA** | **Freddy** | `llm_client` blindado, lector de justificaciones, resolución de entidades, prompts, narración ciudadana, generador de artefactos, y **desde las 22:14, WhatsApp** (Twilio o Evolution API, el que sirva) | `/resolver`, `/justificacion`, `/accion`, `/chat` |
+| **B3 — Plataforma** | **Cristian** | FastAPI y ensamblado, monitor programado, Supabase y sus migraciones, despliegue en Render | `/caso/{id}`, `/monitor/nuevos`, `/alerta` |
 | **UI/UX** | **Andrew** | **Todo el frontend, incluidas las decisiones de tecnología.** Las 4 pantallas, el grafo, el copy, y su propio despliegue | — |
 | **Video** | **Jonatin**, desde las 22:00 | Guion, grabación, subtítulos, corte final | — |
 
@@ -42,7 +42,8 @@ territorio ajeno, lo pides por el chat del equipo. Cuesta un minuto y ahorra un 
 | `api/lumen/routers/analisis.py` | Jonatin | |
 | `api/lumen/ia/` | Freddy | `llm_client`, lector, prompts, narración, artefactos |
 | `api/lumen/routers/ia.py` | Freddy | |
-| `api/lumen/plataforma/` | Cristian | Supabase, monitor, alertas, cache |
+| `api/lumen/whatsapp/` | **Freddy**, desde las 22:14 | Cliente de WhatsApp (Twilio o Evolution API). Reasignado, ver `docs/handoff/FREDDY-B2.md` |
+| `api/lumen/plataforma/` | Cristian | Supabase, monitor, alertas, cache. `/alerta` sigue siendo suyo y llama al cliente de Freddy para el envío |
 | `api/lumen/routers/plataforma.py` | Cristian | |
 | `api/lumen/main.py`, `api/lumen/config.py` | Cristian | Ya están escritos. Tocarlos debería ser raro |
 | `supabase/migrations/` | **Cristian y nadie más** | Dos personas migrando a la vez rompen la base compartida |
@@ -65,7 +66,7 @@ El parche v3.1 añade trabajo que no estaba repartido. Esto lo reparte, sin camb
 | Storyboard nuevo del video, sin leyes y con protagonista | **Jonatin**, desde las 22:00 | — | `video/` |
 | Que las leyes sigan íntegras donde sí suman | **Jonatin** (README) y **Freddy** (cuerpo de la carta) | Jurado | `README.md`, `/accion` |
 | Reconocer a la mentora, si autoriza | **Jonatin** | — | `README.md` |
-| Que exista un WhatsApp real, ahora que es la tesis del producto | **Cristian**, prioridad 1 de su bloque de 20:45 | Jonatin (video) | `api/lumen/plataforma/` |
+| Que exista un WhatsApp real, ahora que es la tesis del producto | ~~Cristian~~ **Freddy**, reasignado a las 22:14 tras el timebox de Cristian | Jonatin (video) | `api/lumen/whatsapp/` |
 
 **La regla que hace que esto funcione:** las nueve frases se escriben **una sola vez**, en
 [`COPY-SENALES.md`](COPY-SENALES.md). Nadie las reescribe en su capa. Si cuatro personas maquillan el
@@ -203,6 +204,12 @@ de las 23:00 no se mueve.
 
 **Se entrega a las 08:00, no a las 08:55.** El deck dice que no se aceptan retrasos, y una subida
 que falla a las 08:50 no tiene plan B.
+
+> **Actualización 22:14 — Twilio/WhatsApp cambia de dueño.** La tabla de arriba queda como registro
+> de lo planeado a las 17:30; en la práctica, WhatsApp se reasignó de Cristian a Freddy tras el
+> timebox de las 20:45–21:45. A partir de aquí, en el bloque de Freddy lee "WhatsApp (Twilio o
+> Evolution API)" donde el reloj original decía "Resolución de entidades + narración" — ambas cosas
+> conviven. Detalle en `docs/handoff/FREDDY-B2.md` y `docs/handoff/CRISTIAN-B3.md`.
 
 ### Los dos momentos en los que se corta, sin discusión
 

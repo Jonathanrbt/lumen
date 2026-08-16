@@ -9,13 +9,19 @@
 
 Brief vivo: [`docs/brief-final-claude.md`](docs/brief-final-claude.md). Reloj y carpetas: [`docs/PLAN.md`](docs/PLAN.md). Contrato: [`docs/CONTRATO-API.md`](docs/CONTRATO-API.md). Copy de señales: [`docs/COPY-SENALES.md`](docs/COPY-SENALES.md).
 
-## Ahora (sábado 15.ago ~22:15)
+## Ahora (sábado 15.ago ~22:20)
 
 Andamio listo. Empieza el build. Croma verificado. Endpoints en 501 por dueño.
 
 **Croma:** el motor consulta la **API HTTP** (`POST /co/…/v1`). Sin `CROMA_MCP_URL`.
 Guías y aliases en `HERRAMIENTAS.md` §1. Leer la guía **antes** de cada `consultar`.
 
-Pendiente de producto: Twilio (prioridad 1 de Cristian, corte 21:45). Link del repo oficial de entrega. Supabase cloud. Motor de señales (Jonatin). `llm_client` (Freddy). Frontend (Andrew).
+**Cambio de reparto:** WhatsApp/Twilio se reasignó de Cristian a Freddy tras el timebox de las
+20:45–21:45. Vive en `api/lumen/whatsapp/`, carpeta nueva; Freddy puede usar Twilio o Evolution API.
+Cristian conserva `/alerta` como puerta del contrato. Detalle en
+[`docs/handoff/FREDDY-B2.md`](docs/handoff/FREDDY-B2.md) y
+[`docs/handoff/CRISTIAN-B3.md`](docs/handoff/CRISTIAN-B3.md).
+
+Pendiente de producto: WhatsApp real (ahora prioridad de Freddy). Link del repo oficial de entrega. Supabase cloud. Motor de señales (Jonatin). `llm_client` (Freddy). Frontend (Andrew).
 
 No tocar: `.githooks/pre-commit`, `api/lumen/contracts/` sin anunciarlo, `supabase/migrations/` si no eres Cristian, `web/` si no eres Andrew.
