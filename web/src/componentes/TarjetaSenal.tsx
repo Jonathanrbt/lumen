@@ -20,7 +20,7 @@ function valorLegible(valor: unknown): string {
 
 export function TarjetaSenal({ senal }: { senal: Senal }) {
   return (
-    <article className="rounded-xl border border-[var(--color-borde)] bg-[var(--color-superficie)] p-4">
+    <article className="border border-[var(--color-borde)] bg-[var(--color-superficie)] p-4">
       <header className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="rounded bg-[var(--color-superficie-alta)] px-1.5 py-0.5 font-mono text-xs text-[var(--color-texto-tenue)]">

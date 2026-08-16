@@ -60,7 +60,7 @@ export function Grafo({ grafo }: { grafo: TipoGrafo }) {
 
       <svg
         viewBox={`0 0 ${ANCHO} ${ALTO}`}
-        className="mt-2 w-full rounded-xl border border-[var(--color-borde)] bg-[var(--color-superficie)]"
+        className="mt-2 w-full border border-[var(--color-borde)] bg-[var(--color-superficie)]"
         role="img"
         aria-label={`Red de ${grafo.nodos.length} actores y ${grafo.aristas.length} vínculos`}
       >
@@ -125,7 +125,7 @@ export function Grafo({ grafo }: { grafo: TipoGrafo }) {
         {grafo.aristas.map((a, i) => (
           <li
             key={i}
-            className="rounded-lg border border-[var(--color-borde)] bg-[var(--color-superficie)] px-3 py-2 text-sm"
+            className="border border-[var(--color-borde)] bg-[var(--color-superficie)] px-3 py-2 text-sm"
           >
             <span className="font-medium">{porId.get(a.origen)?.nombre ?? a.origen}</span>{' '}
             <span className="text-[var(--color-texto-tenue)]">

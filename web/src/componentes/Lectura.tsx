@@ -30,7 +30,7 @@ export function Lectura({ lectura }: { lectura: TipoLectura }) {
   const v = VEREDICTO[lectura.veredicto]
 
   return (
-    <section className="rounded-xl border border-[var(--color-borde)] bg-[var(--color-superficie)] p-4">
+    <section className="border border-[var(--color-borde)] bg-[var(--color-superficie)] p-4">
       <header>
         <p className="text-xs uppercase tracking-wide text-[var(--color-texto-tenue)]">
           Lectura de la justificación de urgencia

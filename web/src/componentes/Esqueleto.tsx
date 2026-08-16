@@ -13,7 +13,7 @@ export function Barra({ ancho = 'w-full', alto = 'h-4' }: { ancho?: string; alto
 /** Con la misma silueta que TarjetaSenal: título, regla, dato y fuente. */
 export function EsqueletoSenal() {
   return (
-    <div className="rounded-xl border border-[var(--color-borde)] bg-[var(--color-superficie)] p-4">
+    <div className="border border-[var(--color-borde)] bg-[var(--color-superficie)] p-4">
       <div className="flex items-center gap-2">
         <Barra ancho="w-12" alto="h-5" />
         <Barra ancho="w-40" alto="h-5" />
