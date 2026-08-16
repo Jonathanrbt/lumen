@@ -92,7 +92,7 @@ function Panel({ onPlegar }: { onPlegar: () => void }) {
   const { consultas, activa, abrir, nueva } = useHistorial()
 
   return (
-    <aside className="hidden w-60 shrink-0 flex-col px-3 py-4 md:flex">
+    <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col overflow-y-auto px-3 py-4 md:flex">
       <div className="flex items-center justify-between pb-5 pl-2">
         <Link to="/" aria-label="Lumen">
           <Marca tamano="sm" />
