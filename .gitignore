@@ -70,3 +70,9 @@ video/crudo/
 .cursor/
 .claude/
 openspec/
+
+# Skills de HyperFrames instaladas localmente para producir el video (21 MB de
+# herramientas, no del proyecto). Se reinstalan con:
+#   npx skills add heygen-com/hyperframes --full-depth
+.agents/
+skills-lock.json
