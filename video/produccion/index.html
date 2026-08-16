@@ -58,10 +58,18 @@
         border: 4px solid oklch(0.74 0.15 264 / 0.7);
       }
       .etiqueta { font-size: 42px; font-weight: 600; color: oklch(0.95 0.008 260); white-space: nowrap; }
-      .p1 { top: 480px; left: 340px; }
-      .p2 { top: 780px; left: 210px; }
-      .p3 { top: 1080px; left: 400px; }
-      .p4 { top: 1380px; left: 260px; }
+      /* El dato real que encontró el motor en esa entidad. */
+      .dato {
+        font-size: 30px;
+        font-weight: 500;
+        color: oklch(0.8 0.14 75);
+        white-space: nowrap;
+        margin-top: -10px;
+      }
+      .p1 { top: 470px; left: 340px; }
+      .p2 { top: 770px; left: 190px; }
+      .p3 { top: 1070px; left: 380px; }
+      .p4 { top: 1370px; left: 250px; }
       .linea { position: absolute; background: oklch(0.34 0.02 260); width: 4px; }
       .l1 { top: 520px; left: 358px; height: 268px; transform: rotate(-14deg); }
       .l2 { top: 820px; left: 300px; height: 268px; transform: rotate(20deg); }
@@ -94,9 +102,9 @@
         <div id="l2" class="linea l2"></div>
         <div id="l3" class="linea l3"></div>
         <div id="p1" class="punto p1"><div class="anillo"><div id="eco1a" class="anillo-eco"></div><div id="eco1b" class="anillo-eco"></div></div><span class="etiqueta">Cali</span></div>
-        <div id="p2" class="punto p2"><div class="anillo"><div id="eco2a" class="anillo-eco"></div><div id="eco2b" class="anillo-eco"></div></div><span class="etiqueta">Buenaventura</span></div>
-        <div id="p3" class="punto p3"><div class="anillo"><div id="eco3a" class="anillo-eco"></div><div id="eco3b" class="anillo-eco"></div></div><span class="etiqueta">Valle del Cauca</span></div>
-        <div id="p4" class="punto p4"><div class="anillo"><div id="eco4a" class="anillo-eco"></div><div id="eco4b" class="anillo-eco"></div></div><span class="etiqueta">Chocó</span></div>
+        <div id="p2" class="punto p2"><div class="anillo"><div id="eco2a" class="anillo-eco"></div><div id="eco2b" class="anillo-eco"></div></div><span class="etiqueta">Buenaventura</span><span id="d2" class="dato">25 contratos</span></div>
+        <div id="p3" class="punto p3"><div class="anillo"><div id="eco3a" class="anillo-eco"></div><div id="eco3b" class="anillo-eco"></div></div><span class="etiqueta">Valle del Cauca</span><span id="d3" class="dato">40 contratos</span></div>
+        <div id="p4" class="punto p4"><div class="anillo"><div id="eco4a" class="anillo-eco"></div><div id="eco4b" class="anillo-eco"></div></div><span class="etiqueta">Chocó</span><span id="d4" class="dato">97 contratos</span></div>
         <div id="texto-mapa" class="texto-mapa">Los contratos se firman rápido. Sin concurso.</div>
       </section>
     </div>
@@ -132,6 +140,17 @@
           tl.fromTo(e2, { scale: 1, autoAlpha: 0.9 }, { scale: 4.2, autoAlpha: 0, duration: 2.2, ease: 'power1.out', repeat: 2 }, t + 1.1);
         }
       }
+
+      // El dato real entra un instante después de su punto: primero el lugar,
+      // después la cifra que el motor encontró ahí. Cali no lleva cifra a
+      // propósito — su barrido no disparó la señal, y no se inventa una.
+      const datos = [['#d2', M + 1.7], ['#d3', M + 2.1], ['#d4', M + 2.5]];
+      for (const [did, t] of datos) {
+        tl.fromTo(did, { autoAlpha: 0, y: -6 }, { autoAlpha: 1, y: 0, duration: 0.35, ease: 'power2.out' }, t);
+      }
+
+      // Zoom lento sobre toda la escena: 8 segundos quietos se sienten muertos.
+      tl.fromTo('#escena-mapa', { scale: 1 }, { scale: 1.06, duration: 8, ease: 'none' }, M);
 
       tl.fromTo('#texto-mapa', { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out' }, M + 2.6);
       tl.to('#texto-mapa', { autoAlpha: 1, duration: 4.4 }, M + 3.2);
