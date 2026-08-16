@@ -21,6 +21,7 @@ import demoVigilancia from '../assets/demo-vigilancia.png'
 import pixelAgente from '../assets/pixel-agente.png'
 import pixelAve from '../assets/pixel-ave.png'
 import pixelBici from '../assets/pixel-bici.png'
+import victoria from '../assets/victoria.png'
 import mundo from '../assets/mundo.mp4'
 
 const CROMA = 'https://usecroma.com'
@@ -285,13 +286,33 @@ export function PantallaLanding() {
           className="border-y border-[var(--color-borde)] bg-[var(--color-superficie)]"
         >
           <div className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
-            <Rubrica>{t.senalesEtiqueta}</Rubrica>
-            <h2 className="mt-6 max-w-3xl font-serif text-[clamp(1.75rem,3.2vw,2.6rem)] font-normal leading-[1.15]">
-              {t.senalesTitulo}
-            </h2>
-            <p className="mt-6 max-w-2xl leading-relaxed text-[var(--color-texto-tenue)]">
-              {t.senalesBajada}
-            </p>
+            <div className="grid items-end gap-12 sm:grid-cols-[1fr_minmax(0,17rem)] sm:gap-16">
+              <div>
+                <Rubrica>{t.senalesEtiqueta}</Rubrica>
+                <h2 className="mt-6 max-w-3xl font-serif text-[clamp(1.75rem,3.2vw,2.6rem)] font-normal leading-[1.15]">
+                  {t.senalesTitulo}
+                </h2>
+                <p className="mt-6 max-w-2xl leading-relaxed text-[var(--color-texto-tenue)]">
+                  {t.senalesBajada}
+                </p>
+              </div>
+
+              {/* La Victoria sobre la nube de datos: por abajo se disuelve en la piedra. */}
+              <div className="relative justify-self-center sm:justify-self-end">
+                <img
+                  src={victoria}
+                  alt=""
+                  aria-hidden
+                  className="w-52 mix-blend-multiply sm:w-full"
+                />
+                <div
+                  className="absolute inset-x-0 bottom-0 h-1/2"
+                  style={{
+                    background: `linear-gradient(to bottom, transparent, ${MARMOL(70)} 45%, var(--color-superficie) 100%)`,
+                  }}
+                />
+              </div>
+            </div>
 
             <ul className="mt-14 grid gap-px border border-[var(--color-borde)] bg-[var(--color-borde)] sm:grid-cols-2">
               {t.senales.map((senal) => (
