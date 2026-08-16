@@ -13,9 +13,75 @@ sano.
 
 from __future__ import annotations
 
+import json
+from collections.abc import Iterator
+from pathlib import Path
+from typing import Any
+
 import pytest
 
+from lumen.contracts import Caso
 from lumen.plataforma import monitor
+
+RAIZ = Path(__file__).resolve().parents[2]
+DUMP = RAIZ / "fixtures" / "casos_demo.json"
+
+
+def _un_caso() -> Caso:
+    crudo = json.loads(DUMP.read_text(encoding="utf-8"))
+    casos = crudo if isinstance(crudo, list) else crudo.get("casos", [])
+    if not casos:
+        pytest.skip("El dump no tiene casos")
+    return Caso.model_validate(casos[0])
+
+
+class _CromaFalso:
+    """El barrido abre un `CromaClient`; aquí nadie sale a la red."""
+
+    async def __aenter__(self) -> "_CromaFalso":
+        return self
+
+    async def __aexit__(self, *_: Any) -> bool:
+        return False
+
+
+@pytest.fixture
+def barrido_de_una_entidad(monkeypatch: pytest.MonkeyPatch) -> Iterator[dict[str, Any]]:
+    """Un barrido sin red: una entidad, un proceso, y registro de lo que pasó."""
+    from lumen.config import get_settings
+
+    registro: dict[str, Any] = {"analizados": [], "guardados": [], "avisados": []}
+
+    monkeypatch.setenv("CROMA_API_KEY", "llave-de-prueba")
+    get_settings.cache_clear()
+
+    monkeypatch.setattr(
+        monitor, "ENTIDADES_EMERGENCIA", [{"nombre": "Gobernación del Chocó", "nit": "891680010"}]
+    )
+    monkeypatch.setattr(monitor, "CromaClient", _CromaFalso)
+
+    async def _procesos(*_: Any, **__: Any) -> list[dict[str, Any]]:
+        return [{"notice_uid": "CO1.NTC.10708619", "published_date": "2026-08-14"}]
+
+    monkeypatch.setattr(monitor, "_procesos_de_entidad", _procesos)
+
+    async def _analizar(peticion: Any) -> Caso:
+        registro["analizados"].append(peticion.entidad_id)
+        return _un_caso()
+
+    monkeypatch.setattr(monitor, "analizar", _analizar)
+    monkeypatch.setattr(
+        monitor,
+        "guardar_caso",
+        lambda caso, **kwargs: registro["guardados"].append((caso.id, kwargs.get("contrato_id"))),
+    )
+
+    async def _avisar(caso: Caso) -> None:
+        registro["avisados"].append(caso.id)
+
+    monkeypatch.setattr(monitor, "_avisar_si_corresponde", _avisar)
+    yield registro
+    get_settings.cache_clear()
 
 
 def test_la_llave_de_novedad_es_notice_uid():
@@ -56,6 +122,55 @@ def test_found_false_es_lista_vacia_no_error():
 def test_se_extraen_los_procesos_de_la_envoltura():
     datos = {"processes": [{"notice_uid": "a"}, {"notice_uid": "b"}], "found": True}
     assert len(monitor._procesos_de(datos)) == 2
+
+
+@pytest.mark.anyio
+async def test_un_contrato_ya_visto_devuelve_el_caso_guardado(
+    monkeypatch: pytest.MonkeyPatch, barrido_de_una_entidad: dict[str, Any]
+):
+    """El bug del que nace `forzar`: la segunda consulta se quedaba en `[]`.
+
+    "Gobernación del Chocó (891680010): sin actividad nueva (CO1.NTC.10708619
+    ya visto)" — la entidad tiene un caso perfectamente consultable y el
+    monitor lo escondía. Ahora lo devuelve, sin re-analizar ni volver a avisar.
+    """
+    guardado = _un_caso()
+    monkeypatch.setattr(monitor, "caso_de_contrato", lambda _: guardado)
+
+    casos = await monitor.monitor_nuevos()
+
+    assert [c.id for c in casos] == [guardado.id]
+    assert barrido_de_una_entidad["analizados"] == []  # no se gastó cuota de Croma
+    assert barrido_de_una_entidad["avisados"] == []  # ni se repitió la alerta
+
+
+@pytest.mark.anyio
+async def test_forzar_reanaliza_aunque_el_contrato_ya_este_en_base(
+    monkeypatch: pytest.MonkeyPatch, barrido_de_una_entidad: dict[str, Any]
+):
+    monkeypatch.setattr(monitor, "caso_de_contrato", lambda _: _un_caso())
+
+    casos = await monitor.monitor_nuevos(forzar=True)
+
+    assert len(casos) == 1
+    assert barrido_de_una_entidad["analizados"] == ["891680010"]
+    assert barrido_de_una_entidad["guardados"] == [(casos[0].id, "CO1.NTC.10708619")]
+    assert barrido_de_una_entidad["avisados"] == [casos[0].id]
+
+
+@pytest.mark.anyio
+async def test_un_contrato_nuevo_se_analiza_y_se_avisa(
+    monkeypatch: pytest.MonkeyPatch, barrido_de_una_entidad: dict[str, Any]
+):
+    """El camino de siempre no cambia: sin caso en base, se analiza y se guarda."""
+    monkeypatch.setattr(monitor, "caso_de_contrato", lambda _: None)
+
+    casos = await monitor.monitor_nuevos()
+
+    assert len(casos) == 1
+    assert barrido_de_una_entidad["analizados"] == ["891680010"]
+    assert barrido_de_una_entidad["guardados"] == [(casos[0].id, "CO1.NTC.10708619")]
+    assert barrido_de_una_entidad["avisados"] == [casos[0].id]
 
 
 @pytest.mark.anyio

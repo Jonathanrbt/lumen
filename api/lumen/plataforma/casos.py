@@ -65,13 +65,21 @@ def obtener_caso(caso_id: str) -> Caso | None:
     return Caso.model_validate(resultado.data[0]["cuerpo"])
 
 
-def contrato_ya_conocido(contrato_id: str) -> bool:
-    """Filtro de novedad: True si ese contrato ya tiene un Caso guardado.
+def caso_de_contrato(contrato_id: str) -> Caso | None:
+    """El Caso ya guardado para ese identificador crudo de Croma, si existe.
 
-    Sin Supabase no hay historia que consultar, asi que todo es "nuevo". Se
-    devuelve False en vez de reventar para que el barrido pueda probarse antes
-    de que la base exista — el precio es que sin base se reprocesa todo, que es
-    exactamente lo que uno espera cuando no hay donde recordar.
+    Devuelve el caso entero y no un booleano a proposito: el monitor no solo
+    necesita saber que un `notice_uid` ya se vio, tambien necesita **poder
+    volver a mostrarlo**. Con un `bool` la unica salida era descartarlo, y una
+    entidad cuyo proceso mas reciente ya estaba en base quedaba muda para
+    siempre ("sin actividad nueva") aunque su caso existiera y fuera
+    consultable.
+
+    Sin Supabase no hay historia que consultar, asi que no hay nada que
+    devolver. Se degrada a `None` en vez de reventar para que el barrido pueda
+    probarse antes de que la base exista — el precio es que sin base se
+    reprocesa todo, que es exactamente lo que uno espera cuando no hay donde
+    recordar.
     """
     try:
         supabase = get_supabase()
@@ -79,9 +87,20 @@ def contrato_ya_conocido(contrato_id: str) -> bool:
         log.warning(
             "Sin Supabase no hay filtro de novedad: se tratara %s como nuevo.", contrato_id
         )
-        return False
+        return None
 
     resultado = (
-        supabase.table(TABLA).select("id").eq("contrato_id", contrato_id).limit(1).execute()
+        supabase.table(TABLA).select("cuerpo").eq("contrato_id", contrato_id).limit(1).execute()
     )
-    return bool(resultado.data)
+    if not resultado.data:
+        return None
+    return Caso.model_validate(resultado.data[0]["cuerpo"])
+
+
+def contrato_ya_conocido(contrato_id: str) -> bool:
+    """True si ese contrato ya tiene un Caso guardado.
+
+    Se mantiene por comodidad de quien solo quiere el si/no; el monitor usa
+    `caso_de_contrato` porque necesita el caso, no la respuesta.
+    """
+    return caso_de_contrato(contrato_id) is not None

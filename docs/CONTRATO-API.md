@@ -22,9 +22,14 @@ handoff. Añadir un campo opcional es barato. Renombrar o quitar uno, no.
 | `POST` | `/justificacion` | PDF (multipart) o `{ url }` | `Lectura` | Freddy · B2 |
 | `GET` | `/red/{nit}` | — | `Grafo` | Jonatin · B1 |
 | `POST` | `/accion` | `{ caso_id, tipo }` | `Artefacto` | Freddy · B2 |
-| `GET` | `/monitor/nuevos` | `?desde=` | `Caso[]` | Cristian · B3 |
+| `GET` | `/monitor/nuevos` | `?desde=`, `?forzar=` | `Caso[]` | Cristian · B3 |
 | `POST` | `/alerta` | `{ caso_id, destinatario }` | `{ estado, detalle? }` | Cristian · B3 |
 | `POST` | `/chat` | `{ mensaje, contexto? }` | `{ narracion, caso?, candidatos?, siguientes_pasos[] }` | Freddy · B2 |
+
+Sobre `/monitor/nuevos`: un contrato ya visto **no desaparece de la respuesta**. Si su caso ya está
+en base se devuelve tal cual, sin re-analizar ni repetir la alerta, para que la misma entidad se
+pueda consultar las veces que haga falta. `?forzar=true` re-analiza desde cero — caro (~80-100 s
+por entidad de cuota compartida de Croma), úsalo solo para refrescar un caso viejo.
 
 Más dos de salud, que no son del contrato pero los vas a usar todo el rato:
 

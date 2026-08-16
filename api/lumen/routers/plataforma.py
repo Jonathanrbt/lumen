@@ -48,18 +48,24 @@ async def obtener_caso_endpoint(caso_id: str) -> Caso:
 @router.get("/monitor/nuevos", response_model=list[Caso])
 async def monitor_nuevos_endpoint(
     desde: date | None = Query(default=None, description="Fecha mínima de publicación"),
+    forzar: bool = Query(
+        default=False,
+        description="Re-analiza aunque el contrato ya esté en base (caro: ~80-100 s por entidad)",
+    ),
 ) -> list[Caso]:
-    """Los contratos nuevos que el monitor encontró y convirtió en casos.
+    """Los contratos que el monitor encontró en las entidades afectadas.
 
     El monitor pide a Croma los contratos con causal de urgencia en los
-    departamentos afectados desde el 11 de agosto, descarta lo que ya está en base
-    y solo procesa lo nuevo.
+    departamentos afectados desde el 11 de agosto. Lo que ya está en base no se
+    vuelve a analizar, pero **sí se devuelve**: el mismo documento se puede
+    consultar varias veces sin que la respuesta se quede vacía. Con
+    `?forzar=true` se re-analiza todo desde cero.
 
     Ojo con la zona horaria: Render corre en UTC y nosotros razonamos en Bogotá
     (UTC-5). Las fechas van explícitas.
     """
     try:
-        return await monitor_nuevos(desde)
+        return await monitor_nuevos(desde, forzar=forzar)
     except SupabaseNoConfigurado as err:
         raise HTTPException(status_code=503, detail=str(err)) from err
     except (CromaError, CromaSinRespuesta, httpx.HTTPError) as err:

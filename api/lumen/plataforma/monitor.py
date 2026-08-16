@@ -1,9 +1,11 @@
 """Monitor de Modo Emergencia. Dueno: Cristian (B3).
 
 Camina los pasos 1-2 y 7-9 del Flujo A (docs/brief-final-claude.md §4.6):
-encuentra actividad contractual nueva en las entidades afectadas, descarta lo
-que ya esta en base, arma el Caso llamando al motor de Jonatin (B1) y dispara
-alertas si el nivel de atencion lo amerita.
+encuentra actividad contractual nueva en las entidades afectadas, arma el Caso
+llamando al motor de Jonatin (B1) y dispara alertas si el nivel de atencion lo
+amerita. Lo que ya esta en base no se re-analiza (eso cuesta Croma) pero
+tampoco se esconde: se devuelve el caso guardado, para que el mismo documento
+se pueda consultar las veces que haga falta.
 
 Los pasos 3-6 (enriquecimiento, las 8 señales, el lector de IA, el nivel de
 atencion) son `POST /analizar`, de Jonatin — este modulo lo invoca, no lo
@@ -44,7 +46,7 @@ from ..routers.analisis import analizar
 from ..senales.entidades_emergencia import ENTIDADES_EMERGENCIA, FECHA_APERTURA
 from ..alertas import enviar_alerta  # despachador Telegram/WhatsApp, dueno Freddy (B2)
 from .cache_croma import llamar_con_cache
-from .casos import contrato_ya_conocido, guardar_caso
+from .casos import caso_de_contrato, guardar_caso
 from .suscripciones import listar_suscriptores
 from .tiempo import inicio_de_dia_bogota_en_utc
 
@@ -131,10 +133,19 @@ async def _avisar_si_corresponde(caso: Caso) -> None:
             )
 
 
-async def monitor_nuevos(desde: date | None = None) -> list[Caso]:
+async def monitor_nuevos(desde: date | None = None, *, forzar: bool = False) -> list[Caso]:
     """Barrido completo: entidades afectadas -> filtro de novedad -> Caso armado.
 
-    Devuelve solo los casos NUEVOS de esta corrida, no el historico.
+    Devuelve el caso de cada entidad con actividad en la ventana. Un contrato
+    ya visto **no se descarta**: se devuelve el caso que ya esta en base, sin
+    volver a gastar Croma ni repetir la alerta. Asi el mismo documento se puede
+    consultar tantas veces como haga falta — antes la segunda consulta
+    respondia `[]` y parecia que la entidad no tenia nada.
+
+    `forzar=True` ignora el filtro de novedad y re-analiza aunque el contrato
+    ya este en base. Es caro (un analisis completo por entidad, ~80-100 s cada
+    uno de cuota compartida de Croma), asi que es opt-in: sirve para refrescar
+    un caso viejo o para volver a disparar el aviso.
     """
     if not get_settings().croma_configurado:
         raise CromaSinRespuesta(
@@ -172,9 +183,20 @@ async def monitor_nuevos(desde: date | None = None) -> list[Caso]:
                 )
                 continue
 
-            if contrato_ya_conocido(llave):
-                log.info("%s (%s): sin actividad nueva (%s ya visto)", nombre, nit, llave)
-                continue
+            if not forzar:
+                conocido = caso_de_contrato(llave)
+                if conocido is not None:
+                    log.info(
+                        "%s (%s): %s ya analizado; se devuelve el caso %s guardado "
+                        "(sin gastar Croma, sin repetir el aviso). Usa forzar=true "
+                        "para re-analizarlo.",
+                        nombre,
+                        nit,
+                        llave,
+                        conocido.id,
+                    )
+                    casos.append(conocido)
+                    continue
 
             try:
                 caso = await analizar(AnalizarRequest(entidad_id=nit))
