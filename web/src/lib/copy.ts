@@ -151,9 +151,10 @@ export const TEXTOS = {
   },
 } as const
 
+/** Mismo texto del parche v3.1 que `lib/tipos.ts`, traducido para la landing. */
 export const DISCLAIMER_LANDING = {
-  es: 'Herramienta de priorización ciudadana. Una señal no es prueba de irregularidad.',
-  en: 'A citizen prioritization tool. A signal is not proof of wrongdoing.',
+  es: 'Una señal no es prueba de irregularidad. Es un motivo para preguntar.',
+  en: 'A signal is not proof of wrongdoing. It is a reason to ask.',
 }
 
 export const IdiomaContext = createContext<{

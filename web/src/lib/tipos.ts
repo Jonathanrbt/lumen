@@ -115,5 +115,5 @@ export interface AlertaResponse {
   detalle?: string | null
 }
 
-export const DISCLAIMER =
-  'Herramienta de priorización ciudadana. Una señal no es prueba de irregularidad.'
+/** Texto del parche v3.1 — fuente única en `api/lumen/contracts/modelos.py`. */
+export const DISCLAIMER = 'Una señal no es prueba de irregularidad. Es un motivo para preguntar.'
