@@ -25,8 +25,12 @@ def formatear_pesos(valor: float) -> str:
 def url_ficha(caso: Caso) -> str:
     ajustes = get_settings()
     if ajustes.lumen_frontend_url:
-        return f"{ajustes.lumen_frontend_url.rstrip('/')}/caso/{caso.id}"
-    # Andrew todavia no declara su dominio: se enlaza al recurso de la API.
+        # El prefijo /app no es decorativo: la ficha vive en la ruta
+        # /app/caso/:id del router del frontend y el catch-all redirige todo
+        # lo demas al landing. Sin /app el enlace del WhatsApp abre la portada
+        # y el veedor nunca ve el caso, sin ningun error visible.
+        return f"{ajustes.lumen_frontend_url.rstrip('/')}/app/caso/{caso.id}"
+    # Sin dominio declarado se enlaza al recurso de la API.
     return f"Ver evidencia: pide el caso {caso.id} en la API (dominio del frontend pendiente)"
 
 
