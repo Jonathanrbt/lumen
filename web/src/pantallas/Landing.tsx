@@ -61,10 +61,9 @@ export function PantallaLanding() {
           */}
           <div className="relative aspect-[16/9] max-h-[54svh] w-full overflow-hidden" aria-hidden>
             <img src={fondoHero} alt="" className="h-full w-full object-cover object-[50%_46%]" />
-            {/* Un solo velo, solo en el borde inferior, para que el texto de abajo
-                tenga contraste. El resto del cuadro queda limpio. */}
+            {/* Un velo corto y pegado al borde: más arriba lavaba media pintura. */}
             <div
-              className="absolute inset-x-0 bottom-0 h-2/5"
+              className="absolute inset-x-0 bottom-0 h-[26%]"
               style={{
                 background: `linear-gradient(to bottom, transparent, ${MARMOL(55)} 60%, var(--color-fondo) 100%)`,
               }}
@@ -86,7 +85,7 @@ export function PantallaLanding() {
 
             <h1 className="mt-7 font-serif text-[clamp(2.1rem,4.4vw,3.5rem)] font-normal leading-[1.08] tracking-[-0.01em]">
               <span className="block max-w-[20ch]">{t.heroTitulo}</span>
-              <span className="my-5 flex items-center gap-4 text-base sm:my-6 sm:pl-[5%]">
+              <span className="mb-5 mt-9 flex items-center gap-4 text-base sm:mb-6 sm:mt-12 sm:pl-[5%]">
                 <span className="h-px w-10 bg-[var(--color-bronce)] opacity-70 sm:w-16" />
                 <span className="font-sans text-[0.66rem] uppercase tracking-[0.3em] text-[var(--color-lumen)]">
                   {t.heroFilete}
