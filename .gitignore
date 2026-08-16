@@ -66,3 +66,7 @@ desktop.ini
 video/crudo/
 *.mp4
 !video/final/*.mp4
+
+.cursor/
+.claude/
+openspec/
